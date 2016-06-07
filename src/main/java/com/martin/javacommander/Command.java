@@ -34,7 +34,7 @@ public class Command implements ICommandAction, Comparable<Command>
      * @param name name of this command, should be unique
      * @param description description of this command
      */
-    public Command(ICommandAction action, String name, String description)
+    public Command(String name, String description, ICommandAction action)
     {
         this.action = action;
         this.Name = name;
@@ -48,9 +48,9 @@ public class Command implements ICommandAction, Comparable<Command>
      * @param description description of this command
      * @param options options for this command
      */
-    public Command(ICommandAction action, String name, String description, List<CommandOption> options)
+    public Command(String name, String description, List<CommandOption> options, ICommandAction action)
     {
-        this(action, name, description);
+        this(name, description, action);
         options.forEach((co) -> Options.put(co.Name, co));
     }
 
@@ -60,7 +60,7 @@ public class Command implements ICommandAction, Comparable<Command>
      * @param description description of this command
      * @param options options for this command
      */
-    private Command(ICommandAction action, String name, String description, Map<String, CommandOption> options)
+    private Command(String name, String description, Map<String, CommandOption> options, ICommandAction action)
     {
         this.action = action;
         this.Name = name;
@@ -101,6 +101,6 @@ public class Command implements ICommandAction, Comparable<Command>
      */
     public Command getSynonym(String commandName)
     {
-        return new Command(this.action, commandName, String.format("Synonym for '%s'.", this.Name), this.Options);
+        return new Command(commandName, String.format("Synonym for '%s'.", this.Name), this.Options, this.action);
     }
 }

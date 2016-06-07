@@ -49,23 +49,21 @@ public class JavaCommander implements Runnable
         if (createBasicCommands)
         {
             // Help command
-            Command helpCommand = new Command((options)
-                    -> 
-                    {
-                        return this.usage();
-            },
-                    "help", "Display this help.");
+            Command helpCommand = new Command(                    "help", "Display this help.", (options)
+                    ->
+            {
+                return this.usage();
+            });
             this.addCommand(helpCommand);
             this.addCommand(helpCommand.getSynonym("?"));
 
             // Quit command
-            Command quitCommand = new Command((options)
-                    -> 
-                    {
-                        System.exit(0);
-                        return "Exiting...";
-            },
-                    "quit", "Quit the program.");
+            Command quitCommand = new Command(                    "quit", "Quit the program.", (options)
+                    ->
+            {
+                System.exit(0);
+                return "Exiting...";
+            });
             this.addCommand(quitCommand);
             this.addCommand(quitCommand.getSynonym("exit"));
         }
@@ -93,7 +91,7 @@ public class JavaCommander implements Runnable
      */
     public void addCommand(ICommandAction action, String name, String description, List<CommandOption> options)
     {
-        this.addCommand(new Command(action, name, description, options));
+        this.addCommand(new Command(name, description, options, action));
     }
 
     /**
