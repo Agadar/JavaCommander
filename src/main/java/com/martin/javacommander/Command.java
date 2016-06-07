@@ -51,7 +51,8 @@ public class Command implements ICommandAction, Comparable<Command>
     public Command(String name, String description, List<CommandOption> options, ICommandAction action)
     {
         this(name, description, action);
-        options.forEach((co) -> Options.put(co.Name, co));
+        if (options != null)
+            options.forEach((co) -> Options.put(co.Name, co));
     }
 
     /**

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,20 +50,27 @@ public class JavaCommander implements Runnable
         if (createBasicCommands)
         {
             // Help command
-            Command helpCommand = new Command(                    "help", "Display this help.", (options)
-                    ->
-            {
-                return this.usage();
+            CommandOption commandInfo = new CommandOption("-c", "Display a specific command's help.", "");
+            Command helpCommand = new Command("help", "Display this help.", Arrays.asList(commandInfo), (options)
+                    -> 
+                    {
+                        String commandName = (String) options.get("-c").Value;
+
+                        if (commandName.isEmpty())
+                        {
+                            return this.usage();
+                        }
+                        return this.usage(commandName);
             });
             this.addCommand(helpCommand);
             this.addCommand(helpCommand.getSynonym("?"));
 
             // Quit command
-            Command quitCommand = new Command(                    "quit", "Quit the program.", (options)
-                    ->
-            {
-                System.exit(0);
-                return "Exiting...";
+            Command quitCommand = new Command("quit", "Quit the program.", (options)
+                    -> 
+                    {
+                        System.exit(0);
+                        return "Exiting...";
             });
             this.addCommand(quitCommand);
             this.addCommand(quitCommand.getSynonym("exit"));
@@ -255,9 +263,45 @@ public class JavaCommander implements Runnable
      */
     public String usage()
     {
-        String toString = "List of all commands:";
+        String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
+        toString += "List of available commands:";
         toString = Commands.entrySet().stream().map((entry) -> String.format("\n%s\t\t\t%s",
                 entry.getValue().Name, entry.getValue().Description)).reduce(toString, String::concat);
+        return toString;
+    }
+
+    /**
+     * Gives the description and a list of all available options for the command
+     * with the given command name. Called by the basic 'help' command when the
+     * '-c' option is set.
+     *
+     * @param commandName the name of the command to return info of
+     * @return description and a list of all available options for the command
+     * with the given command name
+     */
+    public String usage(String commandName)
+    {
+        // Retrieve the command. If it does not exist, then return with an error message.
+        Command command = this.Commands.get(commandName);
+
+        if (command == null)
+        {
+            return String.format("'%s' is not recognized as a command", commandName);
+        }
+
+        // If the command does exist, then print its info.
+        String toString = command.Description + "\n\n";
+
+        // If there are options to list, then list them.
+        if (command.Options.size() > 0)
+        {
+            toString += "List of available options:";
+            toString = command.Options.entrySet().stream().map((entry) -> String.format("\n%s\t\t%s\t\t%s",
+                    entry.getValue().Name, entry.getValue().getValueType().getSimpleName(), entry.getValue().Description)).reduce(toString, String::concat);
+        } else
+        {
+            toString += "No options available for this command.";
+        }
         return toString;
     }
 
@@ -277,7 +321,7 @@ public class JavaCommander implements Runnable
             {
                 String command = br.readLine();
                 String result = execute(command);
-                System.out.println(result + System.lineSeparator());
+                System.out.println(System.lineSeparator() + result + System.lineSeparator());
             }
         } catch (IOException ex)
         {
