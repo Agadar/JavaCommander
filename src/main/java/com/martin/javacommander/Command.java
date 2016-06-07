@@ -5,17 +5,35 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * A command with an action.
+ * The definition of a command.
  *
  * @author Martin
  */
 public class Command implements ICommandAction, Comparable<Command>
 {
+
+    /**
+     * action performed by this command
+     */
     private final ICommandAction action;
+    /**
+     * options for this command
+     */
     public final Map<String, CommandOption> Options;
+    /**
+     * name of this command, should be unique
+     */
     public final String Name;
+    /**
+     * description of this command
+     */
     public final String Description;
 
+    /**
+     * @param action action performed by this command
+     * @param name name of this command, should be unique
+     * @param description description of this command
+     */
     public Command(ICommandAction action, String name, String description)
     {
         this.action = action;
@@ -23,15 +41,25 @@ public class Command implements ICommandAction, Comparable<Command>
         this.Description = description;
         this.Options = new TreeMap<>();
     }
-    
+
+    /**
+     * @param action action performed by this command
+     * @param name name of this command, should be unique
+     * @param description description of this command
+     * @param options options for this command
+     */
     public Command(ICommandAction action, String name, String description, List<CommandOption> options)
     {
         this(action, name, description);
-        
-        if (options != null)
-            options.forEach((co) -> Options.put(co.Name, co));
+        options.forEach((co) -> Options.put(co.Name, co));
     }
-    
+
+    /**
+     * @param action action performed by this command
+     * @param name name of this command, should be unique
+     * @param description description of this command
+     * @param options options for this command
+     */
     private Command(ICommandAction action, String name, String description, Map<String, CommandOption> options)
     {
         this.action = action;
@@ -39,14 +67,14 @@ public class Command implements ICommandAction, Comparable<Command>
         this.Description = description;
         this.Options = options;
     }
-    
+
     /**
-     * Returns the option with the given name.
-     * 
-     * @param optionName
-     * @return 
+     * Finds the option with the given name.
+     *
+     * @param optionName name of the option to find
+     * @return the found option, or null if none was found
      */
-    public CommandOption getOption(String optionName)
+    public CommandOption findOption(String optionName)
     {
         return Options.get(optionName);
     }
@@ -62,13 +90,14 @@ public class Command implements ICommandAction, Comparable<Command>
     {
         return this.action.execute(options);
     }
-    
+
     /**
-     * Returns a command that has a different name and description,
-     * but has the same functionality and options as this command.
-     * 
-     * @param commandName
-     * @return 
+     * Returns a command that is identical to this command but with a different
+     * name (supplied by the caller) and a description that says it's synonymous
+     * with this command.
+     *
+     * @param commandName the name for the synonymous command
+     * @return a command synonymous to this
      */
     public Command getSynonym(String commandName)
     {

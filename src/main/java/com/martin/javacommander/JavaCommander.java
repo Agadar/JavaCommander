@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Manages this application's commands.
+ * Manages an application's commands.
  *
  * @author Martin
  */
@@ -24,16 +24,13 @@ public class JavaCommander implements Runnable
      * All the registered commands.
      */
     private final TreeMap<String, Command> Commands = new TreeMap<>();
-    
     /**
      * Welcoming message.
      */
     public final String WelcomeMsg;
 
     /**
-     * Constructor
-     * 
-     * @param welcomeMsg
+     * @param welcomeMsg the welcoming message printed when run() is called
      */
     public JavaCommander(String welcomeMsg)
     {
@@ -41,16 +38,14 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Constructor. If createBasicCommands is set to true, then some basic
-     * commands such as a 'help' command and a 'quit' command are created.
-     *
-     * @param welcomeMsg
-     * @param createBasicCommands
+     * @param welcomeMsg the welcoming message printed when run() is called
+     * @param createBasicCommands whether or not to create basic utility
+     * commands such as a 'help' command and a 'quit' command
      */
     public JavaCommander(String welcomeMsg, boolean createBasicCommands)
     {
         this.WelcomeMsg = welcomeMsg;
-        
+
         if (createBasicCommands)
         {
             // Help command
@@ -77,11 +72,11 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers a new command.
+     * Adds a new command.
      *
-     * @param action
-     * @param name
-     * @param description
+     * @param action action performed by the command
+     * @param name name of the command, should be unique
+     * @param description description of the command
      */
     public void addCommand(ICommandAction action, String name, String description)
     {
@@ -89,12 +84,12 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers a new command.
+     * Adds a new command.
      *
-     * @param action
-     * @param name
-     * @param description
-     * @param options
+     * @param action action performed by the command
+     * @param name name of the command, should be unique
+     * @param description description of the command
+     * @param options options for the command
      */
     public void addCommand(ICommandAction action, String name, String description, List<CommandOption> options)
     {
@@ -102,9 +97,9 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers a new command.
+     * Adds a new command.
      *
-     * @param command
+     * @param command the new command to add
      */
     public final void addCommand(Command command)
     {
@@ -112,10 +107,10 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Splits a String to a String List of argument tokens.
+     * Parses a string to a list of argument tokens.
      *
-     * @param string
-     * @return
+     * @param string a string to parse to a list of argument tokens
+     * @return a list of argument tokens
      */
     public List<String> stringAsArgs(String string)
     {
@@ -166,10 +161,11 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Parses and executes a String, returning its reply.
+     * Parses and executes a string, and then returns any result or feedback
+     * represented in a string
      *
-     * @param string
-     * @return
+     * @param string the string to parse and then execute
+     * @return any result or feedback represented in a string
      */
     public String execute(String string)
     {
@@ -177,11 +173,11 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Parses and executes a String List of argument tokens, returning its
-     * reply.
+     * Parses and executes a list of argument tokens, and then returns any
+     * result or feedback represented in a string
      *
-     * @param args
-     * @return
+     * @param args the list of argument tokens to parse and then execute
+     * @return any result or feedback represented in a string
      */
     public String execute(List<String> args)
     {
@@ -198,7 +194,7 @@ public class JavaCommander implements Runnable
         // Validate command parameters       
         for (int i = 1; i < args.size(); i += 2)
         {
-            CommandOption option = command.getOption(args.get(i));
+            CommandOption option = command.findOption(args.get(i));
 
             if (option == null)
             {
@@ -239,7 +235,7 @@ public class JavaCommander implements Runnable
         {
             if (!options.containsKey(co.Name))
             {
-                if (!co.IsRequired)
+                if (!co.Mandatory)
                 {
                     options.put(co.Name, co);
                 } else
@@ -254,9 +250,10 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Gives a list of all available commands.
+     * Gives a list of all available commands. Called by the basic 'help'
+     * command.
      *
-     * @return
+     * @return a list of all available commands
      */
     public String usage()
     {
@@ -274,21 +271,19 @@ public class JavaCommander implements Runnable
     {
         // Print welcoming message and instantiate BufferedReader.
         System.out.println(WelcomeMsg + System.lineSeparator());
-        final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        // Thread loop.
-        while (!Thread.currentThread().isInterrupted())
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in)))
         {
-            try
+            // Thread loop.
+            while (!Thread.currentThread().isInterrupted())
             {
                 String command = br.readLine();
                 String result = execute(command);
                 System.out.println(result + System.lineSeparator());
-            } catch (IOException ex)
-            {
-                Thread.currentThread().interrupt();
-                Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (IOException ex)
+        {
+            Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
