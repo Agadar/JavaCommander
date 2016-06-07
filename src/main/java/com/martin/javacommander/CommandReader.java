@@ -58,7 +58,7 @@ public class CommandReader implements Runnable
             {
                 //System.out.print(programName);
                 String command = br.readLine();
-                String result = commandRegistry.parseAndExecute(command);
+                String result = commandRegistry.execute(command);
                 System.out.println(result + System.lineSeparator());
             } catch (IOException ex)
             {
