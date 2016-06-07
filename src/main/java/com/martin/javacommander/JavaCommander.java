@@ -76,9 +76,9 @@ public class JavaCommander implements Runnable
      * @param name name of the command, should be unique
      * @param description description of the command
      */
-    public void addCommand(ICommandAction action, String name, String description)
+    public void addCommand(String name, String description, ICommandAction action)
     {
-        this.addCommand(action, name, description, null);
+        this.addCommand(name, description, null, action);
     }
 
     /**
@@ -89,7 +89,7 @@ public class JavaCommander implements Runnable
      * @param description description of the command
      * @param options options for the command
      */
-    public void addCommand(ICommandAction action, String name, String description, List<CommandOption> options)
+    public void addCommand(String name, String description, List<CommandOption> options, ICommandAction action)
     {
         this.addCommand(new Command(name, description, options, action));
     }
