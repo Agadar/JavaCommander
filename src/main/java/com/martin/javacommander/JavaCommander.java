@@ -2,48 +2,66 @@ package com.martin.javacommander;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages this application's commands.
  *
  * @author Martin
  */
-public class CommandRegistry
+public class JavaCommander implements Runnable
 {
 
     /**
      * All the registered commands.
      */
     private final TreeMap<String, Command> Commands = new TreeMap<>();
+    
+    /**
+     * Welcoming message.
+     */
+    public final String WelcomeMsg;
 
-    public CommandRegistry()
+    /**
+     * Constructor
+     * 
+     * @param welcomeMsg
+     */
+    public JavaCommander(String welcomeMsg)
     {
-        this(true);
+        this(welcomeMsg, true);
     }
 
     /**
      * Constructor. If createBasicCommands is set to true, then some basic
      * commands such as a 'help' command and a 'quit' command are created.
      *
+     * @param welcomeMsg
      * @param createBasicCommands
      */
-    public CommandRegistry(boolean createBasicCommands)
+    public JavaCommander(String welcomeMsg, boolean createBasicCommands)
     {
+        this.WelcomeMsg = welcomeMsg;
+        
         if (createBasicCommands)
         {
             // Help command
             Command helpCommand = new Command((options)
                     -> 
                     {
-                        return this.helpMessage();
+                        return this.usage();
             },
                     "help", "Display this help.");
-            this.put(helpCommand);
-            this.put(helpCommand.getSynonym("?"));
+            this.addCommand(helpCommand);
+            this.addCommand(helpCommand.getSynonym("?"));
 
             // Quit command
             Command quitCommand = new Command((options)
@@ -53,8 +71,8 @@ public class CommandRegistry
                         return "Exiting...";
             },
                     "quit", "Quit the program.");
-            this.put(quitCommand);
-            this.put(quitCommand.getSynonym("exit"));
+            this.addCommand(quitCommand);
+            this.addCommand(quitCommand.getSynonym("exit"));
         }
     }
 
@@ -65,9 +83,9 @@ public class CommandRegistry
      * @param name
      * @param description
      */
-    public void put(ICommandAction action, String name, String description)
+    public void addCommand(ICommandAction action, String name, String description)
     {
-        this.put(action, name, description, null);
+        this.addCommand(action, name, description, null);
     }
 
     /**
@@ -78,9 +96,9 @@ public class CommandRegistry
      * @param description
      * @param options
      */
-    public void put(ICommandAction action, String name, String description, List<CommandOption> options)
+    public void addCommand(ICommandAction action, String name, String description, List<CommandOption> options)
     {
-        this.put(new Command(action, name, description, options));
+        this.addCommand(new Command(action, name, description, options));
     }
 
     /**
@@ -88,7 +106,7 @@ public class CommandRegistry
      *
      * @param command
      */
-    public final void put(Command command)
+    public final void addCommand(Command command)
     {
         Commands.put(command.Name, command);
     }
@@ -203,7 +221,7 @@ public class CommandRegistry
 
                 if (value == null)
                 {
-                    throw new IllegalArgumentException();
+                    return String.format("Failed to identify value type for option '%s'", args.get(i));
                 }
 
             } catch (Exception ex)
@@ -240,11 +258,37 @@ public class CommandRegistry
      *
      * @return
      */
-    public String helpMessage()
+    public String usage()
     {
         String toString = "List of all commands:";
         toString = Commands.entrySet().stream().map((entry) -> String.format("\n%s\t\t\t%s",
                 entry.getValue().Name, entry.getValue().Description)).reduce(toString, String::concat);
         return toString;
+    }
+
+    /**
+     * Blocking method that continuously reads input from a BufferedReader.
+     */
+    @Override
+    public void run()
+    {
+        // Print welcoming message and instantiate BufferedReader.
+        System.out.println(WelcomeMsg + System.lineSeparator());
+        final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        // Thread loop.
+        while (!Thread.currentThread().isInterrupted())
+        {
+            try
+            {
+                String command = br.readLine();
+                String result = execute(command);
+                System.out.println(result + System.lineSeparator());
+            } catch (IOException ex)
+            {
+                Thread.currentThread().interrupt();
+                Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }
