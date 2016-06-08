@@ -1,10 +1,13 @@
 package com.martin.javacommander;
 
+import com.martin.javacommander.annotations.CommandFunction;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,7 +32,7 @@ public class JavaCommander implements Runnable
      * Welcoming message.
      */
     public final String WelcomeMsg;
-
+    
     /**
      * @param welcomeMsg the welcoming message printed when run() is called
      */
@@ -74,6 +77,30 @@ public class JavaCommander implements Runnable
             });
             this.addCommand(quitCommand);
             this.addCommand(quitCommand.getSynonym("exit"));
+        }
+    }
+
+    public void registerCommands(Object o)
+    {
+        // methods found in the object's class and her superclasses that are annotated with @CommandFunction
+        final List<Method> methods = new ArrayList<>();
+        // the object class, with which we start out
+        Class oClass = o.getClass();
+        
+        // iterate through the object's class' hierarchy
+        while (oClass != Object.class)
+        {
+            // iterate through the current class' methods
+            for (final Method method : new ArrayList<>(Arrays.asList(oClass.getDeclaredMethods())))
+            {
+                // if we've found an annotated method, add it to the list
+                if (method.isAnnotationPresent(CommandFunction.class))
+                {
+                    methods.add(method);
+                }
+            }
+            // move to the upper class in the hierarchy in search for more methods
+            oClass = oClass.getSuperclass();
         }
     }
 
