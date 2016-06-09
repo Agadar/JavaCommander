@@ -6,7 +6,7 @@ import com.martin.javacommander.annotations.CommandOption;
 public class TestClass
 {
 
-    @Command(names = "testcommand")
+    @Command(names = "test")
     public void TestMethod(
             @CommandOption(names = "-1", mandatory = false, defaultValue = "defaultdicks") String input1,
             @CommandOption(names = "-2", mandatory = true, defaultValue = "10") int input2)

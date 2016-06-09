@@ -27,9 +27,13 @@ public class JavaCommander implements Runnable
 {
 
     /**
-     * Welcoming message.
+     * Welcoming message printed when run() is called
      */
     public final String WelcomeMsg;
+    /**
+     * Name of the program, printed on every input line
+     */
+    public final String ProgramName;
     /**
      * Objects to invoke Methods from, mapped to unique command names.
      */
@@ -41,48 +45,27 @@ public class JavaCommander implements Runnable
 
     /**
      * @param welcomeMsg the welcoming message printed when run() is called
+     * @param programName the name of the program, printed on every input line
      */
-    public JavaCommander(String welcomeMsg)
+    public JavaCommander(String welcomeMsg, String programName)
     {
-        this(welcomeMsg, true);
+        this(welcomeMsg, programName, true);
     }
 
     /**
      * @param welcomeMsg the welcoming message printed when run() is called
+     * @param programName the name of the program, printed on every input line
      * @param createBasicCommands whether or not to create basic utility
      * commands such as a 'help' command and a 'quit' command
      */
-    public JavaCommander(String welcomeMsg, boolean createBasicCommands)
+    public JavaCommander(String welcomeMsg, String programName, boolean createBasicCommands)
     {
         this.WelcomeMsg = welcomeMsg;
+        this.ProgramName = programName + " ";
 
         if (createBasicCommands)
         {
-            // Help command
-//            CommandOption commandInfo = new CommandOption("-c", "Display a specific command's help.", "");
-//            Command helpCommand = new Command("help", "Display this help.", Arrays.asList(commandInfo), (options)
-//                    -> 
-//                    {
-//                        String commandName = (String) options.get("-c").Value;
-//
-//                        if (commandName.isEmpty())
-//                        {
-//                            return this.usage();
-//                        }
-//                        return this.usage(commandName);
-//            });
-//            this.addCommand(helpCommand);
-//            this.addCommand(helpCommand.getSynonym("?"));
-//
-//            // Quit command
-//            Command quitCommand = new Command("quit", "Quit the program.", (options)
-//                    -> 
-//                    {
-//                        System.exit(0);
-//                        return "Exiting...";
-//            });
-//            this.addCommand(quitCommand);
-//            this.addCommand(quitCommand.getSynonym("exit"));
+            this.registerObject(this);
         }
     }
 
@@ -131,8 +114,7 @@ public class JavaCommander implements Runnable
      * Attempts to find and execute the command defined in a list of argument
      * tokens.
      *
-     * @param args
-     *          the list of argument tokens
+     * @param args the list of argument tokens
      */
     public void execute(List<String> args)
     {
@@ -295,57 +277,80 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Gives a list of all available commands. Called by the basic 'help'
-     * command.
+     * Prints a list of all available commands. Called by the basic 'help'
+     * command. If the given commandName is not null or empty, then the help of
+     * the given command is given, listing its options.
      *
-     * @return a list of all available commands
+     * @param commandName
      */
-    public String usage()
+    @Command(names = "help", description = "Display the help.")
+    public void usage(@CommandOption(names = "-c", description = "Display a specific command's help.",
+            defaultValue = "") String commandName)
     {
-//        String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
-//        toString += "List of available commands:";
-//        toString = Commands.entrySet().stream().map((entry) -> String.format("\n%s\t\t\t%s",
-//                entry.getValue().Name, entry.getValue().Description)).reduce(toString, String::concat);
-//        return toString;
-        throw new UnsupportedOperationException();
+        // List available commands
+        if (commandName == null || commandName.isEmpty())
+        {
+            String toString = "Displaying help. Use option '-c' to display a specific command's help.\n";
+            toString += "List of available commands:";
+
+            // Iterate over the Methods to find the descriptions
+            for (Map.Entry<String, Method> entry : commandMethods.entrySet())
+            {
+                String description = ((Command) entry.getValue().
+                        getAnnotation(Command.class)).description();
+                toString += String.format("\n%s\t\t\t%s", entry.getKey(), description);
+            }
+
+            // Print help
+            System.out.println(toString);
+        } 
+        // List specific command's options
+        else
+        {
+            // Retrieve the command. If it does not exist, then return with an error message.
+            Method method = commandMethods.get(commandName);
+            if (method == null)
+            {
+                System.out.println(String.format("'%s' is not recognized as a command", commandName));
+                return;
+            }
+
+            // Add description
+            String toString = ((Command) method.getAnnotation(Command.class)).description() + "\n";
+
+            // Retrieve parameters
+            Parameter[] params = method.getParameters();
+            
+            // If there are options to list, then list them.
+            if (params.length > 0)
+            {
+                toString += "List of available options:";
+                
+                for (Parameter param : params)
+                {
+                    CommandOption option = param.getAnnotation(CommandOption.class);
+                    toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0], 
+                            param.getType().getSimpleName(), option.description());
+                }
+            } else
+            {
+                toString += "No options available for this command.";
+            }
+            
+            // Print help
+            System.out.println(toString);
+        }
     }
 
     /**
-     * Gives the description and a list of all available options for the command
-     * with the given command name. Called by the basic 'help' command when the
-     * '-c' option is set.
-     *
-     * @param commandName the name of the command to return info of
-     * @return description and a list of all available options for the command
-     * with the given command name
+     * Calls System.Exit(0). Used for the basic exit command.
      */
-    public String usage(String commandName)
+    @Command(names = "exit", description = "Exit the program.")
+    private void exitProgram()
     {
-        // Retrieve the command. If it does not exist, then return with an error message.
-//        Command command = this.Commands.get(commandName);
-//
-//        if (command == null)
-//        {
-//            return String.format("'%s' is not recognized as a command", commandName);
-//        }
-//
-//        // If the command does exist, then print its info.
-//        String toString = command.Description + "\n\n";
-//
-//        // If there are options to list, then list them.
-//        if (command.Options.size() > 0)
-//        {
-//            toString += "List of available options:";
-//            toString = command.Options.entrySet().stream().map((entry) -> String.format("\n%s\t\t%s\t\t%s",
-//                    entry.getValue().Name, entry.getValue().getValueType().getSimpleName(), entry.getValue().Description)).reduce(toString, String::concat);
-//        } else
-//        {
-//            toString += "No options available for this command.";
-//        }
-//        return toString;
-        throw new UnsupportedOperationException();
+        System.exit(0);
     }
-
+    
     /**
      * Blocking method that continuously reads input from a BufferedReader.
      */
