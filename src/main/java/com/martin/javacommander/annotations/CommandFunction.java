@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 public @interface CommandFunction
 {
     String[] names();
-    String description();
+    String description() default "No description available.";
 }

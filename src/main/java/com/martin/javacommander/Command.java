@@ -9,6 +9,7 @@ import java.util.TreeMap;
  *
  * @author Martin
  */
+@Deprecated
 public class Command implements ICommandAction, Comparable<Command>
 {
 

@@ -12,10 +12,10 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandOption
+public @interface CommandFunctionOption
 {
     String[] names();
-    String description();
+    String description() default "No description available.";
     boolean mandatory() default false;
     String[] defaultValue() default {};
 }

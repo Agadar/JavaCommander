@@ -7,6 +7,7 @@ package com.martin.javacommander;
  *
  * @author Martin
  */
+@Deprecated
 public class CommandOption<T>
 {
 

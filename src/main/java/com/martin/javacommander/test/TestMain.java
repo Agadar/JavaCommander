@@ -22,8 +22,10 @@ public class TestMain
         TestClass tc = new TestClass();
         JavaCommander jc = new JavaCommander("Welcome to the testing zone");
         jc.registerCommands(tc);
-        jc.execute("help -c testcommand");
-        jc.execute("testcommand -i 'dicks'");
+        //jc.execute2("testcommand -1 inputdicks -2 22 -3");
+        jc.execute2("testcommand -2 12 -1 inputdicks");
+        //jc.execute2("testcommand");
+        //jc.execute2("nonexistantcommand");
     }
     
 }
