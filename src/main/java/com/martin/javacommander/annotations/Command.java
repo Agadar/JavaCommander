@@ -12,8 +12,19 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandFunction
+public @interface Command
 {
+    /**
+     * Names of the command. The first entry is considered its primary name,
+     * the other entries are considered synonyms.
+     * 
+     * @return 
+     */
     String[] names();
+    /**
+     * A brief description of the command.
+     * 
+     * @return 
+     */
     String description() default "No description available.";
 }

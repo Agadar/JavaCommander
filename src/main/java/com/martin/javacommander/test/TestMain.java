@@ -21,11 +21,12 @@ public class TestMain
     {
         TestClass tc = new TestClass();
         JavaCommander jc = new JavaCommander("Welcome to the testing zone");
-        jc.registerCommands(tc);
-        //jc.execute2("testcommand -1 inputdicks -2 22 -3");
-        jc.execute2("testcommand -2 12 -1 inputdicks");
-        //jc.execute2("testcommand");
-        //jc.execute2("nonexistantcommand");
+        jc.registerObject(tc);
+        jc.run();
+        //jc.execute("testcommand -1 inputdicks -2 22 -3");
+        //jc.execute("testcommand -2 lel -1 inputdicks");
+        //jc.execute("testcommand");
+        //jc.execute("nonexistantcommand");
     }
     
 }

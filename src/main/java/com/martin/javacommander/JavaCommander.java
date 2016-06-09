@@ -1,13 +1,10 @@
 package com.martin.javacommander;
 
-import com.martin.javacommander.annotations.CommandFunction;
-import com.martin.javacommander.annotations.CommandFunctionOption;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -18,6 +15,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.martin.javacommander.annotations.Command;
+import com.martin.javacommander.annotations.CommandOption;
 
 /**
  * Manages an application's commands.
@@ -28,20 +27,16 @@ public class JavaCommander implements Runnable
 {
 
     /**
-     * All the registered commands.
-     */
-    @Deprecated
-    private final TreeMap<String, Command> Commands = new TreeMap<>();
-    /**
      * Welcoming message.
      */
     public final String WelcomeMsg;
-
     /**
-     * Unique command names with references to Methods to invoke and Objects to
-     * invoke said Methods from.
+     * Objects to invoke Methods from, mapped to unique command names.
      */
     private final TreeMap<String, Object> commandObjects = new TreeMap<>();
+    /**
+     * Methods to invoke, mapped to unique command names.
+     */
     private final TreeMap<String, Method> commandMethods = new TreeMap<>();
 
     /**
@@ -64,39 +59,39 @@ public class JavaCommander implements Runnable
         if (createBasicCommands)
         {
             // Help command
-            CommandOption commandInfo = new CommandOption("-c", "Display a specific command's help.", "");
-            Command helpCommand = new Command("help", "Display this help.", Arrays.asList(commandInfo), (options)
-                    -> 
-                    {
-                        String commandName = (String) options.get("-c").Value;
-
-                        if (commandName.isEmpty())
-                        {
-                            return this.usage();
-                        }
-                        return this.usage(commandName);
-            });
-            this.addCommand(helpCommand);
-            this.addCommand(helpCommand.getSynonym("?"));
-
-            // Quit command
-            Command quitCommand = new Command("quit", "Quit the program.", (options)
-                    -> 
-                    {
-                        System.exit(0);
-                        return "Exiting...";
-            });
-            this.addCommand(quitCommand);
-            this.addCommand(quitCommand.getSynonym("exit"));
+//            CommandOption commandInfo = new CommandOption("-c", "Display a specific command's help.", "");
+//            Command helpCommand = new Command("help", "Display this help.", Arrays.asList(commandInfo), (options)
+//                    -> 
+//                    {
+//                        String commandName = (String) options.get("-c").Value;
+//
+//                        if (commandName.isEmpty())
+//                        {
+//                            return this.usage();
+//                        }
+//                        return this.usage(commandName);
+//            });
+//            this.addCommand(helpCommand);
+//            this.addCommand(helpCommand.getSynonym("?"));
+//
+//            // Quit command
+//            Command quitCommand = new Command("quit", "Quit the program.", (options)
+//                    -> 
+//                    {
+//                        System.exit(0);
+//                        return "Exiting...";
+//            });
+//            this.addCommand(quitCommand);
+//            this.addCommand(quitCommand.getSynonym("exit"));
         }
     }
 
     /**
      * Registers all commands found in the supplied object.
      *
-     * @param o the object where the to-register commands are located within
+     * @param o the object where commands are located within
      */
-    public void registerCommands(Object o)
+    public void registerObject(Object o)
     {
         // the object class, with which we start out
         Class oClass = o.getClass();
@@ -108,9 +103,9 @@ public class JavaCommander implements Runnable
             for (final Method method : new ArrayList<>(Arrays.asList(oClass.getDeclaredMethods())))
             {
                 // if we've found an annotated method, add it.
-                if (method.isAnnotationPresent(CommandFunction.class))
+                if (method.isAnnotationPresent(Command.class))
                 {
-                    CommandFunction annotation = method.getAnnotation(CommandFunction.class);
+                    Command annotation = method.getAnnotation(Command.class);
                     String primaryName = annotation.names()[0];
                     commandObjects.put(primaryName, o);
                     commandMethods.put(primaryName, method);
@@ -122,18 +117,29 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Parses a string to a command and options, and then executes that command.
+     * Parses a string to a list of argument tokens, and then attempts to find
+     * and execute the command defined in it.
      *
-     * @param string
+     * @param string the string to parse
      */
-    public void execute2(String string)
+    public void execute(String string)
+    {
+        this.execute(stringAsArgs(string));
+    }
+
+    /**
+     * Attempts to find and execute the command defined in a list of argument
+     * tokens.
+     *
+     * @param args
+     *          the list of argument tokens
+     */
+    public void execute(List<String> args)
     {
         try
         {
-            List<String> arguments = stringAsArgs(string);
-
             // Retrieve the relevant object and method
-            String commandName = arguments.get(0);
+            String commandName = args.get(0);
             Object commandObj = commandObjects.get(commandName);
             Method commandMethod = commandMethods.get(commandName);
 
@@ -146,17 +152,17 @@ public class JavaCommander implements Runnable
 
             // Map the options supplied by the caller
             Map<String, String> suppliedOptions = new TreeMap<>();
-            for (int i = 1; i < arguments.size(); i += 2)
+            for (int i = 1; i < args.size(); i += 2)
             {
                 // Prevent an IndexOutOfBoundsException by checking whether the
                 // last supplied option is followed by a supplied value
-                if (i + 1 >= arguments.size())
+                if (i + 1 >= args.size())
                 {
-                    System.out.println(String.format("No value found for option '%s'", arguments.get(i)));
+                    System.out.println(String.format("No value found for option '%s'", args.get(i)));
                     return;
                 }
 
-                suppliedOptions.put(arguments.get(i), arguments.get(i + 1));
+                suppliedOptions.put(args.get(i), args.get(i + 1));
             }
 
             // List that will be used as arguments when invoking the method
@@ -165,8 +171,8 @@ public class JavaCommander implements Runnable
             // Iterate over the method's parameters
             for (Parameter parameter : commandMethod.getParameters())
             {
-                // Retrieve the @CommandFunctionOption annotation
-                CommandFunctionOption annotation = parameter.getAnnotation(CommandFunctionOption.class);
+                // Retrieve the @CommandOption annotation
+                CommandOption annotation = parameter.getAnnotation(CommandOption.class);
 
                 // If the annotation was not found, print a warning message and return
                 if (annotation == null)
@@ -188,33 +194,30 @@ public class JavaCommander implements Runnable
                         // also remove the option from the supplied options so that we
                         // can later determine incorrect options that were given
                         editor.setAsText(suppliedOptions.remove(annotation.names()[0]));
-                    } 
-                    // Else, use the default value, but only if the option is not mandatory.
+                    } // Else, use the default value, but only if the option is not mandatory.
                     // If it is mandatory, then return and log a warning
                     else if (!annotation.mandatory())
                     {
                         editor.setAsText(annotation.defaultValue()[0]);
-                    }
-                    else
+                    } else
                     {
                         System.out.println(String.format("Option '%s' is required", annotation.names()[0]));
                         return;
-                    }                    
-                    
+                    }
+
                     // Set the value and make sure it is not null
-                    Object value = editor.getValue();                   
+                    Object value = editor.getValue();
                     if (value == null)
                     {
                         System.out.println(String.format("Failed to identify value type for option '%s'", annotation.names()[0]));
                         return;
                     }
-                    
+
                     // If the parsing went well, add the value to finalArgs
                     finalArgs.add(value);
-                } 
-                catch (Exception ex)
+                } catch (Exception ex)
                 {
-                    System.out.println(String.format("Value for option '%s' must be of type '%s'", 
+                    System.out.println(String.format("Value for option '%s' must be of type '%s'",
                             annotation.names()[0], parameter.getType().getSimpleName()));
                     return;
                 }
@@ -228,51 +231,13 @@ public class JavaCommander implements Runnable
                 return;
             }
 
-            // Invoke the method on the object
+            // Finally, invoke the method on the object
             commandMethod.invoke(commandObj, finalArgs.toArray());
 
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
         {
             Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Adds a new command.
-     *
-     * @param action action performed by the command
-     * @param name name of the command, should be unique
-     * @param description description of the command
-     */
-    @Deprecated
-    public void addCommand(String name, String description, ICommandAction action)
-    {
-        this.addCommand(name, description, null, action);
-    }
-
-    /**
-     * Adds a new command.
-     *
-     * @param action action performed by the command
-     * @param name name of the command, should be unique
-     * @param description description of the command
-     * @param options options for the command
-     */
-    @Deprecated
-    public void addCommand(String name, String description, List<CommandOption> options, ICommandAction action)
-    {
-        this.addCommand(new Command(name, description, options, action));
-    }
-
-    /**
-     * Adds a new command.
-     *
-     * @param command the new command to add
-     */
-    @Deprecated
-    public final void addCommand(Command command)
-    {
-        Commands.put(command.Name, command);
     }
 
     /**
@@ -330,97 +295,6 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Parses and executes a string, and then returns any result or feedback
-     * represented in a string
-     *
-     * @param string the string to parse and then execute
-     * @return any result or feedback represented in a string
-     */
-    @Deprecated
-    public String execute(String string)
-    {
-        return this.execute(stringAsArgs(string));
-    }
-
-    /**
-     * Parses and executes a list of argument tokens, and then returns any
-     * result or feedback represented in a string
-     *
-     * @param args the list of argument tokens to parse and then execute
-     * @return any result or feedback represented in a string
-     */
-    @Deprecated
-    public String execute(List<String> args)
-    {
-        Command command = Commands.get(args.get(0));
-
-        if (command == null)
-        {
-            return String.format("'%s' is not recognized as a command", args.get(0));
-        }
-
-        // Options to be inserted into the command.
-        Map<String, CommandOption> options = new TreeMap<>();
-
-        // Validate command parameters       
-        for (int i = 1; i < args.size(); i += 2)
-        {
-            CommandOption option = command.findOption(args.get(i));
-
-            if (option == null)
-            {
-                return String.format("'%s' is not recognized as an option for this command", args.get(i));
-            }
-
-            if (i + 1 >= args.size())
-            {
-                return String.format("No value found for option '%s'", args.get(i));
-            }
-
-            // Option value retrieved from the input text
-            Object value;
-
-            try
-            {
-                PropertyEditor editor = PropertyEditorManager.findEditor(option.getValueType());
-                editor.setAsText(args.get(i + 1));
-                value = editor.getValue();
-
-                if (value == null)
-                {
-                    return String.format("Failed to identify value type for option '%s'", args.get(i));
-                }
-
-            } catch (Exception ex)
-            {
-                return String.format("Value for option '%s' must be of type '%s'", args.get(i), option.getValueType().getSimpleName());
-            }
-
-            // Create CommandOption for the command's execution.
-            options.put(option.Name, option.copyWithValue(value));
-        }
-
-        // For each option that wasn't set, use the default value.
-        // Throw a warning if a required option was not set.
-        for (CommandOption co : command.Options.values())
-        {
-            if (!options.containsKey(co.Name))
-            {
-                if (!co.Mandatory)
-                {
-                    options.put(co.Name, co);
-                } else
-                {
-                    return String.format("Option '%s' is required", co.Name);
-                }
-            }
-        }
-
-        // Finally, execute the function.
-        return command.execute(options);
-    }
-
-    /**
      * Gives a list of all available commands. Called by the basic 'help'
      * command.
      *
@@ -428,11 +302,12 @@ public class JavaCommander implements Runnable
      */
     public String usage()
     {
-        String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
-        toString += "List of available commands:";
-        toString = Commands.entrySet().stream().map((entry) -> String.format("\n%s\t\t\t%s",
-                entry.getValue().Name, entry.getValue().Description)).reduce(toString, String::concat);
-        return toString;
+//        String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
+//        toString += "List of available commands:";
+//        toString = Commands.entrySet().stream().map((entry) -> String.format("\n%s\t\t\t%s",
+//                entry.getValue().Name, entry.getValue().Description)).reduce(toString, String::concat);
+//        return toString;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -447,27 +322,28 @@ public class JavaCommander implements Runnable
     public String usage(String commandName)
     {
         // Retrieve the command. If it does not exist, then return with an error message.
-        Command command = this.Commands.get(commandName);
-
-        if (command == null)
-        {
-            return String.format("'%s' is not recognized as a command", commandName);
-        }
-
-        // If the command does exist, then print its info.
-        String toString = command.Description + "\n\n";
-
-        // If there are options to list, then list them.
-        if (command.Options.size() > 0)
-        {
-            toString += "List of available options:";
-            toString = command.Options.entrySet().stream().map((entry) -> String.format("\n%s\t\t%s\t\t%s",
-                    entry.getValue().Name, entry.getValue().getValueType().getSimpleName(), entry.getValue().Description)).reduce(toString, String::concat);
-        } else
-        {
-            toString += "No options available for this command.";
-        }
-        return toString;
+//        Command command = this.Commands.get(commandName);
+//
+//        if (command == null)
+//        {
+//            return String.format("'%s' is not recognized as a command", commandName);
+//        }
+//
+//        // If the command does exist, then print its info.
+//        String toString = command.Description + "\n\n";
+//
+//        // If there are options to list, then list them.
+//        if (command.Options.size() > 0)
+//        {
+//            toString += "List of available options:";
+//            toString = command.Options.entrySet().stream().map((entry) -> String.format("\n%s\t\t%s\t\t%s",
+//                    entry.getValue().Name, entry.getValue().getValueType().getSimpleName(), entry.getValue().Description)).reduce(toString, String::concat);
+//        } else
+//        {
+//            toString += "No options available for this command.";
+//        }
+//        return toString;
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -485,8 +361,8 @@ public class JavaCommander implements Runnable
             while (!Thread.currentThread().isInterrupted())
             {
                 String command = br.readLine();
-                String result = execute(command);
-                System.out.println(System.lineSeparator() + result + System.lineSeparator());
+                execute(command);
+                System.out.println();
             }
         } catch (IOException ex)
         {

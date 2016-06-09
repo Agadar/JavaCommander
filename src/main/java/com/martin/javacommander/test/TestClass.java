@@ -1,15 +1,15 @@
 package com.martin.javacommander.test;
 
-import com.martin.javacommander.annotations.CommandFunctionOption;
-import com.martin.javacommander.annotations.CommandFunction;
+import com.martin.javacommander.annotations.Command;
+import com.martin.javacommander.annotations.CommandOption;
 
 public class TestClass
 {
 
-    @CommandFunction(names = "testcommand")
+    @Command(names = "testcommand")
     public void TestMethod(
-            @CommandFunctionOption(names = "-1", mandatory = false, defaultValue = "defaultdicks") String input1,
-            @CommandFunctionOption(names = "-2", mandatory = true, defaultValue = "10") int input2)
+            @CommandOption(names = "-1", mandatory = false, defaultValue = "defaultdicks") String input1,
+            @CommandOption(names = "-2", mandatory = true, defaultValue = "10") int input2)
     {
         System.out.println("Called with -1 = " + input1 + " and -2 = " + input2);
     }
