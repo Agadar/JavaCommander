@@ -120,19 +120,30 @@ public class JavaCommander implements Runnable
 
             // List that will be used as arguments when invoking the method
             List<Object> finalArgs = new ArrayList<>();
+            Option[] optionsFromCommand = commandMethod.getAnnotation(Command.class).options();
+            int indexInCommandOptions = 0;
 
             // Iterate over the method's parameters
             for (Parameter parameter : commandMethod.getParameters())
             {
-                // Retrieve the @Option annotation
-                Option annotation = parameter.getAnnotation(Option.class);
+                // First attempt to retrieve the Option from the parameter
+                Option option = parameter.getAnnotation(Option.class);
 
-                // If the annotation was not found, print a warning message and return
-                if (annotation == null)
+                // If the option was not found, then try get the next Option from the Command
+                if (option == null)
                 {
-                    System.out.println("Error while executing command: Not all parameters "
-                                       + "of the object method called by this command are properly annotated.");
-                    return;
+                    if (indexInCommandOptions < optionsFromCommand.length)
+                    {
+                        option = optionsFromCommand[indexInCommandOptions];
+                        indexInCommandOptions++;
+                    }
+                    // Failing that, print a warning message and return
+                    else
+                    {
+                        System.out.println("Error while executing command: Not all parameters "
+                                           + "of the object method called by this command are properly annotated.");
+                        return;
+                    }
                 }
 
                 // Internal try-catch for translating the supplied value to the correct type
@@ -142,20 +153,20 @@ public class JavaCommander implements Runnable
                     PropertyEditor editor = PropertyEditorManager.findEditor(parameter.getType());
 
                     // If the option value was supplied, use that.
-                    if (suppliedOptions.containsKey(annotation.names()[0]))
+                    if (suppliedOptions.containsKey(option.names()[0]))
                     {
                         // also remove the option from the supplied options so that we
                         // can later determine incorrect options that were given
-                        editor.setAsText(suppliedOptions.remove(annotation.names()[0]));
+                        editor.setAsText(suppliedOptions.remove(option.names()[0]));
                     } // Else, use the default value, but only if the option is not mandatory.
                     // If it is mandatory, then return and log a warning
-                    else if (!annotation.mandatory())
+                    else if (!option.mandatory())
                     {
-                        editor.setAsText(annotation.defaultValue()[0]);
+                        editor.setAsText(option.defaultValue()[0]);
                     }
                     else
                     {
-                        System.out.println(String.format("Option '%s' is required", annotation.names()[0]));
+                        System.out.println(String.format("Option '%s' is required", option.names()[0]));
                         return;
                     }
 
@@ -163,7 +174,7 @@ public class JavaCommander implements Runnable
                     Object value = editor.getValue();
                     if (value == null)
                     {
-                        System.out.println(String.format("Failed to identify value type for option '%s'", annotation.names()[0]));
+                        System.out.println(String.format("Failed to identify value type for option '%s'", option.names()[0]));
                         return;
                     }
 
@@ -173,7 +184,7 @@ public class JavaCommander implements Runnable
                 catch (Exception ex)
                 {
                     System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                     annotation.names()[0], parameter.getType().getSimpleName()));
+                                                     option.names()[0], parameter.getType().getSimpleName()));
                     return;
                 }
             }
@@ -210,8 +221,8 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers all commands found in the supplied Object. Any commands of which
-     * the name is already registered will override the old values.
+     * Registers all commands found in the supplied Object. Any commands of
+     * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
      */
@@ -401,11 +412,32 @@ public class JavaCommander implements Runnable
             if (params.length > 0)
             {
                 toString += "List of available options:";
+                Option[] optionsFromCommand = method.getAnnotation(Command.class).options();
+                int indexInCommandOptions = 0;
 
                 for (Parameter param : params)
                 {
-                    Option option = param.getAnnotation(Option.class
-                    );
+                    // First attempt to retrieve the Option from the parameter
+                    Option option = param.getAnnotation(Option.class);
+
+                    // If the option was not found, then try get the next Option from the Command
+                    if (option == null)
+                    {
+                        if (indexInCommandOptions < optionsFromCommand.length)
+                        {
+                            option = optionsFromCommand[indexInCommandOptions];
+                            indexInCommandOptions++;
+                        }
+                        // Failing that, print a warning message and return
+                        else
+                        {
+                            System.out.println("Error while executing command: Not all parameters "
+                                               + "of the object method called by this command are properly annotated.");
+                            return;
+                        }
+                    }
+
+                    // Append the data to the string
                     toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0],
                                               param.getType().getSimpleName(), option.description());
                 }
