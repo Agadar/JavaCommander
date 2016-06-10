@@ -1,5 +1,7 @@
 package com.martin.javacommander;
 
+import com.martin.javacommander.annotations.Command;
+import com.martin.javacommander.annotations.Option;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.BufferedReader;
@@ -14,8 +16,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.martin.javacommander.annotations.Command;
-import com.martin.javacommander.annotations.Option;
 
 /**
  * Manages an application's commands.
@@ -24,19 +24,18 @@ import com.martin.javacommander.annotations.Option;
  */
 public class JavaCommander implements Runnable
 {
-
     /**
      * Welcoming message printed when run() is called
      */
     public final String WelcomeMsg;
     /**
-     * Objects to invoke Methods from, mapped to unique command names.
-     */
-    private final TreeMap<String, Object> commandObjects = new TreeMap<>();
-    /**
      * Methods to invoke, mapped to unique command names.
      */
     private final TreeMap<String, Method> commandMethods = new TreeMap<>();
+    /**
+     * Objects to invoke Methods from, mapped to unique command names.
+     */
+    private final TreeMap<String, Object> commandObjects = new TreeMap<>();
 
     public JavaCommander()
     {
@@ -45,7 +44,8 @@ public class JavaCommander implements Runnable
 
     /**
      * @param createBasicCommands whether or not to create basic utility
-     * commands such as a 'help' command and a 'quit' command
+     *                            commands such as a 'help' command and a 'quit'
+     *                            command
      */
     public JavaCommander(boolean createBasicCommands)
     {
@@ -54,9 +54,11 @@ public class JavaCommander implements Runnable
 
     /**
      * @param createBasicCommands whether or not to create basic utility
-     * commands such as a 'help' command and a 'quit' command
-     * @param welcomeMsg a welcoming message printed when run() is called. Leave
-     * it null or empty to have no message printed.
+     *                            commands such as a 'help' command and a 'quit'
+     *                            command
+     * @param welcomeMsg          a welcoming message printed when run() is
+     *                            called. Leave it null or empty to have no
+     *                            message printed.
      */
     public JavaCommander(boolean createBasicCommands, String welcomeMsg)
     {
@@ -66,41 +68,6 @@ public class JavaCommander implements Runnable
         {
             this.registerObject(this);
         }
-    }
-
-    /**
-     * Registers all commands found in the supplied object. Any commands of
-     * which the name is already registered will override the old values.
-     *
-     * @param o the object where commands are located within
-     */
-    public void registerObject(Object o)
-    {
-        // iterate through the object's class' methods
-        for (final Method method : o.getClass().getMethods())
-        {
-            // if we've found an annotated method, add it.
-            if (method.isAnnotationPresent(Command.class))
-            {
-                for (String name : ((Command) method.getAnnotation(Command.class)).names())
-                {
-                    putCommand(name, o, method);
-                }
-            }
-        }
-    }
-
-    /**
-     * Maps the given Object and Method to the given command name.
-     *
-     * @param name name of the command
-     * @param object object to invoke the method from when the command is called
-     * @param method method to invoke when the command is called
-     */
-    private void putCommand(String name, Object object, Method method)
-    {
-        commandObjects.put(name, object);
-        commandMethods.put(name, method);
     }
 
     /**
@@ -164,7 +131,7 @@ public class JavaCommander implements Runnable
                 if (annotation == null)
                 {
                     System.out.println("Error while executing command: Not all parameters "
-                            + "of the object method called by this command are properly annotated.");
+                                       + "of the object method called by this command are properly annotated.");
                     return;
                 }
 
@@ -185,7 +152,8 @@ public class JavaCommander implements Runnable
                     else if (!annotation.mandatory())
                     {
                         editor.setAsText(annotation.defaultValue()[0]);
-                    } else
+                    }
+                    else
                     {
                         System.out.println(String.format("Option '%s' is required", annotation.names()[0]));
                         return;
@@ -201,10 +169,11 @@ public class JavaCommander implements Runnable
 
                     // If the parsing went well, add the value to finalArgs
                     finalArgs.add(value);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                            annotation.names()[0], parameter.getType().getSimpleName()));
+                                                     annotation.names()[0], parameter.getType().getSimpleName()));
                     return;
                 }
             }
@@ -220,7 +189,72 @@ public class JavaCommander implements Runnable
             // Finally, invoke the method on the object
             commandMethod.invoke(commandObj, finalArgs.toArray());
 
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+        }
+        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+        {
+            Logger.getLogger(JavaCommander.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Calls System.Exit(0). Used for the basic exit command.
+     */
+    @Command(names =
+    {
+        "exit", "quit"
+    }, description = "Exit the program.")
+    public void exitProgram()
+    {
+        System.exit(0);
+    }
+
+    /**
+     * Registers all commands found in the supplied Object. Any commands of which
+     * the name is already registered will override the old values.
+     *
+     * @param obj the Object where commands are located within
+     */
+    public void registerObject(Object obj)
+    {
+        // iterate through the obj's class' methods
+        for (final Method method : obj.getClass().getMethods())
+        {
+            // if we've found an annotated method, add it.
+            if (method.isAnnotationPresent(Command.class))
+            {
+                for (String name : ((Command) method.getAnnotation(Command.class)).names())
+                {
+                    putCommand(name, obj, method);
+                }
+            }
+        }
+    }
+
+    /**
+     * Blocking method that continuously reads input from a BufferedReader.
+     */
+    @Override
+    public void run()
+    {
+        // Print welcoming message and instantiate BufferedReader.
+        if (WelcomeMsg != null && !WelcomeMsg.isEmpty())
+        {
+            System.out.println(WelcomeMsg + System.lineSeparator());
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in)))
+        {
+            // Thread loop.
+            while (!Thread.currentThread().isInterrupted())
+            {
+                String command = br.readLine();
+                System.out.println();
+                execute(command);
+                System.out.println();
+            }
+        }
+        catch (IOException ex)
         {
             Logger.getLogger(JavaCommander.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -282,6 +316,38 @@ public class JavaCommander implements Runnable
     }
 
     /**
+     * Unregisters the command with the given name.
+     *
+     * @param commandName the name of the command to unregister
+     */
+    public void unregisterCommand(String commandName)
+    {
+        commandObjects.remove(commandName);
+        commandMethods.remove(commandName);
+    }
+
+    /**
+     * Unregisters all commands found in the supplied object.
+     *
+     * @param obj the object to find commands to unregister in
+     */
+    public void unregisterObject(Object obj)
+    {
+        // iterate through the object's class' methods
+        for (final Method method : obj.getClass().getMethods())
+        {
+            // if we've found an annotated method, add it.
+            if (method.isAnnotationPresent(Command.class))
+            {
+                for (String name : ((Command) method.getAnnotation(Command.class)).names())
+                {
+                    unregisterCommand(name);
+                }
+            }
+        }
+    }
+
+    /**
      * Prints a list of all available commands. Called by the basic 'help'
      * command. If the given commandName is not null or empty, then the help of
      * the given command is given, listing its options.
@@ -293,7 +359,7 @@ public class JavaCommander implements Runnable
         "help", "?"
     }, description = "Display the help.")
     public void usage(@Option(names = "-c", description = "Display a specific command's help.",
-            defaultValue = "") String commandName)
+                              defaultValue = "") String commandName)
     {
         // List available commands
         if (commandName == null || commandName.isEmpty())
@@ -305,8 +371,8 @@ public class JavaCommander implements Runnable
             for (Map.Entry<String, Method> entry : commandMethods.entrySet())
             {
                 String description = ((Command) entry.getValue().
-                        getAnnotation(Command.class
-                        )).description();
+                                      getAnnotation(Command.class
+                                      )).description();
                 toString += String.format("\n%s\t\t\t%s", entry.getKey(), description);
             }
 
@@ -326,7 +392,7 @@ public class JavaCommander implements Runnable
 
             // Add description
             String toString = ((Command) method.getAnnotation(Command.class
-            )).description() + "\n\n";
+                               )).description() + "\n\n";
 
             // Retrieve parameters
             Parameter[] params = method.getParameters();
@@ -341,9 +407,10 @@ public class JavaCommander implements Runnable
                     Option option = param.getAnnotation(Option.class
                     );
                     toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0],
-                            param.getType().getSimpleName(), option.description());
+                                              param.getType().getSimpleName(), option.description());
                 }
-            } else
+            }
+            else
             {
                 toString += "No options available for this command.";
             }
@@ -354,43 +421,16 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Calls System.Exit(0). Used for the basic exit command.
+     * Maps the given Object and Method to the given command name.
+     *
+     * @param name   name of the command
+     * @param object object to invoke the method from when the command is called
+     * @param method method to invoke when the command is called
      */
-    @Command(names =
+    private void putCommand(String name, Object object, Method method)
     {
-        "exit", "quit"
-    }, description = "Exit the program.")
-    public void exitProgram()
-    {
-        System.exit(0);
+        commandObjects.put(name, object);
+        commandMethods.put(name, method);
     }
 
-    /**
-     * Blocking method that continuously reads input from a BufferedReader.
-     */
-    @Override
-    public void run()
-    {
-        // Print welcoming message and instantiate BufferedReader.
-        if (WelcomeMsg != null && !WelcomeMsg.isEmpty())
-        {
-            System.out.println(WelcomeMsg + System.lineSeparator());
-        }
-
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in)))
-        {
-            // Thread loop.
-            while (!Thread.currentThread().isInterrupted())
-            {
-                String command = br.readLine();
-                System.out.println();
-                execute(command);
-                System.out.println();
-            }
-        } catch (IOException ex)
-        {
-            Logger.getLogger(JavaCommander.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
-    }
 }
