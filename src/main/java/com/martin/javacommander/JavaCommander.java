@@ -16,7 +16,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.martin.javacommander.annotations.Command;
-import com.martin.javacommander.annotations.CommandOption;
+import com.martin.javacommander.annotations.Option;
 
 /**
  * Manages an application's commands.
@@ -31,10 +31,6 @@ public class JavaCommander implements Runnable
      */
     public final String WelcomeMsg;
     /**
-     * Name of the program, printed on every input line
-     */
-    public final String ProgramName;
-    /**
      * Objects to invoke Methods from, mapped to unique command names.
      */
     private final TreeMap<String, Object> commandObjects = new TreeMap<>();
@@ -45,23 +41,20 @@ public class JavaCommander implements Runnable
 
     /**
      * @param welcomeMsg the welcoming message printed when run() is called
-     * @param programName the name of the program, printed on every input line
      */
-    public JavaCommander(String welcomeMsg, String programName)
+    public JavaCommander(String welcomeMsg)
     {
-        this(welcomeMsg, programName, true);
+        this(welcomeMsg, true);
     }
 
     /**
      * @param welcomeMsg the welcoming message printed when run() is called
-     * @param programName the name of the program, printed on every input line
      * @param createBasicCommands whether or not to create basic utility
      * commands such as a 'help' command and a 'quit' command
      */
-    public JavaCommander(String welcomeMsg, String programName, boolean createBasicCommands)
+    public JavaCommander(String welcomeMsg, boolean createBasicCommands)
     {
         this.WelcomeMsg = welcomeMsg;
-        this.ProgramName = programName + " ";
 
         if (createBasicCommands)
         {
@@ -76,26 +69,17 @@ public class JavaCommander implements Runnable
      */
     public void registerObject(Object o)
     {
-        // the object class, with which we start out
-        Class oClass = o.getClass();
-
-        // iterate through the object's class' hierarchy
-        while (oClass != Object.class)
+        // iterate through the object's class' methods
+        for (final Method method : o.getClass().getMethods())
         {
-            // iterate through the current class' methods
-            for (final Method method : new ArrayList<>(Arrays.asList(oClass.getDeclaredMethods())))
+            // if we've found an annotated method, add it.
+            if (method.isAnnotationPresent(Command.class))
             {
-                // if we've found an annotated method, add it.
-                if (method.isAnnotationPresent(Command.class))
-                {
-                    Command annotation = method.getAnnotation(Command.class);
-                    String primaryName = annotation.names()[0];
-                    commandObjects.put(primaryName, o);
-                    commandMethods.put(primaryName, method);
-                }
+                Command annotation = method.getAnnotation(Command.class);
+                String primaryName = annotation.names()[0];
+                commandObjects.put(primaryName, o);
+                commandMethods.put(primaryName, method);
             }
-            // move to the upper class in the hierarchy in search for more methods
-            oClass = oClass.getSuperclass();
         }
     }
 
@@ -153,8 +137,8 @@ public class JavaCommander implements Runnable
             // Iterate over the method's parameters
             for (Parameter parameter : commandMethod.getParameters())
             {
-                // Retrieve the @CommandOption annotation
-                CommandOption annotation = parameter.getAnnotation(CommandOption.class);
+                // Retrieve the @Option annotation
+                Option annotation = parameter.getAnnotation(Option.class);
 
                 // If the annotation was not found, print a warning message and return
                 if (annotation == null)
@@ -218,7 +202,8 @@ public class JavaCommander implements Runnable
 
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
         {
-            Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JavaCommander.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -284,7 +269,7 @@ public class JavaCommander implements Runnable
      * @param commandName
      */
     @Command(names = "help", description = "Display the help.")
-    public void usage(@CommandOption(names = "-c", description = "Display a specific command's help.",
+    public void usage(@Option(names = "-c", description = "Display a specific command's help.",
             defaultValue = "") String commandName)
     {
         // List available commands
@@ -297,14 +282,14 @@ public class JavaCommander implements Runnable
             for (Map.Entry<String, Method> entry : commandMethods.entrySet())
             {
                 String description = ((Command) entry.getValue().
-                        getAnnotation(Command.class)).description();
+                        getAnnotation(Command.class
+                        )).description();
                 toString += String.format("\n%s\t\t\t%s", entry.getKey(), description);
             }
 
             // Print help
             System.out.println(toString);
-        } 
-        // List specific command's options
+        } // List specific command's options
         else
         {
             // Retrieve the command. If it does not exist, then return with an error message.
@@ -313,30 +298,33 @@ public class JavaCommander implements Runnable
             {
                 System.out.println(String.format("'%s' is not recognized as a command", commandName));
                 return;
+
             }
 
             // Add description
-            String toString = ((Command) method.getAnnotation(Command.class)).description() + "\n";
+            String toString = ((Command) method.getAnnotation(Command.class
+            )).description() + "\n";
 
             // Retrieve parameters
             Parameter[] params = method.getParameters();
-            
+
             // If there are options to list, then list them.
             if (params.length > 0)
             {
                 toString += "List of available options:";
-                
+
                 for (Parameter param : params)
                 {
-                    CommandOption option = param.getAnnotation(CommandOption.class);
-                    toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0], 
+                    Option option = param.getAnnotation(Option.class
+                    );
+                    toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0],
                             param.getType().getSimpleName(), option.description());
                 }
             } else
             {
                 toString += "No options available for this command.";
             }
-            
+
             // Print help
             System.out.println(toString);
         }
@@ -346,11 +334,11 @@ public class JavaCommander implements Runnable
      * Calls System.Exit(0). Used for the basic exit command.
      */
     @Command(names = "exit", description = "Exit the program.")
-    private void exitProgram()
+    public void exitProgram()
     {
         System.exit(0);
     }
-    
+
     /**
      * Blocking method that continuously reads input from a BufferedReader.
      */
@@ -366,12 +354,15 @@ public class JavaCommander implements Runnable
             while (!Thread.currentThread().isInterrupted())
             {
                 String command = br.readLine();
+                System.out.println();
                 execute(command);
                 System.out.println();
+
             }
         } catch (IOException ex)
         {
-            Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(JavaCommander.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

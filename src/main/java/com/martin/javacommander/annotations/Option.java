@@ -7,12 +7,14 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation used for marking a method parameter as a command option.
+ * Alternatively, these may be defined in the 'options' field of the Command
+ * annotation instead. NOTE: the latter way is currently nonfunctional.
  * 
  * @author marti
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandOption
+public @interface Option
 {
     /**
      * Names of the option. The first entry is considered its primary name,

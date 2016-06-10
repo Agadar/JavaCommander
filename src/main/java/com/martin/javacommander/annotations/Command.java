@@ -27,4 +27,12 @@ public @interface Command
      * @return 
      */
     String description() default "No description available.";
+    /**
+     * This command's options. Alternatively, these may be defined as parameter
+     * annotations on the method's parameters instead. NOTE: options() is 
+     * currently nonfunctional: use the parameter annotations instead.
+     * 
+     * @return 
+     */
+    Option[] options() default { };
 }
