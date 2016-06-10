@@ -63,7 +63,8 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers all commands found in the supplied object.
+     * Registers all commands found in the supplied object. Any commands of
+     * which the name is already registered will override the old values.
      *
      * @param o the object where commands are located within
      */
@@ -75,12 +76,25 @@ public class JavaCommander implements Runnable
             // if we've found an annotated method, add it.
             if (method.isAnnotationPresent(Command.class))
             {
-                Command annotation = method.getAnnotation(Command.class);
-                String primaryName = annotation.names()[0];
-                commandObjects.put(primaryName, o);
-                commandMethods.put(primaryName, method);
+                for (String name : ((Command) method.getAnnotation(Command.class)).names())
+                {
+                    putCommand(name, o, method);
+                }
             }
         }
+    }
+
+    /**
+     * Maps the given Object and Method to the given command name.
+     *
+     * @param name name of the command
+     * @param object object to invoke the method from when the command is called
+     * @param method method to invoke when the command is called
+     */
+    private void putCommand(String name, Object object, Method method)
+    {
+        commandObjects.put(name, object);
+        commandMethods.put(name, method);
     }
 
     /**
@@ -268,7 +282,7 @@ public class JavaCommander implements Runnable
      *
      * @param commandName
      */
-    @Command(names = "help", description = "Display the help.")
+    @Command(names = { "help", "?" }, description = "Display the help.")
     public void usage(@Option(names = "-c", description = "Display a specific command's help.",
             defaultValue = "") String commandName)
     {
@@ -333,7 +347,7 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = "exit", description = "Exit the program.")
+    @Command(names = { "exit", "quit" }, description = "Exit the program.")
     public void exitProgram()
     {
         System.exit(0);
@@ -357,7 +371,6 @@ public class JavaCommander implements Runnable
                 System.out.println();
                 execute(command);
                 System.out.println();
-
             }
         } catch (IOException ex)
         {
