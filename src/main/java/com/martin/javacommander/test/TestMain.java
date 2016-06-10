@@ -20,7 +20,7 @@ public class TestMain
     public static void main(String[] args)
     {
         TestClass tc = new TestClass();
-        JavaCommander jc = new JavaCommander("Welcome to the testing zone");
+        JavaCommander jc = new JavaCommander(true, "Welcome to the testing zone");
         jc.registerObject(tc);
         jc.run();
     }

@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -39,20 +38,27 @@ public class JavaCommander implements Runnable
      */
     private final TreeMap<String, Method> commandMethods = new TreeMap<>();
 
-    /**
-     * @param welcomeMsg the welcoming message printed when run() is called
-     */
-    public JavaCommander(String welcomeMsg)
+    public JavaCommander()
     {
-        this(welcomeMsg, true);
+        this(true);
     }
 
     /**
-     * @param welcomeMsg the welcoming message printed when run() is called
      * @param createBasicCommands whether or not to create basic utility
      * commands such as a 'help' command and a 'quit' command
      */
-    public JavaCommander(String welcomeMsg, boolean createBasicCommands)
+    public JavaCommander(boolean createBasicCommands)
+    {
+        this(true, null);
+    }
+
+    /**
+     * @param createBasicCommands whether or not to create basic utility
+     * commands such as a 'help' command and a 'quit' command
+     * @param welcomeMsg a welcoming message printed when run() is called. Leave
+     * it null or empty to have no message printed.
+     */
+    public JavaCommander(boolean createBasicCommands, String welcomeMsg)
     {
         this.WelcomeMsg = welcomeMsg;
 
@@ -282,14 +288,17 @@ public class JavaCommander implements Runnable
      *
      * @param commandName
      */
-    @Command(names = { "help", "?" }, description = "Display the help.")
+    @Command(names =
+    {
+        "help", "?"
+    }, description = "Display the help.")
     public void usage(@Option(names = "-c", description = "Display a specific command's help.",
             defaultValue = "") String commandName)
     {
         // List available commands
         if (commandName == null || commandName.isEmpty())
         {
-            String toString = "Displaying help. Use option '-c' to display a specific command's help.\n";
+            String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
             toString += "List of available commands:";
 
             // Iterate over the Methods to find the descriptions
@@ -317,7 +326,7 @@ public class JavaCommander implements Runnable
 
             // Add description
             String toString = ((Command) method.getAnnotation(Command.class
-            )).description() + "\n";
+            )).description() + "\n\n";
 
             // Retrieve parameters
             Parameter[] params = method.getParameters();
@@ -347,7 +356,10 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = { "exit", "quit" }, description = "Exit the program.")
+    @Command(names =
+    {
+        "exit", "quit"
+    }, description = "Exit the program.")
     public void exitProgram()
     {
         System.exit(0);
@@ -360,7 +372,10 @@ public class JavaCommander implements Runnable
     public void run()
     {
         // Print welcoming message and instantiate BufferedReader.
-        System.out.println(WelcomeMsg + System.lineSeparator());
+        if (WelcomeMsg != null && !WelcomeMsg.isEmpty())
+        {
+            System.out.println(WelcomeMsg + System.lineSeparator());
+        }
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in)))
         {
