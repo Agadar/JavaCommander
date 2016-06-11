@@ -434,8 +434,12 @@ public class JavaCommander implements Runnable
             }
 
             // Add description
-            String toString = ((Command) method.getAnnotation(Command.class
-                               )).description() + "\n\n";
+            String toString = "";
+            String description = ((Command) method.getAnnotation(Command.class)).description();
+            if (description != null && !description.isEmpty())
+            {
+                toString += description + "\n\n";
+            }
 
             // Retrieve parameters
             Parameter[] params = method.getParameters();

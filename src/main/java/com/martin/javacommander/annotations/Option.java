@@ -29,7 +29,7 @@ public @interface Option
      *
      * @return
      */
-    String description() default "No description available.";
+    String description() default "";
 
     /**
      * Whether or not this option has a default value. If it does not, then

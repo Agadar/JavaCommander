@@ -28,7 +28,7 @@ public @interface Command
      *
      * @return
      */
-    String description() default "No description available.";
+    String description() default "";
 
     /**
      * This command's options. Alternatively, these may be defined as parameter
