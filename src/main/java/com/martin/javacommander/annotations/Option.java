@@ -47,9 +47,7 @@ public @interface Option
      *
      * @return
      */
-    String[] defaultValue() default 
-    {
-    };
+    String defaultValue() default "";
 
     /**
      * The translator for this option. If this is not set, then

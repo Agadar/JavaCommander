@@ -170,7 +170,7 @@ public class JavaCommander implements Runnable
                 // Else, use the default value, but only if it has one assigned.
                 else if (option.hasDefaultValue())
                 {
-                    optionValue = option.defaultValue()[0];
+                    optionValue = option.defaultValue();
                 }
                 // If it does not have one assigned, then we have a problem.
                 else
@@ -416,7 +416,7 @@ public class JavaCommander implements Runnable
                 "help", "usage", "?"
             },
             description = "Display the help.",
-            options = @Option(names = "-c", description = "Display a specific command's help.", hasDefaultValue = true, defaultValue = "")
+            options = @Option(names = "-c", description = "Display a specific command's help.", hasDefaultValue = true)
     )
     public void usage(String commandName)
     {
