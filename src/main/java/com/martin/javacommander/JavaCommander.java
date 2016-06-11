@@ -146,10 +146,21 @@ public class JavaCommander implements Runnable
                     }
                 }
 
+                String[] optionNames = option.names();
+
+                // Make sure the option annotation has at least one name in it
+                if (optionNames.length <= 0)
+                {
+                    optionNames = new String[]
+                    {
+                        parameter.getName()
+                    };
+                }
+
                 // Check whether any of the supplied options is one of this 
                 // parameter's annotation's names, and keep it on the side
                 String suppliedOptionName = null;
-                for (String optionName : option.names())
+                for (String optionName : optionNames)
                 {
                     if (suppliedOptions.containsKey(optionName))
                     {
@@ -176,7 +187,7 @@ public class JavaCommander implements Runnable
                 else
                 {
                     System.out.println(String.format("Option '%s' is required",
-                                                     option.names()[0]));
+                                                     optionNames[0]));
                     return;
                 }
 
@@ -202,7 +213,7 @@ public class JavaCommander implements Runnable
                     catch (NumberFormatException | IndexOutOfBoundsException ex)
                     {
                         System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                         suppliedOptionName == null ? option.names()[0] : suppliedOptionName,
+                                                         suppliedOptionName == null ? optionNames[0] : suppliedOptionName,
                                                          parameter.getType().getSimpleName()));
                         return;
                     }
@@ -489,11 +500,22 @@ public class JavaCommander implements Runnable
                         }
                     }
 
-                    // Append the data to the string
-                    String optionsList = option.names()[0];
-                    for (int i = 1; i < option.names().length; i++)
+                    String[] optionNames = option.names();
+
+                    // Make sure the option annotation has at least one name in it
+                    if (optionNames.length <= 0)
                     {
-                        optionsList += ", " + option.names()[i];
+                        optionNames = new String[]
+                        {
+                            param.getName()
+                        };
+                    }
+
+                    // Append the data to the string
+                    String optionsList = optionNames[0];
+                    for (int i = 1; i < optionNames.length; i++)
+                    {
+                        optionsList += ", " + optionNames[i];
                     }
 
                     toString += String.format("\n%s\t\t%s\t\t%s", optionsList,

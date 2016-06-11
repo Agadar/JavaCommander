@@ -27,12 +27,12 @@ public class TestClass
         System.out.println("Called with " + input1 + " " + input2 + " " + input3);
     }
 
-    @Command(options = @Option(
-            names = "-1",
-            hasDefaultValue = false,
-            defaultValue = "3,2,1",
-            translator = IntArrayTranslator.class))
-    public void test2(int[] items)
+    @Command(options =
+    {
+        @Option(names = "items", translator = IntArrayTranslator.class),
+        @Option()
+    })
+    public void test2(int[] items, String something)
     {
         for (int s : items)
         {

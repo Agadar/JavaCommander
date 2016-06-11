@@ -20,11 +20,13 @@ public @interface Option
 {
     /**
      * Names of the option. The first entry is considered its primary name, the
-     * other entries are considered synonyms.
+     * other entries are considered synonyms. If no name is supplied, then the
+     * name of the option will be 'arg{#}' where {#} is the parameter's index.
+     * (e.g. 'arg0', 'arg1', 'arg2', etc.)
      *
      * @return
      */
-    String[] names();
+    String[] names() default {};
 
     /**
      * A brief description of the option.
