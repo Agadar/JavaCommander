@@ -170,9 +170,8 @@ public class JavaCommander implements Runnable
                         // also remove the option from the supplied options so that we
                         // can later determine incorrect options that were given
                         editor.setAsText(suppliedOptions.remove(suppliedOptionName));
-                    } // Else, use the default value, but only if the option is not mandatory.
-                    // If it is mandatory, then return and log a warning
-                    else if (!option.mandatory())
+                    } // Else, use the default value, but only if it has one assigned.
+                    else if (option.hasDefaultValue())
                     {
                         editor.setAsText(option.defaultValue()[0]);
                     }
@@ -403,7 +402,7 @@ public class JavaCommander implements Runnable
         "help", "?"
     }, description = "Display the help.")
     public void usage(@Option(names = "-c", description = "Display a specific command's help.",
-                              defaultValue = "") String commandName)
+                              hasDefaultValue = true, defaultValue = "") String commandName)
     {
         // List available commands
         if (commandName == null || commandName.isEmpty())

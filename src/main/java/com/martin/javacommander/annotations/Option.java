@@ -32,14 +32,15 @@ public @interface Option
     String description() default "No description available.";
 
     /**
-     * Whether or not this option must always manually be given a value.
+     * Whether or not this option has a default value. If it does not, then
+     * a value MUST be supplied by the caller for this option, else it is optional.
      *
      * @return
      */
-    boolean mandatory() default false;
+    boolean hasDefaultValue() default false;
 
     /**
-     * This option's default value. Ignored if this option is mandatory.
+     * This option's default value.
      *
      * @return
      */
