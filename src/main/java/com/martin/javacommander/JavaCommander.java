@@ -178,7 +178,7 @@ public class JavaCommander implements Runnable
                     }
                     else
                     {
-                        System.out.println(String.format("Option '%s' is required", 
+                        System.out.println(String.format("Option '%s' is required",
                                                          option.names()[0]));
                         return;
                     }
@@ -187,7 +187,7 @@ public class JavaCommander implements Runnable
                     Object value = editor.getValue();
                     if (value == null)
                     {
-                        System.out.println(String.format("Failed to identify value type for option '%s'", 
+                        System.out.println(String.format("Failed to identify value type for option '%s'",
                                                          suppliedOptionName == null ? option.names()[0] : suppliedOptionName));
                         return;
                     }
@@ -198,7 +198,7 @@ public class JavaCommander implements Runnable
                 catch (Exception ex)
                 {
                     System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                     suppliedOptionName == null ? option.names()[0] : suppliedOptionName, 
+                                                     suppliedOptionName == null ? option.names()[0] : suppliedOptionName,
                                                      parameter.getType().getSimpleName()));
                     return;
                 }
@@ -250,13 +250,16 @@ public class JavaCommander implements Runnable
             if (method.isAnnotationPresent(Command.class))
             {
                 String[] names = ((Command) method.getAnnotation(Command.class)).names();
-                
+
                 // if no names were given, simply use the name of the method
                 if (names.length <= 0)
                 {
-                    names = new String[] { method.getName() };
+                    names = new String[]
+                    {
+                        method.getName()
+                    };
                 }
-                
+
                 // for each command name, register a new command
                 for (String name : names)
                 {
@@ -304,6 +307,7 @@ public class JavaCommander implements Runnable
      */
     public List<String> stringAsArgs(String string)
     {
+        string = string.trim();
         List<String> tokens = new ArrayList<>();        // the token list to be returned
         StringBuilder curToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
@@ -329,11 +333,16 @@ public class JavaCommander implements Runnable
             } // Else if the character is a space...
             else if (c == ' ')
             {
-                // ...and we're not in a quote, then the current token is finished.
+                // ...and we're not in a quote...
                 if (!insideQuote)
                 {
-                    tokens.add(curToken.toString());
-                    curToken.delete(0, curToken.length());
+                    // ...and the current token is at least 1 character long,
+                    // then the current token is finished.
+                    if (curToken.length() > 0)
+                    {
+                        tokens.add(curToken.toString());
+                        curToken.delete(0, curToken.length());
+                    }
                 } // ...and we're in a quote, then append it to the token.
                 else
                 {
@@ -467,7 +476,7 @@ public class JavaCommander implements Runnable
                     {
                         optionsList += ", " + option.names()[i];
                     }
-                    
+
                     toString += String.format("\n%s\t\t%s\t\t%s", optionsList,
                                               param.getType().getSimpleName(), option.description());
                 }
