@@ -225,10 +225,7 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names =
-    {
-        "exit", "quit"
-    }, description = "Exit the program.")
+    @Command(names = { "exit", "quit" }, description = "Exit the program.")
     public void exitProgram()
     {
         System.exit(0);
@@ -397,12 +394,12 @@ public class JavaCommander implements Runnable
      *
      * @param commandName
      */
-    @Command(names =
-    {
-        "help", "?"
-    }, description = "Display the help.")
-    public void usage(@Option(names = "-c", description = "Display a specific command's help.",
-                              hasDefaultValue = true, defaultValue = "") String commandName)
+    @Command(
+            names = { "help", "usage", "?" },
+            description = "Display the help.",
+            options = @Option(names = "-c", description = "Display a specific command's help.", hasDefaultValue = true, defaultValue = "")
+    )
+    public void usage(String commandName)
     {
         // List available commands
         if (commandName == null || commandName.isEmpty())
