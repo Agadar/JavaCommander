@@ -194,8 +194,22 @@ public class JavaCommander implements Runnable
                 // Else, use the supplied translator.
                 else
                 {
-                    OptionTranslator translator = translatorType.newInstance();
-                    translatedValue = translator.translateString(optionValue);
+                    try
+                    {
+                        OptionTranslator translator = translatorType.newInstance();
+                        translatedValue = translator.translateString(optionValue);
+                    }
+                    catch (NumberFormatException | IndexOutOfBoundsException ex)
+                    {
+                        System.out.println(String.format("Value for option '%s' must be of type '%s'",
+                                                         suppliedOptionName == null ? option.names()[0] : suppliedOptionName,
+                                                         parameter.getType().getSimpleName()));
+                        return;
+                    }
+                    catch (InstantiationException | IllegalAccessException ex)
+                    {
+                        throw ex;
+                    }
                 }
 
                 // If the parsing went well, add the translatedValue to finalArgs

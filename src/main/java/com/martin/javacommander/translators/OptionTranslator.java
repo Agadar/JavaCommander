@@ -28,7 +28,8 @@ public interface OptionTranslator<T>
      * @param wrapperType the type to parse to
      * @return the parsed string, or null
      */
-    public static <V> V parseToPrimitive(String s, Class<V> wrapperType)
+    public static <V> V parseToPrimitive(String s, Class<V> wrapperType) throws NumberFormatException,
+                                                                                IndexOutOfBoundsException
     {
         if (wrapperType.equals(String.class))
         {

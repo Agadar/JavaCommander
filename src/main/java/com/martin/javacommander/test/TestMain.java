@@ -17,6 +17,8 @@ public class TestMain
         JavaCommander jc = new JavaCommander(true, "Welcome to the testing zone");
         jc.registerObject(tc);
         jc.run();
+        
+        //System.out.println(Boolean.valueOf("TRUE"));
     }
 
     public static void derp(String[] dicks)

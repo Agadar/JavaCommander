@@ -2,7 +2,7 @@ package com.martin.javacommander.test;
 
 import com.martin.javacommander.annotations.Command;
 import com.martin.javacommander.annotations.Option;
-import com.martin.javacommander.translators.StringArrayTranslator;
+import com.martin.javacommander.translators.IntArrayTranslator;
 
 public class TestClass
 {
@@ -21,11 +21,11 @@ public class TestClass
     @Command(options = @Option(
             names = "-1", 
             hasDefaultValue = true,
-            defaultValue = "one,two,three", 
-            translator = StringArrayTranslator.class))
-    public void test2(String[] items)
+            defaultValue = "3,2,1", 
+            translator = IntArrayTranslator.class))
+    public void test2(int[] items)
     {
-        for (String s : items)
+        for (int s : items)
         {
             System.out.println(s);
         }
