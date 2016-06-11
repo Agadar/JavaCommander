@@ -146,6 +146,18 @@ public class JavaCommander implements Runnable
                     }
                 }
 
+                // Check whether any of the supplied options is one of this 
+                // parameter's annotation's names, and keep it on the side
+                String suppliedOptionName = null;
+                for (String optionName : option.names())
+                {
+                    if (suppliedOptions.containsKey(optionName))
+                    {
+                        suppliedOptionName = optionName;
+                        break;
+                    }
+                }
+
                 // Internal try-catch for translating the supplied value to the correct type
                 try
                 {
@@ -153,11 +165,11 @@ public class JavaCommander implements Runnable
                     PropertyEditor editor = PropertyEditorManager.findEditor(parameter.getType());
 
                     // If the option value was supplied, use that.
-                    if (suppliedOptions.containsKey(option.names()[0]))
+                    if (suppliedOptionName != null)
                     {
                         // also remove the option from the supplied options so that we
                         // can later determine incorrect options that were given
-                        editor.setAsText(suppliedOptions.remove(option.names()[0]));
+                        editor.setAsText(suppliedOptions.remove(suppliedOptionName));
                     } // Else, use the default value, but only if the option is not mandatory.
                     // If it is mandatory, then return and log a warning
                     else if (!option.mandatory())
@@ -166,7 +178,8 @@ public class JavaCommander implements Runnable
                     }
                     else
                     {
-                        System.out.println(String.format("Option '%s' is required", option.names()[0]));
+                        System.out.println(String.format("Option '%s' is required", 
+                                                         option.names()[0]));
                         return;
                     }
 
@@ -174,7 +187,8 @@ public class JavaCommander implements Runnable
                     Object value = editor.getValue();
                     if (value == null)
                     {
-                        System.out.println(String.format("Failed to identify value type for option '%s'", option.names()[0]));
+                        System.out.println(String.format("Failed to identify value type for option '%s'", 
+                                                         suppliedOptionName == null ? option.names()[0] : suppliedOptionName));
                         return;
                     }
 
@@ -184,7 +198,8 @@ public class JavaCommander implements Runnable
                 catch (Exception ex)
                 {
                     System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                     option.names()[0], parameter.getType().getSimpleName()));
+                                                     suppliedOptionName == null ? option.names()[0] : suppliedOptionName, 
+                                                     parameter.getType().getSimpleName()));
                     return;
                 }
             }
@@ -438,7 +453,13 @@ public class JavaCommander implements Runnable
                     }
 
                     // Append the data to the string
-                    toString += String.format("\n%s\t\t%s\t\t%s", option.names()[0],
+                    String optionsList = option.names()[0];
+                    for (int i = 1; i < option.names().length; i++)
+                    {
+                        optionsList += ", " + option.names()[i];
+                    }
+                    
+                    toString += String.format("\n%s\t\t%s\t\t%s", optionsList,
                                               param.getType().getSimpleName(), option.description());
                 }
             }
