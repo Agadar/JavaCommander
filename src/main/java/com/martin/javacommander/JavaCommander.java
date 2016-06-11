@@ -2,8 +2,8 @@ package com.martin.javacommander;
 
 import com.martin.javacommander.annotations.Command;
 import com.martin.javacommander.annotations.Option;
-import java.beans.PropertyEditor;
-import java.beans.PropertyEditorManager;
+import com.martin.javacommander.translators.NoTranslator;
+import com.martin.javacommander.translators.OptionTranslator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -108,7 +108,7 @@ public class JavaCommander implements Runnable
             for (int i = 1; i < args.size(); i += 2)
             {
                 // Prevent an IndexOutOfBoundsException by checking whether the
-                // last supplied option is followed by a supplied value
+                // last supplied option is followed by a supplied translatedValue
                 if (i + 1 >= args.size())
                 {
                     System.out.println(String.format("No value found for option '%s'", args.get(i)));
@@ -158,49 +158,48 @@ public class JavaCommander implements Runnable
                     }
                 }
 
-                // Internal try-catch for translating the supplied value to the correct type
-                try
+                // The option value, retrieved from either the supplied options
+                // or the option's default value
+                String optionValue;
+
+                // If the option value was supplied, use that.
+                if (suppliedOptionName != null)
                 {
-                    // Prepare property editor for translating
-                    PropertyEditor editor = PropertyEditorManager.findEditor(parameter.getType());
-
-                    // If the option value was supplied, use that.
-                    if (suppliedOptionName != null)
-                    {
-                        // also remove the option from the supplied options so that we
-                        // can later determine incorrect options that were given
-                        editor.setAsText(suppliedOptions.remove(suppliedOptionName));
-                    } // Else, use the default value, but only if it has one assigned.
-                    else if (option.hasDefaultValue())
-                    {
-                        editor.setAsText(option.defaultValue()[0]);
-                    }
-                    else
-                    {
-                        System.out.println(String.format("Option '%s' is required",
-                                                         option.names()[0]));
-                        return;
-                    }
-
-                    // Set the value and make sure it is not null
-                    Object value = editor.getValue();
-                    if (value == null)
-                    {
-                        System.out.println(String.format("Failed to identify value type for option '%s'",
-                                                         suppliedOptionName == null ? option.names()[0] : suppliedOptionName));
-                        return;
-                    }
-
-                    // If the parsing went well, add the value to finalArgs
-                    finalArgs.add(value);
+                    optionValue = suppliedOptions.remove(suppliedOptionName);
                 }
-                catch (Exception ex)
+                // Else, use the default value, but only if it has one assigned.
+                else if (option.hasDefaultValue())
                 {
-                    System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                     suppliedOptionName == null ? option.names()[0] : suppliedOptionName,
-                                                     parameter.getType().getSimpleName()));
+                    optionValue = option.defaultValue()[0];
+                }
+                // If it does not have one assigned, then we have a problem.
+                else
+                {
+                    System.out.println(String.format("Option '%s' is required",
+                                                     option.names()[0]));
                     return;
                 }
+
+                // The translated value
+                Object translatedValue;
+
+                // Retrieve the OptionTranslator.
+                Class<? extends OptionTranslator> translatorType = option.translator();
+
+                // If the translator is the default one, assume it's primitive
+                if (translatorType.equals(NoTranslator.class))
+                {
+                    translatedValue = OptionTranslator.parseToPrimitive(optionValue, parameter.getType());
+                }
+                // Else, use the supplied translator.
+                else
+                {
+                    OptionTranslator translator = translatorType.newInstance();
+                    translatedValue = translator.translateString(optionValue);
+                }
+
+                // If the parsing went well, add the translatedValue to finalArgs
+                finalArgs.add(translatedValue);
             }
 
             // Ensure the supplied options have been exhausted, giving a warning
@@ -215,7 +214,7 @@ public class JavaCommander implements Runnable
             commandMethod.invoke(commandObj, finalArgs.toArray());
 
         }
-        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex)
+        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex)
         {
             Logger.getLogger(JavaCommander.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -225,7 +224,10 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = { "exit", "quit" }, description = "Exit the program.")
+    @Command(names =
+    {
+        "exit", "quit"
+    }, description = "Exit the program.")
     public void exitProgram()
     {
         System.exit(0);
@@ -395,7 +397,10 @@ public class JavaCommander implements Runnable
      * @param commandName
      */
     @Command(
-            names = { "help", "usage", "?" },
+            names =
+            {
+                "help", "usage", "?"
+            },
             description = "Display the help.",
             options = @Option(names = "-c", description = "Display a specific command's help.", hasDefaultValue = true, defaultValue = "")
     )

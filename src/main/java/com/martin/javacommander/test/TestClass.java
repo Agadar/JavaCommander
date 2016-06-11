@@ -2,6 +2,7 @@ package com.martin.javacommander.test;
 
 import com.martin.javacommander.annotations.Command;
 import com.martin.javacommander.annotations.Option;
+import com.martin.javacommander.translators.StringArrayTranslator;
 
 public class TestClass
 {
@@ -10,11 +11,24 @@ public class TestClass
              {
                  @Option(names = { "2", "two" }, defaultValue = "2")
              })
-    public void TestMethod(@Option(names = { "1", "one" }, defaultValue = "1") String input1,
+    public void test1(@Option(names = { "1", "one" }, defaultValue = "1") String input1,
                            int input2,
-                           @Option(names = {"3", "three" }, hasDefaultValue = true, defaultValue = "3") int input3)
+                           @Option(names = {"3", "three" }, defaultValue = "3") int input3)
     {
         System.out.println("Called with " + input1 + " " + input2 + " " + input3);
+    }
+    
+    @Command(options = @Option(
+            names = "-1", 
+            hasDefaultValue = true,
+            defaultValue = "one,two,three", 
+            translator = StringArrayTranslator.class))
+    public void test2(String[] items)
+    {
+        for (String s : items)
+        {
+            System.out.println(s);
+        }
     }
 
 //    @Command(names = "test")
