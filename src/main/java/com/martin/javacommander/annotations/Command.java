@@ -16,11 +16,12 @@ public @interface Command
 {
     /**
      * Names of the command. The first entry is considered its primary name, the
-     * other entries are considered synonyms.
+     * other entries are considered synonyms. If no name is supplied, then the
+     * name of the annotated method will be used for the name of the command.
      *
      * @return
      */
-    String[] names();
+    String[] names() default {};
 
     /**
      * A brief description of the command.

@@ -249,7 +249,16 @@ public class JavaCommander implements Runnable
             // if we've found an annotated method, add it.
             if (method.isAnnotationPresent(Command.class))
             {
-                for (String name : ((Command) method.getAnnotation(Command.class)).names())
+                String[] names = ((Command) method.getAnnotation(Command.class)).names();
+                
+                // if no names were given, simply use the name of the method
+                if (names.length <= 0)
+                {
+                    names = new String[] { method.getName() };
+                }
+                
+                // for each command name, register a new command
+                for (String name : names)
                 {
                     putCommand(name, obj, method);
                 }

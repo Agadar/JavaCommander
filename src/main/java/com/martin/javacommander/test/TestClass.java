@@ -6,8 +6,7 @@ import com.martin.javacommander.annotations.Option;
 public class TestClass
 {
 
-    @Command(names = "test",
-             options =
+    @Command(options =
              {
                  @Option(names = { "2", "two" }, mandatory = false, defaultValue = "2")
              })
