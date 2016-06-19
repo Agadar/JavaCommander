@@ -29,7 +29,7 @@ public class TestClass
 
     @Command(options =
     {
-        @Option(names = "items", translator = IntArrayTranslator.class),
+        @Option(translator = IntArrayTranslator.class),
         @Option()
     })
     public void test2(int[] items, String something)

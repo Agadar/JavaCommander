@@ -1,5 +1,7 @@
 package com.martin.javacommander.translators;
 
+import com.martin.javacommander.JavaCommanderException;
+
 /**
  * Interface that can be used to translate the user's String input for a command
  * Option to the type of the method parameter it is to be passed to.
@@ -14,70 +16,72 @@ public interface OptionTranslator<T>
      *
      * @param s the string to translate
      * @return a value of type T
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public abstract T translateString(String s);
+    public abstract T translateString(String s) throws JavaCommanderException;
 
     /**
-     * Attempts to parse the given string to the supplied class, assumed to be a
-     * primitive type or a primitive wrapper type. If it is neither, then null
-     * is returned, unless it is String, in which case the String is simply
-     * returned. May throw native parsing exceptions.
+     * Attempts to parse the given string to the supplied class. If the supplied
+     * class is not a primitive type, a wrapper type for primitives, or
+     * String, then a JavaCommanderException is thrown. May also throw other
+     * types of exceptions if the parsing from String to primitive failed.
      *
-     * @param <V>         the type to parse to
-     * @param s           the string to parse
-     * @param wrapperType the type to parse to
-     * @return the parsed string, or null
+     * @param <V>  the type to parse to
+     * @param s    the string to parse
+     * @param type the type to parse to
+     * @return the parsed string
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public static <V> V parseToPrimitive(String s, Class<V> wrapperType) throws NumberFormatException,
-                                                                                IndexOutOfBoundsException
+    public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException
     {
-        if (wrapperType.equals(String.class))
+        if (type.equals(String.class))
         {
             return (V) s;
         }
 
-        if (wrapperType.equals(Integer.class) || wrapperType.equals(int.class))
+        if (type.equals(Integer.class) || type.equals(int.class))
         {
             return (V) Integer.valueOf(s);
         }
 
-        if (wrapperType.equals(Short.class) || wrapperType.equals(short.class))
+        if (type.equals(Short.class) || type.equals(short.class))
         {
             return (V) Short.valueOf(s);
         }
 
-        if (wrapperType.equals(Long.class) || wrapperType.equals(long.class))
+        if (type.equals(Long.class) || type.equals(long.class))
         {
             return (V) Long.valueOf(s);
         }
 
-        if (wrapperType.equals(Byte.class) || wrapperType.equals(byte.class))
+        if (type.equals(Byte.class) || type.equals(byte.class))
         {
             return (V) Byte.valueOf(s);
         }
 
-        if (wrapperType.equals(Float.class) || wrapperType.equals(float.class))
+        if (type.equals(Float.class) || type.equals(float.class))
         {
             return (V) Float.valueOf(s);
         }
 
-        if (wrapperType.equals(Double.class) || wrapperType.equals(double.class))
+        if (type.equals(Double.class) || type.equals(double.class))
         {
             return (V) Double.valueOf(s);
         }
 
-        if (wrapperType.equals(Character.class) || wrapperType.equals(char.class))
+        if (type.equals(Character.class) || type.equals(char.class))
         {
             return (V) Character.valueOf(s.charAt(0));
         }
 
-        if (wrapperType.equals(Boolean.class) || wrapperType.equals(boolean.class))
+        if (type.equals(Boolean.class) || type.equals(boolean.class))
         {
             return (V) Boolean.valueOf(s);
         }
 
-        // If wrapperType is not a primitive or is void, then return null
-        return null;
+        throw new JavaCommanderException(
+                "Could not convert String value: type '" + type.getSimpleName()
+                + "' is not a primitive type, a primitive wrapper type, or String!");
     }
 
 }

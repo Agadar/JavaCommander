@@ -1,5 +1,7 @@
 package com.martin.javacommander.translators;
 
+import com.martin.javacommander.JavaCommanderException;
+
 /**
  * Example implementation of OptionTranslator that converts a String to an int
  * array in such a way that "1,2,3" becomes an array with the elements 1, 2 and
@@ -10,7 +12,7 @@ package com.martin.javacommander.translators;
 public class IntArrayTranslator implements OptionTranslator<int[]>
 {
     @Override
-    public int[] translateString(String s)
+    public int[] translateString(String s) throws JavaCommanderException
     {
         String[] split = s.split(",");
         int[] value = new int[split.length];

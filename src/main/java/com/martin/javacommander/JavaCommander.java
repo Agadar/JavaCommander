@@ -7,11 +7,9 @@ import com.martin.javacommander.translators.OptionTranslator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,15 +28,8 @@ public class JavaCommander implements Runnable
      */
     public final String WelcomeMsg;
     /**
-     * Methods to invoke, mapped to unique command names.
-     */
-    private final TreeMap<String, Method> commandMethods = new TreeMap<>();
-    /**
-     * Objects to invoke Methods from, mapped to unique command names.
-     */
-    private final TreeMap<String, Object> commandObjects = new TreeMap<>();
-    /**
-     * PCommands, mapped to unique command names. Will replace commandMethods and commandObjects.
+     * PCommands, mapped to unique command names. Will replace commandMethods
+     * and commandObjects.
      */
     private final TreeMap<String, PCommand> commands = new TreeMap<>();
 
@@ -51,8 +42,10 @@ public class JavaCommander implements Runnable
      * @param createBasicCommands whether or not to create basic utility
      *                            commands such as a 'help' command and a 'quit'
      *                            command
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public JavaCommander(boolean createBasicCommands) throws JavaCommanderException
+    public JavaCommander(boolean createBasicCommands) throws
+            JavaCommanderException
     {
         this(true, null);
     }
@@ -64,8 +57,10 @@ public class JavaCommander implements Runnable
      * @param welcomeMsg          a welcoming message printed when run() is
      *                            called. Leave it null or empty to have no
      *                            message printed.
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public JavaCommander(boolean createBasicCommands, String welcomeMsg) throws JavaCommanderException
+    public JavaCommander(boolean createBasicCommands, String welcomeMsg) throws
+            JavaCommanderException
     {
         this.WelcomeMsg = welcomeMsg;
 
@@ -80,8 +75,9 @@ public class JavaCommander implements Runnable
      * and execute the command defined in it.
      *
      * @param string the string to parse
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public void execute(String string)
+    public void execute(String string) throws JavaCommanderException
     {
         this.execute(stringAsArgs(string));
     }
@@ -91,164 +87,238 @@ public class JavaCommander implements Runnable
      * tokens.
      *
      * @param args the list of argument tokens
+     * @throws com.martin.javacommander.JavaCommanderException
      */
-    public void execute(List<String> args)
+    public void execute(List<String> args) throws JavaCommanderException
     {
-        try
+        // If no args are given, just return and do nothing.
+        if (args == null || args.isEmpty())
         {
-            // Retrieve the relevant object and method
-            String commandName = args.get(0);
-            Object commandObj = commandObjects.get(commandName);
-            Method commandMethod = commandMethods.get(commandName);
+            return;
+        }
 
-            // If the command was not found, print a warning message and return
-            if (commandObj == null || commandMethod == null)
+        // Retrieve the command. If none was found, throw an error.
+        PCommand command = commands.get(args.get(0));
+        if (command == null)
+        {
+            System.out.println((String.format(
+                                "'%s' is not recognized as a command", args.get(
+                                0))));
+            return;
+        }
+
+        // Arguments to be passed to the Method.invoke function.
+        Object[] finalArgs = new Object[command.Options.size()];
+        int curIndexInFinalArgs = 0;
+        POption currentOption = null;
+        for (String arg : args)
+        {
+            // If we're not currently finding a value for an option, then
+            // try find the option.
+            if (currentOption == null)
             {
-                System.out.println(String.format("'%s' is not recognized as a command", commandName));
+                currentOption = command.OptionsMapped.get(arg);
+
+                // If the option is not recognized, throw an error.
+                if (currentOption == null)
+                {
+                    System.out.println(String.format(
+                            "'%s' is not recognized as an option for this command",
+                            args));
+                    return;
+                }
+            }
+            // Else, try to parse the value.
+            else
+            {
+                Object parsedArg = parseValue(arg, currentOption.Translator, 
+                    command.ToInvoke.getParameters()[command.Options.indexOf(currentOption)].getClass());
+                finalArgs[curIndexInFinalArgs++] = parsedArg;
+                currentOption = null;
+            }
+        }
+        
+        // If the last parameter was not given a value, throw an error.
+        if (currentOption != null)
+        {
+            System.out.println(String.format(
+                        "No value found for option '%s'", currentOption.Names[0]));
+                return;
+        }
+        
+        // For each entry in finalArgs that is still null, check whether there
+        // is a default value. If there is, use that. Else, throw an error.
+        for (int i = 0; i < finalArgs.length; i++)
+        {
+            Object val = finalArgs[i];
+            
+            if (val == null)
+            {
+                POption option = command.Options.get(i);
+                
+                if (option.HasDefaultValue)
+                {
+                    
+                }
+                else
+                {
+                    // WE WUZ HERE N SHEET
+                }
+            }
+        }
+
+        
+        
+        
+        
+        
+        
+        // Map the options supplied by the caller
+        Map<String, String> suppliedOptions = new TreeMap<>();
+        for (int i = 1; i < args.size(); i += 2)
+        {
+            // Prevent an IndexOutOfBoundsException by checking whether the
+            // last supplied option is followed by a supplied translatedValue
+            if (i + 1 >= args.size())
+            {
+                System.out.println(String.format(
+                        "No value found for option '%s'", args.get(i)));
                 return;
             }
 
-            // Map the options supplied by the caller
-            Map<String, String> suppliedOptions = new TreeMap<>();
-            for (int i = 1; i < args.size(); i += 2)
+            suppliedOptions.put(args.get(i), args.get(i + 1));
+        }
+
+        // List that will be used as arguments when invoking the method
+        List<Object> finalArgs = new ArrayList<>();
+        Option[] optionsFromCommand = commandMethod.getAnnotation(
+                Command.class).options();
+        int indexInCommandOptions = 0;
+
+        // Iterate over the method's parameters
+        for (Parameter parameter : commandMethod.getParameters())
+        {
+            // First attempt to retrieve the Option from the parameter
+            Option option = parameter.getAnnotation(Option.class);
+
+            // If the option was not found, then try get the next Option from the Command
+            if (option == null)
             {
-                // Prevent an IndexOutOfBoundsException by checking whether the
-                // last supplied option is followed by a supplied translatedValue
-                if (i + 1 >= args.size())
+                if (indexInCommandOptions < optionsFromCommand.length)
                 {
-                    System.out.println(String.format("No value found for option '%s'", args.get(i)));
-                    return;
+                    option = optionsFromCommand[indexInCommandOptions];
+                    indexInCommandOptions++;
                 }
-
-                suppliedOptions.put(args.get(i), args.get(i + 1));
-            }
-
-            // List that will be used as arguments when invoking the method
-            List<Object> finalArgs = new ArrayList<>();
-            Option[] optionsFromCommand = commandMethod.getAnnotation(Command.class).options();
-            int indexInCommandOptions = 0;
-
-            // Iterate over the method's parameters
-            for (Parameter parameter : commandMethod.getParameters())
-            {
-                // First attempt to retrieve the Option from the parameter
-                Option option = parameter.getAnnotation(Option.class);
-
-                // If the option was not found, then try get the next Option from the Command
-                if (option == null)
-                {
-                    if (indexInCommandOptions < optionsFromCommand.length)
-                    {
-                        option = optionsFromCommand[indexInCommandOptions];
-                        indexInCommandOptions++;
-                    }
-                    // Failing that, print a warning message and return
-                    else
-                    {
-                        System.out.println("Error while executing command: Not all parameters "
-                                           + "of the object method called by this command are properly annotated.");
-                        return;
-                    }
-                }
-
-                String[] optionNames = option.names();
-
-                // Make sure the option annotation has at least one name in it
-                if (optionNames.length <= 0)
-                {
-                    optionNames = new String[]
-                    {
-                        parameter.getName()
-                    };
-                }
-
-                // Check whether any of the supplied options is one of this 
-                // parameter's annotation's names, and keep it on the side
-                String suppliedOptionName = null;
-                for (String optionName : optionNames)
-                {
-                    if (suppliedOptions.containsKey(optionName))
-                    {
-                        suppliedOptionName = optionName;
-                        break;
-                    }
-                }
-
-                // The option value, retrieved from either the supplied options
-                // or the option's default value
-                String optionValue;
-
-                // If the option value was supplied, use that.
-                if (suppliedOptionName != null)
-                {
-                    optionValue = suppliedOptions.remove(suppliedOptionName);
-                }
-                // Else, use the default value, but only if it has one assigned.
-                else if (option.hasDefaultValue())
-                {
-                    optionValue = option.defaultValue();
-                }
-                // If it does not have one assigned, then we have a problem.
+                // Failing that, print a warning message and return
                 else
                 {
-                    System.out.println(String.format("Option '%s' is required",
-                                                     optionNames[0]));
+                    System.out.println(
+                            "Error while executing command: Not all parameters "
+                                    + "of the object method called by this command are properly annotated.");
                     return;
                 }
-
-                // The translated value
-                Object translatedValue;
-
-                // Retrieve the OptionTranslator.
-                Class<? extends OptionTranslator> translatorType = option.translator();
-
-                // If the translator is the default one, assume it's primitive
-                if (translatorType.equals(NoTranslator.class))
-                {
-                    translatedValue = OptionTranslator.parseToPrimitive(optionValue, parameter.getType());
-                }
-                // Else, use the supplied translator.
-                else
-                {
-                    try
-                    {
-                        OptionTranslator translator = translatorType.newInstance();
-                        translatedValue = translator.translateString(optionValue);
-                    }
-                    catch (NumberFormatException | IndexOutOfBoundsException ex)
-                    {
-                        System.out.println(String.format("Value for option '%s' must be of type '%s'",
-                                                         suppliedOptionName == null ? optionNames[0] : suppliedOptionName,
-                                                         parameter.getType().getSimpleName()));
-                        return;
-                    }
-                    catch (InstantiationException | IllegalAccessException ex)
-                    {
-                        throw ex;
-                    }
-                }
-
-                // If the parsing went well, add the translatedValue to finalArgs
-                finalArgs.add(translatedValue);
             }
 
-            // Ensure the supplied options have been exhausted, giving a warning
-            // and returning if this isn't the case
-            if (suppliedOptions.size() > 0)
+            String[] optionNames = option.names();
+
+            // Make sure the option annotation has at least one name in it
+            if (optionNames.length <= 0)
             {
-                System.out.println(String.format("'%s' is not recognized as an option for this command", suppliedOptions.keySet().toArray()[0]));
+                optionNames = new String[]
+                {
+                    parameter.getName()
+                };
+            }
+
+            // Check whether any of the supplied options is one of this 
+            // parameter's annotation's names, and keep it on the side
+            String suppliedOptionName = null;
+            for (String optionName : optionNames)
+            {
+                if (suppliedOptions.containsKey(optionName))
+                {
+                    suppliedOptionName = optionName;
+                    break;
+                }
+            }
+
+            // The option value, retrieved from either the supplied options
+            // or the option's default value
+            String optionValue;
+
+            // If the option value was supplied, use that.
+            if (suppliedOptionName != null)
+            {
+                optionValue = suppliedOptions.remove(suppliedOptionName);
+            }
+            // Else, use the default value, but only if it has one assigned.
+            else if (option.hasDefaultValue())
+            {
+                optionValue = option.defaultValue();
+            }
+            // If it does not have one assigned, then we have a problem.
+            else
+            {
+                System.out.println(String.format("Option '%s' is required",
+                                                 optionNames[0]));
                 return;
             }
 
-            // Finally, invoke the method on the object
-            commandMethod.invoke(commandObj, finalArgs.toArray());
+            // The translated value
+            Object translatedValue;
 
+            // Retrieve the OptionTranslator.
+            Class<? extends OptionTranslator> translatorType = option.
+                    translator();
+
+            // If the translator is the default one, assume it's primitive
+            if (translatorType.equals(NoTranslator.class))
+            {
+                translatedValue = OptionTranslator.parseToPrimitive(
+                        optionValue, parameter.getType());
+            }
+            // Else, use the supplied translator.
+            else
+            {
+                try
+                {
+                    OptionTranslator translator = translatorType.
+                            newInstance();
+                    translatedValue = translator.
+                            translateString(optionValue);
+                }
+                catch (NumberFormatException | IndexOutOfBoundsException ex)
+                {
+                    System.out.println(String.format(
+                            "Value for option '%s' must be of type '%s'",
+                            suppliedOptionName == null ? optionNames[0]
+                                    : suppliedOptionName,
+                            parameter.getType().getSimpleName()));
+                    return;
+                }
+                catch (InstantiationException | IllegalAccessException ex)
+                {
+                    throw ex;
+                }
+            }
+
+            // If the parsing went well, add the translatedValue to finalArgs
+            finalArgs.add(translatedValue);
         }
-        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex)
+
+        // Ensure the supplied options have been exhausted, giving a warning
+        // and returning if this isn't the case
+        if (suppliedOptions.size() > 0)
         {
-            Logger.getLogger(JavaCommander.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            System.out.println(String.format(
+                    "'%s' is not recognized as an option for this command",
+                    suppliedOptions.keySet().toArray()[0]));
+            return;
         }
+
+        // Finally, invoke the method on the object
+        commandMethod.invoke(commandObj, finalArgs.toArray());
+
     }
 
     /**
@@ -268,6 +338,7 @@ public class JavaCommander implements Runnable
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     public void registerObject(Object obj) throws JavaCommanderException
     {
@@ -278,35 +349,34 @@ public class JavaCommander implements Runnable
             if (method.isAnnotationPresent(Command.class))
             {
                 // Obtain the command and derive the needed values
-                Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
+                Command commandAnnotation = ((Command) method.getAnnotation(
+                                             Command.class));
                 String[] names = commandAnnotation.names();
                 String description = commandAnnotation.description();
-                POption[] options = parseOptions(commandAnnotation, method);
+                List<POption> options = parseOptions(commandAnnotation, method);
 
                 // if no names were given, simply use the name of the method
                 if (names.length <= 0)
                 {
-                    names = new String[] { method.getName() };
+                    names = new String[]
+                    {
+                        method.getName()
+                    };
                 }
-                
+
                 // Create new PCommand object that is the basis, and add it to the commands with its primary name
-                PCommand pcommand = new PCommand(names, description, options, method, obj);
+                PCommand pcommand = new PCommand(names, description, options,
+                                                 method, obj);
                 commands.put(pcommand.Names[0], pcommand);
-                
+
                 // For each synonym, add another entry.
                 String synonymDescr = "Synonym of " + pcommand.Names[0];
                 for (int i = 1; i < pcommand.Names.length; i++)
                 {
-                    commands.put(pcommand.Names[i], new PCommand(names, synonymDescr, options, method, obj));
-                }
-                
-                
-                //
-
-                // OLD METHOD
-                for (String name : names)
-                {
-                    putCommand(name, obj, method);
+                    commands.put(pcommand.Names[i], new PCommand(names,
+                                                                 synonymDescr,
+                                                                 options, method,
+                                                                 obj));
                 }
             }
         }
@@ -324,7 +394,8 @@ public class JavaCommander implements Runnable
             System.out.println(WelcomeMsg + System.lineSeparator());
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in)))
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(
+                System.in)))
         {
             // Thread loop.
             while (!Thread.currentThread().isInterrupted())
@@ -335,7 +406,7 @@ public class JavaCommander implements Runnable
                 System.out.println();
             }
         }
-        catch (IOException ex)
+        catch (IOException | JavaCommanderException ex)
         {
             Logger.getLogger(JavaCommander.class
                     .getName()).log(Level.SEVERE, null, ex);
@@ -403,38 +474,6 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Unregisters the command with the given name.
-     *
-     * @param commandName the name of the command to unregister
-     */
-    public void unregisterCommand(String commandName)
-    {
-        commandObjects.remove(commandName);
-        commandMethods.remove(commandName);
-    }
-
-    /**
-     * Unregisters all commands found in the supplied object.
-     *
-     * @param obj the object to find commands to unregister in
-     */
-    public void unregisterObject(Object obj)
-    {
-        // iterate through the object's class' methods
-        for (final Method method : obj.getClass().getMethods())
-        {
-            // if we've found an annotated method, add it.
-            if (method.isAnnotationPresent(Command.class))
-            {
-                for (String name : ((Command) method.getAnnotation(Command.class)).names())
-                {
-                    unregisterCommand(name);
-                }
-            }
-        }
-    }
-
-    /**
      * Prints a list of all available commands. Called by the basic 'help'
      * command. If the given commandName is not null or empty, then the help of
      * the given command is given, listing its options.
@@ -447,191 +486,208 @@ public class JavaCommander implements Runnable
                 "help", "usage", "?"
             },
             description = "Display the help.",
-            options = @Option(names = "-c", description = "Display a specific command's help.", hasDefaultValue = true)
+            options = @Option(names = "-c", description
+                                                    = "Display a specific command's help.",
+                    hasDefaultValue = true)
     )
     public void usage(String commandName)
     {
-        // List available commands
+        String toString;
+
+        // If no command name given, then list general info of all commands
         if (commandName == null || commandName.isEmpty())
         {
-            String toString = "Displaying help. Use option '-c' to display a specific command's help.\n\n";
-            toString += "List of available commands:";
+            toString = "Displaying help. Use option '-c' to display a specific "
+                               + "command's help.\n\nList of available commands:";
 
             // Iterate over the Methods to find the descriptions
-            for (Map.Entry<String, Method> entry : commandMethods.entrySet())
+            for (Map.Entry<String, PCommand> entry : commands.entrySet())
             {
-                String description = ((Command) entry.getValue().
-                                      getAnnotation(Command.class
-                                      )).description();
-                toString += String.format("\n%s\t\t\t%s", entry.getKey(), description);
+                toString += String.format("\n%s\t\t\t%s", entry.getKey(),
+                                          entry.getValue().Description);
             }
-
-            // Print help
-            System.out.println(toString);
-        } // List specific command's options
+        }
+        // Else if a command name is given, then list info specific to that command
         else
         {
             // Retrieve the command. If it does not exist, then return with an error message.
-            Method method = commandMethods.get(commandName);
-            if (method == null)
+            PCommand command = commands.get(commandName);
+            if (command == null)
             {
-                System.out.println(String.format("'%s' is not recognized as a command", commandName));
+                System.out.println(String.format(
+                        "'%s' is not recognized as a command", commandName));
                 return;
-
             }
 
-            // Add description
-            String toString = "";
-            String description = ((Command) method.getAnnotation(Command.class)).description();
-            if (description != null && !description.isEmpty())
-            {
-                toString += description + "\n\n";
-            }
+            // Build string
+            toString = command.Description + "\n\n";
 
-            // Retrieve parameters
-            Parameter[] params = method.getParameters();
-
-            // If there are options to list, then list them.
-            if (params.length > 0)
+            // If there are options, then list them.
+            if (command.Options.size() > 0)
             {
                 toString += "List of available options:";
-                Option[] optionsFromCommand = method.getAnnotation(Command.class).options();
-                int indexInCommandOptions = 0;
 
-                for (Parameter param : params)
+                for (POption option : command.Options)
                 {
-                    // First attempt to retrieve the Option from the parameter
-                    Option option = param.getAnnotation(Option.class);
-
-                    // If the option was not found, then try get the next Option from the Command
-                    if (option == null)
-                    {
-                        if (indexInCommandOptions < optionsFromCommand.length)
-                        {
-                            option = optionsFromCommand[indexInCommandOptions];
-                            indexInCommandOptions++;
-                        }
-                        // Failing that, print a warning message and return
-                        else
-                        {
-                            System.out.println("Error while executing command: Not all parameters "
-                                               + "of the object method called by this command are properly annotated.");
-                            return;
-                        }
-                    }
-
-                    String[] optionNames = option.names();
-
-                    // Make sure the option annotation has at least one name in it
-                    if (optionNames.length <= 0)
-                    {
-                        optionNames = new String[]
-                        {
-                            param.getName()
-                        };
-                    }
+                    toString += "";
 
                     // Append the data to the string
-                    String optionsList = optionNames[0];
-                    for (int i = 1; i < optionNames.length; i++)
+                    toString += "\n" + option.Names[0];
+                    for (int i = 1; i < option.Names.length; i++)
                     {
-                        optionsList += ", " + optionNames[i];
+                        toString += ", " + option.Names[i];
                     }
-
-                    toString += String.format("\n%s\t\t%s\t\t%s", optionsList,
-                                              param.getType().getSimpleName(), option.description());
+                    toString += "\t\t" + option.Description;
                 }
             }
+            // Otherwise, inform the user there are no options.
             else
             {
                 toString += "No options available for this command.";
             }
-
-            // Print help
-            System.out.println(toString);
         }
+        // Print help
+        System.out.println(toString);
     }
 
     /**
-     * Maps the given Object and Method to the given command name.
+     * Validates and parses all option annotations found in the command
+     * annotation or on the method parameters to an array of POptions.
      *
-     * @param name   name of the command
-     * @param object object to invoke the method from when the command is called
-     * @param method method to invoke when the command is called
-     */
-    private void putCommand(String name, Object object, Method method)
-    {
-        commandObjects.put(name, object);
-        commandMethods.put(name, method);
-    }
-
-    /**
-     * Reads all of the Option annotations that are defined within the Command
-     * annotation or on the method parameters, and parses them to an array of
-     * POptions. 
-     * 
      * @param commandAnnotation
      * @param method
-     * @return 
+     * @return
      */
-    private POption[] parseOptions(Command commandAnnotation, Method method) throws JavaCommanderException
+    private List<POption> parseOptions(Command commandAnnotation, Method method)
+            throws JavaCommanderException
     {
+        List<POption> poptions = new ArrayList<>();
         Parameter[] params = method.getParameters();
-        List<Option> optionAnnos;  
-        
-        // If the command annotation has options defined, then go with those.
-        if (commandAnnotation.options().length > 0)
+
+        // If the number of options defined in the command annotation is equal to
+        // the number of parameters, then we use those.
+        if (commandAnnotation.options().length == params.length)
         {
-            // If the number of options is equal to the number of parameters, all is well.
-            if (commandAnnotation.options().length == params.length)
-            {           
-                optionAnnos = Arrays.asList(commandAnnotation.options());
-            }
-            // If not, then throw an exception.
-            else
+            // Parse all options
+            for (int i = 0; i < params.length; i++)
             {
-                throw new JavaCommanderException("Not all parameters of " + 
-                            method.getDeclaringClass().getSimpleName() + "." + 
-                            method.getName() + " are properly annotated with @Option!");
+                poptions.add(parseOption(commandAnnotation.options()[i],
+                                         params[i]));
             }
         }
-        // Else, go with the option annotations of the method parameters.
-        else
+        // Else, if there is not a single option defined in the command, we use
+        // the options annotated on the parameters.
+        else if (commandAnnotation.options().length == 0)
         {
-            optionAnnos = new ArrayList<>();
-            
             for (Parameter param : params)
             {
-                // If the parameter is properly annotated, process it.
+                // If the parameter is properly annotated, parse it.
                 if (param.isAnnotationPresent(Option.class))
                 {
-                    optionAnnos.add(param.getAnnotation(Option.class));
+                    poptions.add(parseOption(param.getAnnotation(Option.class),
+                                             param));
                 }
                 // If any parameter at all is not properly annotated, throw an exception.
                 else
                 {
-                    throw new JavaCommanderException("Not all parameters of " + 
-                            method.getDeclaringClass().getSimpleName() + "." + 
-                            method.getName() + " are properly annotated with @Option!");
+                    throw new JavaCommanderException("Not all parameters of "
+                                                             + method.
+                            getDeclaringClass().getSimpleName() + "." + method.
+                            getName() + " are properly annotated with @Option!");
                 }
             }
         }
-        
-        // Now we iterate over the retrieved option annotations and parameters.
-        for (int i = 0; i < optionAnnos.size(); i++)
+        // Else, if there are options defined in the command, but not enough to
+        // cover all parameters, then the annotations are wrong. Throw an error.
+        else
         {
-            Parameter curPar = params[i];
-            Option curOpt = optionAnnos.get(i);
-
-            String[] names = curOpt.names();
-            String description = curOpt.description();
-            boolean hasDefaultVal = curOpt.hasDefaultValue();
-            Class<? extends OptionTranslator> translator = curOpt.translator();
-            
+            throw new JavaCommanderException("Not all parameters of " + method.
+                    getDeclaringClass().getSimpleName() + "." + method.getName()
+                                                     + " are properly annotated with @Option!");
         }
-        
-        return null;
-        
+
+        // Return the parsed poptions.
+        return poptions;
+    }
+
+    /**
+     * Validates and parses a single option annotation to a POption.
+     *
+     * @param optionAnnotation
+     * @param param
+     * @return
+     */
+    private POption parseOption(Option optionAnnotation, Parameter param) throws
+            JavaCommanderException
+    {
+        // Get the option names. If none is assigned, use the parameter name.
+        String[] names = optionAnnotation.names();
+        if (names.length <= 0)
+        {
+            names = new String[]
+            {
+                param.getName()
+            };
+        }
+        // Get other fields
+        boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
+        String defaultValueStr = optionAnnotation.defaultValue();
+        String description = optionAnnotation.description();
+        Class<? extends OptionTranslator> translatorClass = optionAnnotation.
+                translator();
+
+        // If there is a default value, then try to parse it.
+        if (hasDefaultValue)
+        {
+            Object value = parseValue(defaultValueStr, translatorClass, param.
+                                      getType());
+            // Return parsed POption.
+            return new POption(names, description, hasDefaultValue,
+                               value, translatorClass);
+
+        }
+        // Else, just parse and return a new POption.
+        else
+        {
+            return new POption(names, description, hasDefaultValue, null,
+                               translatorClass);
+        }
+    }
+
+    /**
+     * Attempts to parse the given String value to the given type, using the
+     * given translator type.
+     *
+     * @param value
+     * @param translatorType
+     * @param toType
+     * @return
+     * @throws JavaCommanderException
+     */
+    private <T> T parseValue(String value,
+            Class<? extends OptionTranslator> translatorType, Class<T> toType)
+            throws JavaCommanderException
+    {
+        try
+        {
+            // If no translator is set, attempt a normal valueOf.
+            if (translatorType.equals(NoTranslator.class))
+            {
+                return OptionTranslator.parseToPrimitive(value, toType);
+            }
+            // If one is set, then attempt using that.
+            else
+            {
+                OptionTranslator translator = translatorType.newInstance();
+                return (T) translator.translateString(value);
+            }
+        }
+        catch (InstantiationException | IllegalAccessException ex)
+        {
+            throw new JavaCommanderException(
+                    "Failed to instantiate translator '" + translatorType.
+                    getSimpleName() + "'!");
+        }
     }
 
 }
