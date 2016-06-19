@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,8 +37,12 @@ public class JavaCommander implements Runnable
      * Objects to invoke Methods from, mapped to unique command names.
      */
     private final TreeMap<String, Object> commandObjects = new TreeMap<>();
+    /**
+     * PCommands, mapped to unique command names. Will replace commandMethods and commandObjects.
+     */
+    private final TreeMap<String, PCommand> commands = new TreeMap<>();
 
-    public JavaCommander()
+    public JavaCommander() throws JavaCommanderException
     {
         this(true);
     }
@@ -47,7 +52,7 @@ public class JavaCommander implements Runnable
      *                            commands such as a 'help' command and a 'quit'
      *                            command
      */
-    public JavaCommander(boolean createBasicCommands)
+    public JavaCommander(boolean createBasicCommands) throws JavaCommanderException
     {
         this(true, null);
     }
@@ -60,7 +65,7 @@ public class JavaCommander implements Runnable
      *                            called. Leave it null or empty to have no
      *                            message printed.
      */
-    public JavaCommander(boolean createBasicCommands, String welcomeMsg)
+    public JavaCommander(boolean createBasicCommands, String welcomeMsg) throws JavaCommanderException
     {
         this.WelcomeMsg = welcomeMsg;
 
@@ -264,26 +269,41 @@ public class JavaCommander implements Runnable
      *
      * @param obj the Object where commands are located within
      */
-    public void registerObject(Object obj)
+    public void registerObject(Object obj) throws JavaCommanderException
     {
         // iterate through the obj's class' methods
         for (final Method method : obj.getClass().getMethods())
         {
-            // if we've found an annotated method, add it.
+            // if we've found an annotated method, get to work.
             if (method.isAnnotationPresent(Command.class))
             {
-                String[] names = ((Command) method.getAnnotation(Command.class)).names();
+                // Obtain the command and derive the needed values
+                Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
+                String[] names = commandAnnotation.names();
+                String description = commandAnnotation.description();
+                POption[] options = parseOptions(commandAnnotation, method);
 
                 // if no names were given, simply use the name of the method
                 if (names.length <= 0)
                 {
-                    names = new String[]
-                    {
-                        method.getName()
-                    };
+                    names = new String[] { method.getName() };
                 }
+                
+                // Create new PCommand object that is the basis, and add it to the commands with its primary name
+                PCommand pcommand = new PCommand(names, description, options, method, obj);
+                commands.put(pcommand.Names[0], pcommand);
+                
+                // For each synonym, add another entry.
+                String synonymDescr = "Synonym of " + pcommand.Names[0];
+                for (int i = 1; i < pcommand.Names.length; i++)
+                {
+                    commands.put(pcommand.Names[i], new PCommand(names, synonymDescr, options, method, obj));
+                }
+                
+                
+                //
 
-                // for each command name, register a new command
+                // OLD METHOD
                 for (String name : names)
                 {
                     putCommand(name, obj, method);
@@ -543,6 +563,75 @@ public class JavaCommander implements Runnable
     {
         commandObjects.put(name, object);
         commandMethods.put(name, method);
+    }
+
+    /**
+     * Reads all of the Option annotations that are defined within the Command
+     * annotation or on the method parameters, and parses them to an array of
+     * POptions. 
+     * 
+     * @param commandAnnotation
+     * @param method
+     * @return 
+     */
+    private POption[] parseOptions(Command commandAnnotation, Method method) throws JavaCommanderException
+    {
+        Parameter[] params = method.getParameters();
+        List<Option> optionAnnos;  
+        
+        // If the command annotation has options defined, then go with those.
+        if (commandAnnotation.options().length > 0)
+        {
+            // If the number of options is equal to the number of parameters, all is well.
+            if (commandAnnotation.options().length == params.length)
+            {           
+                optionAnnos = Arrays.asList(commandAnnotation.options());
+            }
+            // If not, then throw an exception.
+            else
+            {
+                throw new JavaCommanderException("Not all parameters of " + 
+                            method.getDeclaringClass().getSimpleName() + "." + 
+                            method.getName() + " are properly annotated with @Option!");
+            }
+        }
+        // Else, go with the option annotations of the method parameters.
+        else
+        {
+            optionAnnos = new ArrayList<>();
+            
+            for (Parameter param : params)
+            {
+                // If the parameter is properly annotated, process it.
+                if (param.isAnnotationPresent(Option.class))
+                {
+                    optionAnnos.add(param.getAnnotation(Option.class));
+                }
+                // If any parameter at all is not properly annotated, throw an exception.
+                else
+                {
+                    throw new JavaCommanderException("Not all parameters of " + 
+                            method.getDeclaringClass().getSimpleName() + "." + 
+                            method.getName() + " are properly annotated with @Option!");
+                }
+            }
+        }
+        
+        // Now we iterate over the retrieved option annotations and parameters.
+        for (int i = 0; i < optionAnnos.size(); i++)
+        {
+            Parameter curPar = params[i];
+            Option curOpt = optionAnnos.get(i);
+
+            String[] names = curOpt.names();
+            String description = curOpt.description();
+            boolean hasDefaultVal = curOpt.hasDefaultValue();
+            Class<? extends OptionTranslator> translator = curOpt.translator();
+            
+        }
+        
+        return null;
+        
     }
 
 }
