@@ -13,14 +13,15 @@ import java.util.Map;
  */
 public class PCommand
 {
-    protected final String[] Names;
-    protected final String Description;
-    protected final List<POption> Options;              // list of the options, in order of the method's parameters
-    protected final Map<String, POption> OptionsMapped; // options mapped to option names, including synonyms
-    protected final Method ToInvoke;
-    protected final Object ToInvokeOn;
 
-    protected PCommand(String[] Names, String Description, List<POption> Options,
+    public final String[] Names;
+    public final String Description;
+    public final List<POption> Options;              // list of the options, in order of the method's parameters
+    public final Map<String, POption> OptionsMapped; // options mapped to option names, including synonyms
+    public final Method ToInvoke;
+    public final Object ToInvokeOn;
+
+    public PCommand(String[] Names, String Description, List<POption> Options,
             Method ToInvoke, Object ToInvokeOn)
     {
         this.Names = Names;
@@ -31,20 +32,53 @@ public class PCommand
         this.OptionsMapped = new HashMap<>();
 
         // Map all options
-        Options.stream().forEach((option) ->
-        {
-            for (String name : option.Names)
-            {
-                OptionsMapped.put(name, option);
-            }
+        Options.stream().forEach((option)
+                -> 
+                {
+                    for (String name : option.Names)
+                    {
+                        OptionsMapped.put(name, option);
+                    }
         });
     }
 
-    protected void execute(Object[] args) throws IllegalAccessException,
-                                                 IllegalArgumentException,
-                                                 InvocationTargetException
+    /**
+     * Convenience method for getting the primary name.
+     * 
+     * @return 
+     */
+    public final String getPrimaryName()
     {
-        ToInvoke.invoke(ToInvokeOn, args);
+        return Names[0];
+    }
+    
+    /**
+     * Convenience method for checking whether this command has any options.
+     *
+     * @return
+     */
+    public final boolean hasOptions()
+    {
+        return Options != null && Options.size() > 0;
     }
 
+    /**
+     * Convenience method for checking whether this command has any synonyms.
+     *
+     * @return
+     */
+    public final boolean hasSynonyms()
+    {
+        return Names != null && Names.length > 1;
+    }
+
+    /**
+     * Convenience method for checking whether this command has a description.
+     *
+     * @return
+     */
+    public final boolean hasDescription()
+    {
+        return Description != null && !Description.isEmpty();
+    }
 }

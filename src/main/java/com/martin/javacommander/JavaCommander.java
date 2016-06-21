@@ -395,7 +395,7 @@ public class JavaCommander implements Runnable
         if (commandName == null || commandName.isEmpty())
         {
             toString = "Displaying help. Use option '-c' to display a specific "
-                    + "command's help.\n\nList of available commands:";
+                    + "command's help.\n\nAvailable commands:";
 
             // Iterate over the commands to find the info
             for (Map.Entry<String, PCommand> entry : commandToPrimaryName.entrySet())
@@ -406,7 +406,7 @@ public class JavaCommander implements Runnable
                 {
                     toString += ", " + command.Names[i];
                 }
-                toString += "\t\t" + command.Description;
+                toString += "\t\t" + (command.hasDescription() ? command.Description : "No description available.");
             }
         } // Else if a command name is given, then list info specific to that command
         else
@@ -421,13 +421,20 @@ public class JavaCommander implements Runnable
             }
 
             // Build string
-            toString = command.Description + "\n\n";
+            toString = "Description:\n" + (command.hasDescription() ? command.Description : "No description available.") + "\n\n";
+
+            // If there are synonyms, then list them.
+            toString += "Synonyms:\n" + command.Names[0];
+            for (int i = 1; i < command.Names.length; i++)
+            {
+                toString += ", " + command.Names[i];
+            }
+            toString += "\n\n";
 
             // If there are options, then list them.
-            if (command.Options.size() > 0)
+            toString += "Available options:";
+            if (command.hasOptions())
             {
-                toString += "List of available options:";
-
                 for (POption option : command.Options)
                 {
                     toString += "\n" + option.Names[0];
@@ -440,7 +447,7 @@ public class JavaCommander implements Runnable
             } // Otherwise, inform the user there are no options.
             else
             {
-                toString += "No options available for this command.";
+                toString += "\nNo options available.\n";
             }
         }
         // Print help
