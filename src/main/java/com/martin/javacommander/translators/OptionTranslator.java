@@ -32,7 +32,9 @@ public interface OptionTranslator<T>
      * @return the parsed string
      * @throws com.martin.javacommander.JavaCommanderException
      */
-    public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException
+    public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException, 
+                                                                         NumberFormatException,
+                                                                         IndexOutOfBoundsException
     {
         if (type.equals(String.class))
         {

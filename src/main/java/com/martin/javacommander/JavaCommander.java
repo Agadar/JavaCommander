@@ -115,7 +115,7 @@ public class JavaCommander implements Runnable
         for (int i = 1; i < args.size(); i++)
         {
             String arg = args.get(i);
-            
+
             // If we're not currently finding a value for an option, then
             // try find the option.
             if (currentOption == null)
@@ -179,11 +179,11 @@ public class JavaCommander implements Runnable
             command.ToInvoke.invoke(command.ToInvokeOn, finalArgs);
         }
         catch (IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException ex)
+               InvocationTargetException ex)
         {
-            System.out.println(String.format("Failed to execute command '%s'", args.get(0)));
-            Logger.getLogger(JavaCommander.class.getName()).
-                    log(Level.SEVERE, null, ex);
+            throw new JavaCommanderException(String.format(
+                    "Failed to invoke method behind command '%s'",
+                    args.get(0)), ex);
         }
 
     }
@@ -251,6 +251,7 @@ public class JavaCommander implements Runnable
 
     /**
      * Blocking method that continuously reads input from a BufferedReader.
+     * JavaCommanderExceptions are logged, but don't stop the loop.
      */
     @Override
     public void run()
@@ -261,22 +262,23 @@ public class JavaCommander implements Runnable
             System.out.println(WelcomeMsg + System.lineSeparator());
         }
 
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                System.in)))
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        // Thread loop.
+        while (!Thread.currentThread().isInterrupted())
         {
-            // Thread loop.
-            while (!Thread.currentThread().isInterrupted())
+            try
             {
                 String command = br.readLine();
                 System.out.println();
                 execute(command);
                 System.out.println();
             }
-        }
-        catch (IOException | JavaCommanderException ex)
-        {
-            Logger.getLogger(JavaCommander.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            catch (IOException | JavaCommanderException ex)
+            {
+                Logger.getLogger(JavaCommander.class
+                        .getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -553,7 +555,14 @@ public class JavaCommander implements Runnable
         {
             throw new JavaCommanderException(
                     "Failed to instantiate translator '" + translatorType.
-                    getSimpleName() + "'!");
+                    getSimpleName() + "'!", ex);
+        }
+        catch (NumberFormatException | IndexOutOfBoundsException ex)
+        {
+            throw new JavaCommanderException(
+                    "Failed to parse String '" + value + "' using translator '"
+                            + translatorType.
+                    getSimpleName() + "'!", ex);
         }
     }
 
