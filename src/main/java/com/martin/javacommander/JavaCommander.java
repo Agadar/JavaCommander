@@ -7,6 +7,7 @@ import com.martin.javacommander.translators.OptionTranslator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
@@ -111,8 +112,10 @@ public class JavaCommander implements Runnable
         Object[] finalArgs = new Object[command.Options.size()];
         int curIndexInFinalArgs = 0;
         POption currentOption = null;
-        for (String arg : args)
+        for (int i = 1; i < args.size(); i++)
         {
+            String arg = args.get(i);
+            
             // If we're not currently finding a value for an option, then
             // try find the option.
             if (currentOption == null)
@@ -124,200 +127,64 @@ public class JavaCommander implements Runnable
                 {
                     System.out.println(String.format(
                             "'%s' is not recognized as an option for this command",
-                            args));
+                            arg));
                     return;
                 }
             }
             // Else, try to parse the value.
             else
             {
-                Object parsedArg = parseValue(arg, currentOption.Translator, 
-                    command.ToInvoke.getParameters()[command.Options.indexOf(currentOption)].getClass());
+                Object parsedArg = parseValue(arg, currentOption.Translator,
+                                              command.ToInvoke.getParameters()[command.Options.
+                                              indexOf(currentOption)].getType());
                 finalArgs[curIndexInFinalArgs++] = parsedArg;
                 currentOption = null;
             }
         }
-        
+
         // If the last parameter was not given a value, throw an error.
         if (currentOption != null)
         {
             System.out.println(String.format(
-                        "No value found for option '%s'", currentOption.Names[0]));
-                return;
+                    "No value found for option '%s'", currentOption.Names[0]));
+            return;
         }
-        
+
         // For each entry in finalArgs that is still null, check whether there
         // is a default value. If there is, use that. Else, throw an error.
         for (int i = 0; i < finalArgs.length; i++)
         {
             Object val = finalArgs[i];
-            
+
             if (val == null)
             {
                 POption option = command.Options.get(i);
-                
+
                 if (option.HasDefaultValue)
                 {
-                    
+                    finalArgs[i] = option.DefaultValue;
                 }
                 else
                 {
-                    // WE WUZ HERE N SHEET
-                }
-            }
-        }
-
-        
-        
-        
-        
-        
-        
-        // Map the options supplied by the caller
-        Map<String, String> suppliedOptions = new TreeMap<>();
-        for (int i = 1; i < args.size(); i += 2)
-        {
-            // Prevent an IndexOutOfBoundsException by checking whether the
-            // last supplied option is followed by a supplied translatedValue
-            if (i + 1 >= args.size())
-            {
-                System.out.println(String.format(
-                        "No value found for option '%s'", args.get(i)));
-                return;
-            }
-
-            suppliedOptions.put(args.get(i), args.get(i + 1));
-        }
-
-        // List that will be used as arguments when invoking the method
-        List<Object> finalArgs = new ArrayList<>();
-        Option[] optionsFromCommand = commandMethod.getAnnotation(
-                Command.class).options();
-        int indexInCommandOptions = 0;
-
-        // Iterate over the method's parameters
-        for (Parameter parameter : commandMethod.getParameters())
-        {
-            // First attempt to retrieve the Option from the parameter
-            Option option = parameter.getAnnotation(Option.class);
-
-            // If the option was not found, then try get the next Option from the Command
-            if (option == null)
-            {
-                if (indexInCommandOptions < optionsFromCommand.length)
-                {
-                    option = optionsFromCommand[indexInCommandOptions];
-                    indexInCommandOptions++;
-                }
-                // Failing that, print a warning message and return
-                else
-                {
-                    System.out.println(
-                            "Error while executing command: Not all parameters "
-                                    + "of the object method called by this command are properly annotated.");
+                    System.out.println(String.format("Option '%s' is required",
+                                                     option.Names[0]));
                     return;
                 }
             }
-
-            String[] optionNames = option.names();
-
-            // Make sure the option annotation has at least one name in it
-            if (optionNames.length <= 0)
-            {
-                optionNames = new String[]
-                {
-                    parameter.getName()
-                };
-            }
-
-            // Check whether any of the supplied options is one of this 
-            // parameter's annotation's names, and keep it on the side
-            String suppliedOptionName = null;
-            for (String optionName : optionNames)
-            {
-                if (suppliedOptions.containsKey(optionName))
-                {
-                    suppliedOptionName = optionName;
-                    break;
-                }
-            }
-
-            // The option value, retrieved from either the supplied options
-            // or the option's default value
-            String optionValue;
-
-            // If the option value was supplied, use that.
-            if (suppliedOptionName != null)
-            {
-                optionValue = suppliedOptions.remove(suppliedOptionName);
-            }
-            // Else, use the default value, but only if it has one assigned.
-            else if (option.hasDefaultValue())
-            {
-                optionValue = option.defaultValue();
-            }
-            // If it does not have one assigned, then we have a problem.
-            else
-            {
-                System.out.println(String.format("Option '%s' is required",
-                                                 optionNames[0]));
-                return;
-            }
-
-            // The translated value
-            Object translatedValue;
-
-            // Retrieve the OptionTranslator.
-            Class<? extends OptionTranslator> translatorType = option.
-                    translator();
-
-            // If the translator is the default one, assume it's primitive
-            if (translatorType.equals(NoTranslator.class))
-            {
-                translatedValue = OptionTranslator.parseToPrimitive(
-                        optionValue, parameter.getType());
-            }
-            // Else, use the supplied translator.
-            else
-            {
-                try
-                {
-                    OptionTranslator translator = translatorType.
-                            newInstance();
-                    translatedValue = translator.
-                            translateString(optionValue);
-                }
-                catch (NumberFormatException | IndexOutOfBoundsException ex)
-                {
-                    System.out.println(String.format(
-                            "Value for option '%s' must be of type '%s'",
-                            suppliedOptionName == null ? optionNames[0]
-                                    : suppliedOptionName,
-                            parameter.getType().getSimpleName()));
-                    return;
-                }
-                catch (InstantiationException | IllegalAccessException ex)
-                {
-                    throw ex;
-                }
-            }
-
-            // If the parsing went well, add the translatedValue to finalArgs
-            finalArgs.add(translatedValue);
         }
 
-        // Ensure the supplied options have been exhausted, giving a warning
-        // and returning if this isn't the case
-        if (suppliedOptions.size() > 0)
+        try
         {
-            System.out.println(String.format(
-                    "'%s' is not recognized as an option for this command",
-                    suppliedOptions.keySet().toArray()[0]));
-            return;
+            // Finally, invoke the method on the object
+            command.ToInvoke.invoke(command.ToInvokeOn, finalArgs);
         }
-
-        // Finally, invoke the method on the object
-        commandMethod.invoke(commandObj, finalArgs.toArray());
+        catch (IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException ex)
+        {
+            System.out.println(String.format("Failed to execute command '%s'", args.get(0)));
+            Logger.getLogger(JavaCommander.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
 
     }
 
