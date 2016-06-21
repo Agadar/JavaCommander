@@ -37,7 +37,7 @@ public class JavaCommander implements Runnable
      * The parsed commands, mapped to the objects on which their underlying
      * methods are invoked. Contains each command exactly once.
      */
-    private final Map<Object, PCommand> commandsToObj = new TreeMap<>();
+    private final Map<Object, PCommand> commandsToObj = new HashMap<>();
 
     public JavaCommander() throws JavaCommanderException
     {
