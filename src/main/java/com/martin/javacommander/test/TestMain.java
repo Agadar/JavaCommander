@@ -9,11 +9,10 @@ import com.martin.javacommander.JavaCommanderException;
  */
 public class TestMain
 {
-    private enum testEnum{
-        ONE,
-        TWO,
-        THREE
-    }
+  
+    public static JavaCommander jc;
+    public static TestClass tc1;
+    public static TestClass2 tc2;
     
     /**
      * @param args the command line arguments
@@ -21,21 +20,10 @@ public class TestMain
      */
     public static void main(String[] args) throws JavaCommanderException
     {
-        TestClass tc = new TestClass();
-        JavaCommander jc = new JavaCommander(true, "Welcome to the testing zone");
-        jc.registerObject(tc);
+        jc = new JavaCommander(true, "Welcome to the testing zone");
+        tc1 = new TestClass();
+        tc2 = new TestClass2();
+        jc.registerObject(tc1);
         jc.run();
-        
-        
-        testEnum derp = null;
-   
-        
-        //System.out.println(Boolean.valueOf("TRUE"));
     }
-
-    public static void derp(String[] dicks)
-    {
-
-    }
-
 }
