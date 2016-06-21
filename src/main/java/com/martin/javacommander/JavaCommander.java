@@ -27,17 +27,21 @@ public class JavaCommander implements Runnable
     /**
      * Welcoming message printed when run() is called
      */
-    private final String WelcomeMsg;
+    protected final String WelcomeMsg;
     /**
-     * The parsed commands, mapped alphabetically to unique command names. May
-     * contain the same command more than once if it has more than one name.
+     * The parsed commands, each command mapped to its primary name, in
+     * alphabetical order.
      */
-    private final Map<String, PCommand> commands = new TreeMap<>();
+    protected final Map<String, PCommand> commandToPrimaryName = new TreeMap<>();
     /**
-     * The parsed commands, mapped to the objects on which their underlying
-     * methods are invoked. Contains each command exactly once.
+     * The parsed commands, each command mapped once for each of its names, in
+     * alphabetical order.
      */
-    private final Map<Object, PCommand> commandsToObj = new HashMap<>();
+    protected final Map<String, PCommand> commandToAllNames = new TreeMap<>();
+    /**
+     * The parsed commands, each command mapped to its underlying object.
+     */
+    protected final Map<Object, PCommand> commandToObj = new HashMap<>();
 
     public JavaCommander() throws JavaCommanderException
     {
@@ -74,24 +78,18 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Adds the given command to the commandsToObj map, and adds it to the
-     * commands map once for each synonym.
-     * 
-     * @param command 
+     * Registers the given command.
+     *
+     * @param command
      */
     private void registerCommand(PCommand command)
     {
-        // Add to both maps, once.
-        commandsToObj.put(command.ToInvokeOn, command);
-        commands.put(command.Names[0], command);
+        commandToObj.put(command.ToInvokeOn, command);
+        commandToPrimaryName.put(command.Names[0], command);
 
-        // For each synonym, add another entry.
-        String synonymDescr = "Synonym of " + command.Names[0];
-        for (int i = 1; i < command.Names.length; i++)
+        for (String name : command.Names)
         {
-            commands.put(command.Names[i], new PCommand(command.Names,
-                    synonymDescr, command.Options, command.ToInvoke,
-                    command.ToInvokeOn));
+            commandToAllNames.put(name, command);
         }
     }
 
@@ -123,7 +121,7 @@ public class JavaCommander implements Runnable
         }
 
         // Retrieve the command. If none was found, throw an error.
-        PCommand command = commands.get(args.get(0));
+        PCommand command = commandToAllNames.get(args.get(0));
         if (command == null)
         {
             System.out.println((String.format(
@@ -259,21 +257,22 @@ public class JavaCommander implements Runnable
 
     /**
      * Unregisters all commands found in the supplied Object.
-     * 
-     * @param obj 
+     *
+     * @param obj
      */
     public final void unregisterObject(Object obj)
     {
         // Remove from commandsToObj
-        PCommand command = commandsToObj.remove(obj);
-        
-        // If there was an entry present, then remove it from commands
-        // by iterating over all the command's names
+        PCommand command = commandToObj.remove(obj);
+
+        // If there was an entry present, then remove it from the other maps too.
         if (command != null)
         {
+            commandToPrimaryName.remove(command.Names[0]);
+
             for (String name : command.Names)
             {
-                commands.remove(name);
+                commandToAllNames.remove(name);
             }
         }
     }
@@ -398,17 +397,22 @@ public class JavaCommander implements Runnable
             toString = "Displaying help. Use option '-c' to display a specific "
                     + "command's help.\n\nList of available commands:";
 
-            // Iterate over the Methods to find the descriptions
-            for (Map.Entry<String, PCommand> entry : commands.entrySet())
+            // Iterate over the commands to find the info
+            for (Map.Entry<String, PCommand> entry : commandToPrimaryName.entrySet())
             {
-                toString += String.format("\n%s\t\t\t%s", entry.getKey(),
-                        entry.getValue().Description);
+                PCommand command = entry.getValue();
+                toString += "\n" + command.Names[0];
+                for (int i = 1; i < command.Names.length; i++)
+                {
+                    toString += ", " + command.Names[i];
+                }
+                toString += "\t\t" + command.Description;
             }
         } // Else if a command name is given, then list info specific to that command
         else
         {
             // Retrieve the command. If it does not exist, then return with an error message.
-            PCommand command = commands.get(commandName);
+            PCommand command = commandToAllNames.get(commandName);
             if (command == null)
             {
                 System.out.println(String.format(
@@ -426,9 +430,6 @@ public class JavaCommander implements Runnable
 
                 for (POption option : command.Options)
                 {
-                    toString += "";
-
-                    // Append the data to the string
                     toString += "\n" + option.Names[0];
                     for (int i = 1; i < option.Names.length; i++)
                     {

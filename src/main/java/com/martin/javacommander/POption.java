@@ -8,7 +8,7 @@ import com.martin.javacommander.translators.OptionTranslator;
  * @author marti
  * @param <T>
  */
-class POption<T>
+public class POption<T>
 {
     protected final String[] Names;
     protected final String Description;

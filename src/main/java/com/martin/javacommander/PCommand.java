@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author marti
  */
-class PCommand
+public class PCommand
 {
     protected final String[] Names;
     protected final String Description;
@@ -31,13 +31,13 @@ class PCommand
         this.OptionsMapped = new HashMap<>();
 
         // Map all options
-        for (POption option : Options)
+        Options.stream().forEach((option) ->
         {
             for (String name : option.Names)
             {
                 OptionsMapped.put(name, option);
             }
-        }
+        });
     }
 
     protected void execute(Object[] args) throws IllegalAccessException,
