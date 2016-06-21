@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages an application's commands.
@@ -110,7 +108,6 @@ public class JavaCommander implements Runnable
 
         // Arguments to be passed to the Method.invoke function.
         Object[] finalArgs = new Object[command.Options.size()];
-        int curIndexInFinalArgs = 0;
         POption currentOption = null;
         for (int i = 1; i < args.size(); i++)
         {
@@ -137,7 +134,7 @@ public class JavaCommander implements Runnable
                 Object parsedArg = parseValue(arg, currentOption.Translator,
                                               command.ToInvoke.getParameters()[command.Options.
                                               indexOf(currentOption)].getType());
-                finalArgs[curIndexInFinalArgs++] = parsedArg;
+                finalArgs[command.Options.indexOf(currentOption)] = parsedArg;
                 currentOption = null;
             }
         }
@@ -251,7 +248,7 @@ public class JavaCommander implements Runnable
 
     /**
      * Blocking method that continuously reads input from a BufferedReader.
-     * JavaCommanderExceptions are logged, but don't stop the loop.
+     * JavaCommanderExceptions are printed, but don't stop the loop.
      */
     @Override
     public void run()
@@ -276,8 +273,8 @@ public class JavaCommander implements Runnable
             }
             catch (IOException | JavaCommanderException ex)
             {
-                Logger.getLogger(JavaCommander.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                System.out.println();
+                System.out.println(ex.getMessage());
             }
         }
     }
@@ -462,7 +459,7 @@ public class JavaCommander implements Runnable
                     throw new JavaCommanderException("Not all parameters of "
                                                              + method.
                             getDeclaringClass().getSimpleName() + "." + method.
-                            getName() + " are properly annotated with @Option!");
+                            getName() + "(...) are properly annotated with @Option!");
                 }
             }
         }
