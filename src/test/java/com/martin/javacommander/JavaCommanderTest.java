@@ -54,8 +54,6 @@ public class JavaCommanderTest
     @Test
     public void testNoArguments() throws JavaCommanderException
     {
-        System.out.println("execute, no-arguments command");
-
         // Register object
         testRegisterObject();
 
@@ -86,56 +84,226 @@ public class JavaCommanderTest
 
     /**
      * Single-argument command, no default value
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     @Test
-    public void testSingleArgumentWithNoDefault() throws Exception
+    public void testSingleArgumentWithNoDefault() throws JavaCommanderException
     {
-        System.out.println("execute, single-argument command, no default value");
+        // Register object
+        testRegisterObject();
 
-        fail("The test case is a prototype.");
+        // Call command, no arg. Should fail.
+        String args = "b0";
+        try
+        {
+            jc.execute(args);
+            fail("Input '" + args + "' succeeded even though it shouldn't have!");
+        } catch (JavaCommanderException ex)
+        {
+            // Ignore, as this is what should happen.
+        }
+
+        // Call command, with explicit arg. Should succeed.
+        args = "b0 arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Call command, with implicit arg. Should succeed.
+        args = "b0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+
+        // Unregister object
+        testUnregisterObject();
     }
 
     /**
      * Single-argument command, default value
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     @Test
-    public void testSingleArgumentWithDefault() throws Exception
+    public void testSingleArgumentWithDefault() throws JavaCommanderException
     {
-        System.out.println("execute, single-argument command, default value");
+        // Register object
+        testRegisterObject();
 
-        fail("The test case is a prototype.");
+        // Call command, no arg. Should succeed.
+        String args = "b1";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Call command, with arg. Should succeed.
+        args = "b1 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Unregister object
+        testUnregisterObject();
     }
 
     /**
      * Multi-argument command, no default values
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentNoDefaults() throws Exception
+    public void testMultiArgumentNoDefaults() throws JavaCommanderException
     {
-        System.out.println("execute, multi-arguments command, no default values");
+        // Register object
+        testRegisterObject();
+        
+        // Call command, too few arguments, explicit options. Should fail.
+        String args = "c0 arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+            fail("Input '" + args + "' succeeded even though it shouldn't have!");
+        } catch (JavaCommanderException ex)
+        {
+            // Ignore, as this is what should happen.
+        }
+        
+        // Call command, too few arguments, implicit options. Should fail.
+        args = "c0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+            fail("Input '" + args + "' succeeded even though it shouldn't have!");
+        } catch (JavaCommanderException ex)
+        {
+            // Ignore, as this is what should happen.
+        }
+        
+        // Call command, too many arguments, explicit options. Should fail.
+        args = "c0 arg0 'somevalue' arg1 '4,5,6' arg2 5";
+        try
+        {
+            jc.execute(args);
+            fail("Input '" + args + "' succeeded even though it shouldn't have!");
+        } catch (JavaCommanderException ex)
+        {
+            // Ignore, as this is what should happen.
+        }
+        
+        // Call command, too many arguments, implicit options. Should fail.
+        args = "c0 'somevalue' '4,5,6' 5";
+        try
+        {
+            jc.execute(args);
+            fail("Input '" + args + "' succeeded even though it shouldn't have!");
+        } catch (JavaCommanderException ex)
+        {
+            // Ignore, as this is what should happen.
+        }
+        
+        // Call command with explicit options. Should succeed.
+        args = "c0 arg1 '4,5,6' arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Call command with implicit options. Should succeed.
+        args = "c0 'somevalue' '4,5,6'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
 
-        fail("The test case is a prototype.");
+        // Unregister object
+        testUnregisterObject();
     }
 
     /**
      * Multi-argument command, some default values
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentSomeDefaults() throws Exception
+    public void testMultiArgumentSomeDefaults() throws JavaCommanderException
     {
-        System.out.println("execute, multi-arguments command, some default values");
-
-        fail("The test case is a prototype.");
+        // Register object
+        testRegisterObject();
+        
+        // Skipping default values, should succeed.
+        String args = "c1 arg1 '4,5,6'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Filling in all values, should succeed.
+        args = "c1 arg1 '4,5,6' arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Unregister object
+        testUnregisterObject();
     }
 
     /**
      * Multi-argument command, all default values
+     * @throws com.martin.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentAllDefaults() throws Exception
+    public void testMultiArgumentAllDefaults() throws JavaCommanderException
     {
-        System.out.println("execute, multi-arguments command, all default values");
+        // Register object
+        testRegisterObject();
+        
+        // Skipping default values, should succeed.
+        String args = "c2";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Filling in all values, should succeed.
+        args = "c2 arg1 '4,5,6' arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
 
-        fail("The test case is a prototype.");
+        // Unregister object
+        testUnregisterObject();
     }
 }
