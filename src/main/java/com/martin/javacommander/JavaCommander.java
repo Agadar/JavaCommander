@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
@@ -38,10 +39,6 @@ public class JavaCommander implements Runnable
      * alphabetical order.
      */
     protected final Map<String, PCommand> commandToAllNames = new TreeMap<>();
-    /**
-     * The parsed commands, each command mapped to its underlying object.
-     */
-    protected final Map<Object, PCommand> commandToObj = new HashMap<>();
 
     public JavaCommander() throws JavaCommanderException
     {
@@ -108,10 +105,9 @@ public class JavaCommander implements Runnable
         PCommand command = commandToAllNames.get(args.get(0));
         if (command == null)
         {
-            System.out.println((String.format(
+            throw new JavaCommanderException(String.format(
                     "'%s' is not recognized as a command", args.get(
-                            0))));
-            return;
+                            0)));
         }
         
         // Determine whether we're using explicit, or implicit, options for this command.
@@ -132,9 +128,8 @@ public class JavaCommander implements Runnable
             // If too many arguments were supplied, throw an error.
             if (args.size() - 1 > finalArgs.length)
             {
-                System.out.println(String.format("Too many arguments "
+                throw new JavaCommanderException(String.format("Too many arguments "
                         + "supplied for command '%s'", args.get(0)));
-                return;
             }
             
             // Now simply iterate over the arguments, parsing them and placing
@@ -165,9 +160,8 @@ public class JavaCommander implements Runnable
                     // implicit and try parse the value to the current parameter.
                     if (currentOption == null)
                     {
-                        System.out.println(String.format("'%s' is not recognized as "
+                        throw new JavaCommanderException(String.format("'%s' is not recognized as "
                                 + "an option for command '%s'", arg, args.get(0)));
-                        return;
                     }
                 } // Else, try to parse the value.
                 else
@@ -182,9 +176,8 @@ public class JavaCommander implements Runnable
             // If the last parameter was not given a value, throw an error.
             if (currentOption != null)
             {
-                System.out.println(String.format(
+                throw new JavaCommanderException(String.format(
                         "No value found for option '%s'", currentOption.getPrimaryName()));
-                return;
             }
         }
 
@@ -203,9 +196,8 @@ public class JavaCommander implements Runnable
                     finalArgs[i] = option.DefaultValue;
                 } else
                 {
-                    System.out.println(String.format("Option '%s' is required",
+                    throw new JavaCommanderException(String.format("Option '%s' is required",
                             option.getPrimaryName()));
-                    return;
                 }
             }
         }
@@ -268,17 +260,27 @@ public class JavaCommander implements Runnable
      */
     public final void unregisterObject(Object obj)
     {
-        // Remove from commandsToObj
-        PCommand command = commandToObj.remove(obj);
-
-        // If there was an entry present, then remove it from the other maps too.
-        if (command != null)
+        // Keys which are to be removed from the maps
+        List<String> keysToRemove = new ArrayList<>();
+        
+        // Collect keys to remove from commandToPrimaryName
+        for (Entry<String, PCommand> entry : commandToPrimaryName.entrySet())
         {
-            commandToPrimaryName.remove(command.Names[0]);
-
-            for (String name : command.Names)
+            if (entry.getValue().ToInvokeOn.equals(obj))
             {
-                commandToAllNames.remove(name);
+                keysToRemove.add(entry.getKey());
+            }
+        }
+
+        // For each iteration, remove the key from commandToPrimaryName and use
+        // its synonyms to remove keys from commandToAllNames
+        for (String s : keysToRemove)
+        {
+            PCommand command = commandToPrimaryName.remove(s);
+            
+            for (String ss : command.Names)
+            {
+                commandToAllNames.remove(ss);
             }
         }
     }
@@ -483,7 +485,6 @@ public class JavaCommander implements Runnable
      */
     private void registerCommand(PCommand command)
     {
-        commandToObj.put(command.ToInvokeOn, command);
         commandToPrimaryName.put(command.Names[0], command);
 
         for (String name : command.Names)
