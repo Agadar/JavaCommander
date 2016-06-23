@@ -14,14 +14,17 @@ public class POption<T>
     public final String[] Names;
     public final String Description;
     public final boolean HasDefaultValue;
+    public final Class<T> Type;
     public final T DefaultValue;
     public final Class<? extends OptionTranslator<T>> Translator;
 
-    public POption(String[] Names, String Description, boolean HasDefaultValue, T DefaultValue, Class<? extends OptionTranslator<T>> Translator)
+    public POption(String[] Names, String Description, boolean HasDefaultValue, 
+            Class<T> Type, T DefaultValue, Class<? extends OptionTranslator<T>> Translator)
     {
         this.Names = Names;
         this.Description = Description;
         this.HasDefaultValue = HasDefaultValue;
+        this.Type = Type;
         this.DefaultValue = DefaultValue;
         this.Translator = Translator;
     }

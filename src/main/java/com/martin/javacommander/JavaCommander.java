@@ -78,22 +78,6 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Registers the given command.
-     *
-     * @param command
-     */
-    private void registerCommand(PCommand command)
-    {
-        commandToObj.put(command.ToInvokeOn, command);
-        commandToPrimaryName.put(command.Names[0], command);
-
-        for (String name : command.Names)
-        {
-            commandToAllNames.put(name, command);
-        }
-    }
-
-    /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
      *
@@ -129,45 +113,79 @@ public class JavaCommander implements Runnable
                             0))));
             return;
         }
-
+        
+        // Determine whether we're using explicit, or implicit, options for this command.
+        // Only relevant if there are arguments given, so check args.size().
+        POption currentOption = null;
+        if (args.size() > 1)
+        {
+            String arg = args.get(1);
+            currentOption = command.OptionsMapped.get(arg);
+        }
+        
         // Arguments to be passed to the Method.invoke function.
         Object[] finalArgs = new Object[command.Options.size()];
-        POption currentOption = null;
-        for (int i = 1; i < args.size(); i++)
+        
+        // If the retrieved option is null, then use implicit options.
+        if (currentOption == null)
         {
-            String arg = args.get(i);
-
-            // If we're not currently finding a value for an option, then
-            // try find the option.
-            if (currentOption == null)
+            // If too many arguments were supplied, throw an error.
+            if (args.size() - 1 > finalArgs.length)
             {
-                currentOption = command.OptionsMapped.get(arg);
-
-                // If the option is not recognized, throw an error.
-                if (currentOption == null)
-                {
-                    System.out.println(String.format(
-                            "'%s' is not recognized as an option for this command",
-                            arg));
-                    return;
-                }
-            } // Else, try to parse the value.
-            else
+                System.out.println(String.format("Too many arguments "
+                        + "supplied for command '%s'", args.get(0)));
+                return;
+            }
+            
+            // Now simply iterate over the arguments, parsing them and placing
+            // them in finalArgs as we go.
+            for (int i = 1; i < args.size(); i++)
             {
-                Object parsedArg = parseValue(arg, currentOption.Translator,
-                        command.ToInvoke.getParameters()[command.Options.
-                        indexOf(currentOption)].getType());
-                finalArgs[command.Options.indexOf(currentOption)] = parsedArg;
-                currentOption = null;
+                int iminus = i - 1;
+                currentOption = command.Options.get(iminus);
+                Object parsedArg = parseValue(args.get(i), currentOption.Translator,
+                            currentOption.Type);
+                finalArgs[iminus] = parsedArg;
             }
         }
-
-        // If the last parameter was not given a value, throw an error.
-        if (currentOption != null)
+        // Else if the retrieved option is not null, then use explicit options.
+        else
         {
-            System.out.println(String.format(
-                    "No value found for option '%s'", currentOption.Names[0]));
-            return;
+            for (int i = 2; i < args.size(); i++)
+            {
+                String arg = args.get(i);
+
+                // If we're not currently finding a value for an option, then
+                // try find the option.
+                if (currentOption == null)
+                {
+                    currentOption = command.OptionsMapped.get(arg);
+
+                    // If the option is not recognized, assume the option name is
+                    // implicit and try parse the value to the current parameter.
+                    if (currentOption == null)
+                    {
+                        System.out.println(String.format("'%s' is not recognized as "
+                                + "an option for command '%s'", arg, args.get(0)));
+                        return;
+                    }
+                } // Else, try to parse the value.
+                else
+                {
+                    Object parsedArg = parseValue(arg, currentOption.Translator,
+                            currentOption.Type);
+                    finalArgs[command.Options.indexOf(currentOption)] = parsedArg;
+                    currentOption = null;
+                }
+            }
+
+            // If the last parameter was not given a value, throw an error.
+            if (currentOption != null)
+            {
+                System.out.println(String.format(
+                        "No value found for option '%s'", currentOption.getPrimaryName()));
+                return;
+            }
         }
 
         // For each entry in finalArgs that is still null, check whether there
@@ -186,7 +204,7 @@ public class JavaCommander implements Runnable
                 } else
                 {
                     System.out.println(String.format("Option '%s' is required",
-                            option.Names[0]));
+                            option.getPrimaryName()));
                     return;
                 }
             }
@@ -205,19 +223,7 @@ public class JavaCommander implements Runnable
         }
 
     }
-
-    /**
-     * Calls System.Exit(0). Used for the basic exit command.
-     */
-    @Command(names =
-    {
-        "exit", "quit"
-    }, description = "Exit the program.")
-    public void exitProgram()
-    {
-        System.exit(0);
-    }
-
+    
     /**
      * Registers all commands found in the supplied Object. Any commands of
      * which the name is already registered will override the old values.
@@ -298,13 +304,16 @@ public class JavaCommander implements Runnable
             try
             {
                 String command = br.readLine();
-                System.out.println();
+                System.out.println("--------------------");
                 execute(command);
-                System.out.println();
             } catch (IOException | JavaCommanderException ex)
             {
-                System.out.println();
                 System.out.println(ex.getMessage());
+            }
+            finally
+            {
+                System.out.println("--------------------");
+                System.out.println();
             }
         }
     }
@@ -370,6 +379,17 @@ public class JavaCommander implements Runnable
     }
 
     /**
+     * Returns a list of all parsed commands. The returned list should not be
+     * altered. Could for example be used to create a custom help command.
+     * 
+     * @return a list of all parsed commands
+     */
+    public final List<PCommand> getParsedCommands()
+    {
+        return new ArrayList<>(commandToPrimaryName.values());
+    }
+    
+    /**
      * Prints a list of all available commands. Called by the basic 'help'
      * command. If the given commandName is not null or empty, then the help of
      * the given command is given, listing its options. May be overridden to
@@ -377,16 +397,10 @@ public class JavaCommander implements Runnable
      *
      * @param commandName
      */
-    @Command(
-            names =
-            {
-                "help", "usage", "?"
-            },
-            description = "Display the help.",
-            options = @Option(names = "-c", description
+    @Command(names = { "help", "usage", "?" }, description = "Display the help.",
+            options = @Option(names = "-command", description
                     = "Display a specific command's help.",
-                    hasDefaultValue = true)
-    )
+                    hasDefaultValue = true))
     public void usage(String commandName)
     {
         String toString;
@@ -394,13 +408,12 @@ public class JavaCommander implements Runnable
         // If no command name given, then list general info of all commands
         if (commandName == null || commandName.isEmpty())
         {
-            toString = "Displaying help. Use option '-c' to display a specific "
+            toString = "Displaying help. Use option '-command' to display a specific "
                     + "command's help.\n\nAvailable commands:";
 
             // Iterate over the commands to find the info
-            for (Map.Entry<String, PCommand> entry : commandToPrimaryName.entrySet())
+            for (PCommand command : getParsedCommands())
             {
-                PCommand command = entry.getValue();
                 toString += "\n" + command.Names[0];
                 for (int i = 1; i < command.Names.length; i++)
                 {
@@ -447,13 +460,38 @@ public class JavaCommander implements Runnable
             } // Otherwise, inform the user there are no options.
             else
             {
-                toString += "\nNo options available.\n";
+                toString += "\nNo options available.";
             }
         }
         // Print help
         System.out.println(toString);
     }
 
+    /**
+     * Calls System.Exit(0). Used for the basic exit command.
+     */
+    @Command(names = { "exit", "quit" }, description = "Exit the program.")
+    public void exitProgram()
+    {
+        System.exit(0);
+    }
+    
+    /**
+     * Registers the given command.
+     *
+     * @param command
+     */
+    private void registerCommand(PCommand command)
+    {
+        commandToObj.put(command.ToInvokeOn, command);
+        commandToPrimaryName.put(command.Names[0], command);
+
+        for (String name : command.Names)
+        {
+            commandToAllNames.put(name, command);
+        }
+    }
+    
     /**
      * Validates and parses all option annotations found in the command
      * annotation or on the method parameters to an array of POptions.
@@ -534,6 +572,7 @@ public class JavaCommander implements Runnable
         boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
         String defaultValueStr = optionAnnotation.defaultValue();
         String description = optionAnnotation.description();
+        Class type = param.getType();
         Class<? extends OptionTranslator> translatorClass = optionAnnotation.
                 translator();
 
@@ -542,14 +581,15 @@ public class JavaCommander implements Runnable
         {
             Object value = parseValue(defaultValueStr, translatorClass, param.
                     getType());
+            
             // Return parsed POption.
-            return new POption(names, description, hasDefaultValue,
+            return new POption(names, description, hasDefaultValue, type,
                     value, translatorClass);
 
         } // Else, just parse and return a new POption.
         else
         {
-            return new POption(names, description, hasDefaultValue, null,
+            return new POption(names, description, hasDefaultValue, type, null,
                     translatorClass);
         }
     }
