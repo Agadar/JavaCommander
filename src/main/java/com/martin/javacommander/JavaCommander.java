@@ -628,9 +628,9 @@ public class JavaCommander implements Runnable
         } catch (NumberFormatException | IndexOutOfBoundsException ex)
         {
             throw new JavaCommanderException(
-                    "Failed to parse String '" + value + "' using translator '"
-                    + translatorType.
-                    getSimpleName() + "'!", ex);
+                    "Failed to parse String '" + value + "' to type " + toType.getSimpleName() 
+                            + " using translator '" + translatorType.getSimpleName() 
+                            + "'!", ex);
         }
     }
 
