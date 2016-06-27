@@ -1,9 +1,9 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
-import com.martin.javacommander.annotations.Command;
-import com.martin.javacommander.annotations.Option;
-import com.martin.javacommander.translators.NoTranslator;
-import com.martin.javacommander.translators.OptionTranslator;
+import com.github.agadar.javacommander.annotation.Command;
+import com.github.agadar.javacommander.annotation.Option;
+import com.github.agadar.javacommander.translator.NoTranslator;
+import com.github.agadar.javacommander.translator.OptionTranslator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,7 +47,7 @@ public class JavaCommander implements Runnable
     /**
      * @param createBasicCommands whether or not to create basic utility
      * commands such as a 'help' command and a 'quit' command
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public JavaCommander(boolean createBasicCommands) throws
             JavaCommanderException
@@ -60,7 +60,7 @@ public class JavaCommander implements Runnable
      * commands such as a 'help' command and a 'quit' command
      * @param welcomeMsg a welcoming message printed when run() is called. Leave
      * it null or empty to have no message printed.
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public JavaCommander(boolean createBasicCommands, String welcomeMsg) throws
             JavaCommanderException
@@ -78,7 +78,7 @@ public class JavaCommander implements Runnable
      * and execute the command defined in it.
      *
      * @param string the string to parse
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public final void execute(String string) throws JavaCommanderException
     {
@@ -90,7 +90,7 @@ public class JavaCommander implements Runnable
      * tokens.
      *
      * @param args the list of argument tokens
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public final void execute(List<String> args) throws JavaCommanderException
     {
@@ -220,7 +220,7 @@ public class JavaCommander implements Runnable
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public final void registerObject(Object obj) throws JavaCommanderException
     {

@@ -1,4 +1,4 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
 /**
  * Custom exception for JavaCommander. Any and all exceptions thrown by

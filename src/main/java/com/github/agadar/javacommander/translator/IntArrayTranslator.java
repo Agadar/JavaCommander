@@ -1,6 +1,6 @@
-package com.martin.javacommander.translators;
+package com.github.agadar.javacommander.translator;
 
-import com.martin.javacommander.JavaCommanderException;
+import com.github.agadar.javacommander.JavaCommanderException;
 
 /**
  * Example implementation of OptionTranslator that converts a String to an int

@@ -1,4 +1,4 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;

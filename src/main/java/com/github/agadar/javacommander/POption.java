@@ -1,7 +1,7 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
-import com.martin.javacommander.translators.NoTranslator;
-import com.martin.javacommander.translators.OptionTranslator;
+import com.github.agadar.javacommander.translator.NoTranslator;
+import com.github.agadar.javacommander.translator.OptionTranslator;
 
 /**
  * A command option parsed from an Option annotation.

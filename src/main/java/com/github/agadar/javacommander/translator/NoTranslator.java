@@ -1,4 +1,4 @@
-package com.martin.javacommander.translators;
+package com.github.agadar.javacommander.translator;
 
 /**
  * Default translator that exists solely because Java annotations don't allow

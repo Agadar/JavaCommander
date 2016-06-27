@@ -1,6 +1,6 @@
-package com.martin.javacommander.translators;
+package com.github.agadar.javacommander.translator;
 
-import com.martin.javacommander.JavaCommanderException;
+import com.github.agadar.javacommander.JavaCommanderException;
 
 /**
  * Interface that can be used to translate the user's String input for a command
@@ -16,7 +16,7 @@ public interface OptionTranslator<T>
      *
      * @param s the string to translate
      * @return a value of type T
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public abstract T translateString(String s) throws JavaCommanderException;
 
@@ -30,7 +30,7 @@ public interface OptionTranslator<T>
      * @param s    the string to parse
      * @param type the type to parse to
      * @return the parsed string
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException, 
                                                                          NumberFormatException,

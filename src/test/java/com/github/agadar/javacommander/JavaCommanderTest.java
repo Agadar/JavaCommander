@@ -1,5 +1,8 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.PCommand;
+import com.github.agadar.javacommander.JavaCommanderException;
+import com.github.agadar.javacommander.JavaCommander;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;

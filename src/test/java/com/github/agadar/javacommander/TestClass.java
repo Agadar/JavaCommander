@@ -1,8 +1,8 @@
-package com.martin.javacommander;
+package com.github.agadar.javacommander;
 
-import com.martin.javacommander.annotations.Command;
-import com.martin.javacommander.annotations.Option;
-import com.martin.javacommander.translators.IntArrayTranslator;
+import com.github.agadar.javacommander.annotation.Command;
+import com.github.agadar.javacommander.annotation.Option;
+import com.github.agadar.javacommander.translator.IntArrayTranslator;
 
 /**
  * Used by JavaCommanderTest for testing com.martin.javacommander.JavaCommander.
