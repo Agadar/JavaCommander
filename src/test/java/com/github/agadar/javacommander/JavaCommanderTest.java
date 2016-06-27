@@ -11,12 +11,27 @@ import static org.junit.Assert.*;
  */
 public class JavaCommanderTest
 {
-
     /**
-     * The instance we'll be testing on.
+     * The JavaCommander instance we'll be testing.
      */
     public JavaCommander jc;
+    
+    /**
+     * Arbitrary test class we'll be testing with.
+     */
     public TestClass tc;
+    
+    /**
+     * Number of basic commands in JavaCommander. 
+     * Currently two: 'help' and 'quit'.
+     */
+    public final static int nrOfBasicCommands = 2;
+    
+    /**
+     * Number of commands in JavaCommander.
+     * Equal to number of basic commands plus whatever is found in TestClass.
+     */
+    public final static int nrOfCommands = TestClass.class.getDeclaredMethods().length + nrOfBasicCommands;
 
     /**
      * Tests registering the test object.
@@ -31,7 +46,7 @@ public class JavaCommanderTest
 
         // Ensure the object was registered.
         List<PCommand> commands = jc.getParsedCommands();
-        assertTrue(commands.size() == 8);   // 6 commands from TestClass + 2 default commands (help and exit)
+        assertEquals(nrOfCommands, commands.size());
     }
 
     /**
@@ -43,7 +58,7 @@ public class JavaCommanderTest
 
         // Ensure the object was unregistered.
         List<PCommand> commands = jc.getParsedCommands();
-        assertTrue(commands.size() == 2);   // remaining 2 default commands (help and exit)
+        assertEquals(nrOfBasicCommands, commands.size());
     }
 
     /**
@@ -303,6 +318,42 @@ public class JavaCommanderTest
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
+        // Unregister object
+        testUnregisterObject();
+    }
+    
+    /**
+     * Single test for when option annotations are not part of a command annotation
+     * but are instead annotated on parameters.
+     * 
+     * @throws JavaCommanderException 
+     */
+    @Test
+    public void testParameterAnnotations() throws JavaCommanderException
+    {
+        // Register object
+        testRegisterObject();
+        
+        // Skipping default values, should succeed.
+        String args = "d arg1 '4,5,6'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Filling in all values, should succeed.
+        args = "d arg1 '4,5,6' arg0 'somevalue'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
         // Unregister object
         testUnregisterObject();
     }

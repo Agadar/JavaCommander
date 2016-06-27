@@ -11,24 +11,19 @@ import com.github.agadar.javacommander.translator.IntArrayTranslator;
  */
 public class TestClass
 {
-    public static String RESULT;
-    
-    @Command()
+    @Command
     public void a()
     {
-        RESULT = "a";
     }
     
     @Command(options = { @Option(hasDefaultValue = false) })
     public void b0(String arg0)
     {
-        RESULT = arg0;
     }
     
     @Command(options = { @Option(hasDefaultValue = true, defaultValue = "default") })
     public void b1(String arg0)
     {
-        RESULT = arg0;
     }
     
     @Command(options = { 
@@ -36,7 +31,6 @@ public class TestClass
         @Option(hasDefaultValue = false, translator = IntArrayTranslator.class)})
     public void c0(String arg0, int[] arg1)
     {
-        RESULT = arg0 + arg1.length;
     }
     
     @Command(options = { 
@@ -44,7 +38,6 @@ public class TestClass
     @Option(hasDefaultValue = false, translator = IntArrayTranslator.class)})
     public void c1(String arg0, int[] arg1)
     {
-        RESULT = arg0 + arg1.length;
     }
     
     @Command(options = { 
@@ -52,6 +45,12 @@ public class TestClass
         @Option(hasDefaultValue = true, defaultValue = "1,2,3", translator = IntArrayTranslator.class)})
     public void c2(String arg0, int[] arg1)
     {
-        RESULT = arg0 + arg1.length;
+    }
+    
+    @Command
+    public void d(
+            @Option(hasDefaultValue = true, defaultValue = "default") String arg0, 
+            @Option(hasDefaultValue = false, translator = IntArrayTranslator.class) int[] arg1)
+    { 
     }
 }
