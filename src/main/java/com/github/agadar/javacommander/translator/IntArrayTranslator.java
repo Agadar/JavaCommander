@@ -7,7 +7,7 @@ import com.github.agadar.javacommander.JavaCommanderException;
  * array in such a way that "1,2,3" becomes an array with the elements 1, 2 and
  * 3.
  *
- * @author Martin
+ * @author Agadar
  */
 public class IntArrayTranslator implements OptionTranslator<int[]>
 {

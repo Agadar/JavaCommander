@@ -5,7 +5,7 @@ package com.github.agadar.javacommander.translator;
  * null values. It is never used, but if it is, it only returns the exact
  * String that was supplied.
  * 
- * @author Martin
+ * @author Agadar
  */
 public class NoTranslator implements OptionTranslator<String>
 {

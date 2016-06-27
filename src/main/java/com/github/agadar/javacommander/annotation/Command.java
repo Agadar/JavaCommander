@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation used for marking a method as being available as a command.
  *
- * @author marti
+ * @author Agadar
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

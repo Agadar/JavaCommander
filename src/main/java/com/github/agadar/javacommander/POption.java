@@ -6,7 +6,7 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
 /**
  * A command option parsed from an Option annotation.
  * 
- * @author marti
+ * @author Agadar
  * @param <T>
  */
 public class POption<T>

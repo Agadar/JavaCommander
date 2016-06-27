@@ -6,7 +6,7 @@ import com.github.agadar.javacommander.JavaCommanderException;
  * Interface that can be used to translate the user's String input for a command
  * Option to the type of the method parameter it is to be passed to.
  *
- * @author Martin
+ * @author Agadar
  * @param <T> the type to convert to
  */
 public interface OptionTranslator<T>

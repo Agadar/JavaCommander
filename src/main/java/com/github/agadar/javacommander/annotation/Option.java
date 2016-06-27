@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * Alternatively, these may be defined in the 'options' field of the Command
  * annotation instead, or even in conjunction.
  *
- * @author marti
+ * @author Agadar
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * A command parsed from a Command annotation.
  *
- * @author marti
+ * @author Agadar
  */
 public class PCommand
 {

@@ -5,9 +5,9 @@ import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.translator.IntArrayTranslator;
 
 /**
- * Used by JavaCommanderTest for testing com.martin.javacommander.JavaCommander.
+ * Used by JavaCommanderTest for testing com.github.agadar.javacommander.JavaCommander.
  * 
- * @author marti
+ * @author Agadar
  */
 public class TestClass
 {

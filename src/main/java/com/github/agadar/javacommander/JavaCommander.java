@@ -19,7 +19,7 @@ import java.util.TreeMap;
 /**
  * Manages an application's commands.
  *
- * @author Martin
+ * @author Agadar
  */
 public class JavaCommander implements Runnable
 {
@@ -263,25 +263,20 @@ public class JavaCommander implements Runnable
         List<String> keysToRemove = new ArrayList<>();
         
         // Collect keys to remove from commandToPrimaryName
-        for (Entry<String, PCommand> entry : commandToPrimaryName.entrySet())
+        commandToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().ToInvokeOn.equals(obj))).forEach((entry) ->
         {
-            if (entry.getValue().ToInvokeOn.equals(obj))
-            {
-                keysToRemove.add(entry.getKey());
-            }
-        }
+            keysToRemove.add(entry.getKey());
+        });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
-        for (String s : keysToRemove)
+        keysToRemove.stream().map((s) -> commandToPrimaryName.remove(s)).forEach((command) ->
         {
-            PCommand command = commandToPrimaryName.remove(s);
-            
             for (String ss : command.Names)
             {
                 commandToAllNames.remove(ss);
             }
-        }
+        });
     }
 
     /**

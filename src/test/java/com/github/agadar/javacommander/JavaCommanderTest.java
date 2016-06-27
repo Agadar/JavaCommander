@@ -1,8 +1,5 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.PCommand;
-import com.github.agadar.javacommander.JavaCommanderException;
-import com.github.agadar.javacommander.JavaCommander;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -10,7 +7,7 @@ import static org.junit.Assert.*;
 /**
  * Tests the functionalities of com.martin.javacommander.JavaCommander.
  *
- * @author marti
+ * @author Agadar
  */
 public class JavaCommanderTest
 {
@@ -24,7 +21,7 @@ public class JavaCommanderTest
     /**
      * Tests registering the test object.
      *
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public void testRegisterObject() throws JavaCommanderException
     {
@@ -52,7 +49,7 @@ public class JavaCommanderTest
     /**
      * No-arguments command
      *
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testNoArguments() throws JavaCommanderException
@@ -87,7 +84,7 @@ public class JavaCommanderTest
 
     /**
      * Single-argument command, no default value
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testSingleArgumentWithNoDefault() throws JavaCommanderException
@@ -132,7 +129,7 @@ public class JavaCommanderTest
 
     /**
      * Single-argument command, default value
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testSingleArgumentWithDefault() throws JavaCommanderException
@@ -166,7 +163,7 @@ public class JavaCommanderTest
 
     /**
      * Multi-argument command, no default values
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testMultiArgumentNoDefaults() throws JavaCommanderException
@@ -244,7 +241,7 @@ public class JavaCommanderTest
 
     /**
      * Multi-argument command, some default values
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testMultiArgumentSomeDefaults() throws JavaCommanderException
@@ -278,7 +275,7 @@ public class JavaCommanderTest
 
     /**
      * Multi-argument command, all default values
-     * @throws com.martin.javacommander.JavaCommanderException
+     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
     public void testMultiArgumentAllDefaults() throws JavaCommanderException

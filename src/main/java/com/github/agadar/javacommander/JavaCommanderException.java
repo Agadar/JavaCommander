@@ -4,7 +4,7 @@ package com.github.agadar.javacommander;
  * Custom exception for JavaCommander. Any and all exceptions thrown by
  * JavaCommander should preferably be of this type.
  * 
- * @author marti
+ * @author Agadar
  */
 public class JavaCommanderException extends Exception
 {
