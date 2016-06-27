@@ -1,5 +1,5 @@
 # JavaCommander
-Pet project that builds a framework for Java Command Prompt-like applications.
+Java framework for annotating functions in such a way that they can be called via interpreting string inputs.
 
 #Usage
-Run the main.java and enter your command in the console, followed by the parameters.
+Annotate functions, register instance of class containing annotated functions with JavaCommander, feed JavaCommander string inputs to interpret.
