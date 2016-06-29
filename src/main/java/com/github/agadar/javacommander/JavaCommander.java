@@ -22,12 +22,13 @@ import java.util.TreeMap;
  */
 public class JavaCommander implements Runnable
 {
+
     /**
      * The parsed commands, each command mapped to its primary name, in
      * alphabetical order.
      */
     protected final Map<String, PCommand> commandToPrimaryName = new TreeMap<>();
-    
+
     /**
      * The parsed commands, each command mapped once for each of its names, in
      * alphabetical order.
@@ -35,12 +36,12 @@ public class JavaCommander implements Runnable
     protected final Map<String, PCommand> commandToAllNames = new TreeMap<>();
 
     /**
-     * A special command name that can be used for a single command. 
-     * If no known command name can be found in a given string input, then an
-     * attempt to call the master command is made, using said input.
+     * A special command name that can be used for a single command. If no known
+     * command name can be found in a given string input, then an attempt to
+     * call the master command is made, using said input.
      */
     public static final String MASTER_COMMAND = "_MASTER";
-    
+
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
@@ -67,7 +68,7 @@ public class JavaCommander implements Runnable
         {
             return;
         }
-        
+
         // What index in args to start reading parameters from. If this is a
         // normal command, then the parameters start at index 1, as index 0
         // is the command name. If this is the master command, then the
@@ -80,16 +81,16 @@ public class JavaCommander implements Runnable
         {
             // If the master command was also not found, then throw an error.
             command = commandToPrimaryName.get(MASTER_COMMAND);
-            
+
             if (command == null)
-            {          
+            {
                 throw new JavaCommanderException(String.format(
                         "'%s' is not recognized as a command", args.get(
                                 0)));
             }
             paramsStartingIndex = 0;
         }
-        
+
         // Determine whether we're using explicit, or implicit, options for this command.
         // Only relevant if there are arguments given, so check args.size().
         POption currentOption = null;
@@ -98,10 +99,10 @@ public class JavaCommander implements Runnable
             String arg = args.get(paramsStartingIndex);
             currentOption = command.OptionsMapped.get(arg);
         }
-        
+
         // Arguments to be passed to the Method.invoke function.
         Object[] finalArgs = new Object[command.Options.size()];
-        
+
         // If the retrieved option is null, then use implicit options.
         if (currentOption == null)
         {
@@ -110,7 +111,7 @@ public class JavaCommander implements Runnable
             {
                 throw new JavaCommanderException("Too many arguments supplied for this command");
             }
-            
+
             // Now simply iterate over the arguments, parsing them and placing
             // them in finalArgs as we go.
             for (int i = paramsStartingIndex; i < args.size(); i++)
@@ -118,11 +119,10 @@ public class JavaCommander implements Runnable
                 int iminus = i - paramsStartingIndex;
                 currentOption = command.Options.get(iminus);
                 Object parsedArg = parseValue(args.get(i), currentOption.Translator,
-                            currentOption.Type);
+                        currentOption.Type);
                 finalArgs[iminus] = parsedArg;
             }
-        }
-        // Else if the retrieved option is not null, then use explicit options.
+        } // Else if the retrieved option is not null, then use explicit options.
         else
         {
             for (int i = paramsStartingIndex + 1; i < args.size(); i++)
@@ -191,9 +191,10 @@ public class JavaCommander implements Runnable
         }
 
     }
-    
+
     /**
      * Creates the basic 'help' and 'exit' commands.
+     *
      * @return this JavaCommander instance
      * @throws JavaCommanderException
      */
@@ -202,7 +203,7 @@ public class JavaCommander implements Runnable
         this.registerObject(this);
         return this;
     }
-    
+
     /**
      * Registers all commands found in the supplied Object. Any commands of
      * which the name is already registered will override the old values.
@@ -249,21 +250,23 @@ public class JavaCommander implements Runnable
     {
         // Keys which are to be removed from the maps
         List<String> keysToRemove = new ArrayList<>();
-        
+
         // Collect keys to remove from commandToPrimaryName
-        commandToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().ToInvokeOn.equals(obj))).forEach((entry) ->
-        {
-            keysToRemove.add(entry.getKey());
+        commandToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().ToInvokeOn.equals(obj))).forEach((entry)
+                -> 
+                {
+                    keysToRemove.add(entry.getKey());
         });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
-        keysToRemove.stream().map((s) -> commandToPrimaryName.remove(s)).forEach((command) ->
-        {
-            for (String ss : command.Names)
-            {
-                commandToAllNames.remove(ss);
-            }
+        keysToRemove.stream().map((s) -> commandToPrimaryName.remove(s)).forEach((command)
+                -> 
+                {
+                    for (String ss : command.Names)
+                    {
+                        commandToAllNames.remove(ss);
+                    }
         });
     }
 
@@ -283,12 +286,10 @@ public class JavaCommander implements Runnable
             {
                 String command = br.readLine();
                 execute(command);
-            } 
-            catch (IOException | JavaCommanderException ex)
+            } catch (IOException | JavaCommanderException ex)
             {
                 System.out.println(ex.getMessage());
-            }
-            finally
+            } finally
             {
                 System.out.println();   // always print a newline after a command
             }
@@ -358,14 +359,14 @@ public class JavaCommander implements Runnable
     /**
      * Returns a list of all parsed commands. The returned list should not be
      * altered. Could for example be used to create a custom help command.
-     * 
+     *
      * @return a list of all parsed commands
      */
     public final List<PCommand> getParsedCommands()
     {
         return new ArrayList<>(commandToPrimaryName.values());
     }
-    
+
     /**
      * Prints a list of all available commands. Called by the basic 'help'
      * command. If the given commandName is not null or empty, then the help of
@@ -374,7 +375,10 @@ public class JavaCommander implements Runnable
      *
      * @param commandName
      */
-    @Command(names = { "help", "usage", "?" }, description = "Display the help.",
+    @Command(names =
+    {
+        "help", "usage", "?"
+    }, description = "Display the help.",
             options = @Option(names = "-command", description
                     = "Display a specific command's help.",
                     hasDefaultValue = true))
@@ -447,12 +451,15 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = { "exit", "quit" }, description = "Exit the program.")
+    @Command(names =
+    {
+        "exit", "quit"
+    }, description = "Exit the program.")
     public void exitProgram()
     {
         System.exit(0);
     }
-    
+
     /**
      * Registers the given command.
      *
@@ -467,7 +474,7 @@ public class JavaCommander implements Runnable
             commandToAllNames.put(name, command);
         }
     }
-    
+
     /**
      * Validates and parses all option annotations found in the command
      * annotation or on the method parameters to an array of POptions.
@@ -509,7 +516,7 @@ public class JavaCommander implements Runnable
                     throw new JavaCommanderException("Not all parameters of "
                             + method.
                             getDeclaringClass().getSimpleName() + "." + method.
-                            getName() + "(...) are properly annotated with @Option!");
+                            getName() + " are properly annotated with @Option!");
                 }
             }
         } // Else, if there are options defined in the command, but not enough to
@@ -557,7 +564,7 @@ public class JavaCommander implements Runnable
         {
             Object value = parseValue(defaultValueStr, translatorClass, param.
                     getType());
-            
+
             // Return parsed POption.
             return new POption(names, description, hasDefaultValue, type,
                     value, translatorClass);
@@ -604,9 +611,9 @@ public class JavaCommander implements Runnable
         } catch (NumberFormatException | IndexOutOfBoundsException ex)
         {
             throw new JavaCommanderException(
-                    "Failed to parse String '" + value + "' to type " + toType.getSimpleName() 
-                            + " using translator '" + translatorType.getSimpleName() 
-                            + "'!", ex);
+                    "Failed to parse String '" + value + "' to type " + toType.getSimpleName()
+                    + " using translator '" + translatorType.getSimpleName()
+                    + "'!", ex);
         }
     }
 
