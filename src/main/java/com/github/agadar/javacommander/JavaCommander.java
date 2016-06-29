@@ -33,25 +33,6 @@ public class JavaCommander implements Runnable
      */
     protected final Map<String, PCommand> commandToAllNames = new TreeMap<>();
 
-    public JavaCommander() throws JavaCommanderException
-    {
-        this(true);
-    }
-
-    /**
-     * @param createBasicCommands whether or not to create basic utility
-     * commands such as a 'help' command and a 'quit' command
-     * @throws JavaCommanderException
-     */
-    public JavaCommander(boolean createBasicCommands) throws
-            JavaCommanderException
-    {
-        if (createBasicCommands)
-        {
-            this.registerObject(this);
-        }
-    }
-
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
@@ -192,6 +173,17 @@ public class JavaCommander implements Runnable
                     args.get(0)), ex);
         }
 
+    }
+    
+    /**
+     * Creates the basic 'help' and 'exit' commands.
+     * @return this JavaCommander instance
+     * @throws JavaCommanderException
+     */
+    public final JavaCommander createBasicCommands() throws JavaCommanderException
+    {
+        this.registerObject(this);
+        return this;
     }
     
     /**

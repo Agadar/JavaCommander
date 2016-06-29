@@ -21,17 +21,12 @@ public class JavaCommanderTest
      */
     public TestClass tc;
     
-    /**
-     * Number of basic commands in JavaCommander. 
-     * Currently two: 'help' and 'quit'.
-     */
-    public final static int nrOfBasicCommands = 2;
     
     /**
      * Number of commands in JavaCommander.
      * Equal to number of basic commands plus whatever is found in TestClass.
      */
-    public final static int nrOfCommands = TestClass.class.getDeclaredMethods().length + nrOfBasicCommands;
+    public final static int nrOfCommands = TestClass.class.getDeclaredMethods().length;
 
     /**
      * Tests registering the test object.
@@ -58,7 +53,7 @@ public class JavaCommanderTest
 
         // Ensure the object was unregistered.
         List<PCommand> commands = jc.getParsedCommands();
-        assertEquals(nrOfBasicCommands, commands.size());
+        assertEquals(0, commands.size());
     }
 
     /**
