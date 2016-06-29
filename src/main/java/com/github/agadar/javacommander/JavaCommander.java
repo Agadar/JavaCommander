@@ -27,12 +27,20 @@ public class JavaCommander implements Runnable
      * alphabetical order.
      */
     protected final Map<String, PCommand> commandToPrimaryName = new TreeMap<>();
+    
     /**
      * The parsed commands, each command mapped once for each of its names, in
      * alphabetical order.
      */
     protected final Map<String, PCommand> commandToAllNames = new TreeMap<>();
 
+    /**
+     * A special command name that can be used for a single command. 
+     * If no known command name can be found in a given string input, then an
+     * attempt to call the master command is made, using said input.
+     */
+    public static final String MASTER_COMMAND = "_MASTER";
+    
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
@@ -59,22 +67,35 @@ public class JavaCommander implements Runnable
         {
             return;
         }
+        
+        // What index in args to start reading parameters from. If this is a
+        // normal command, then the parameters start at index 1, as index 0
+        // is the command name. If this is the master command, then the
+        // parameters start at index 0, as there is no command name.
+        int paramsStartingIndex = 1;
 
-        // Retrieve the command. If none was found, throw an error.
+        // Retrieve the command. If none was found, attempt to get the master command.
         PCommand command = commandToAllNames.get(args.get(0));
         if (command == null)
         {
-            throw new JavaCommanderException(String.format(
-                    "'%s' is not recognized as a command", args.get(
-                            0)));
+            // If the master command was also not found, then throw an error.
+            command = commandToPrimaryName.get(MASTER_COMMAND);
+            
+            if (command == null)
+            {          
+                throw new JavaCommanderException(String.format(
+                        "'%s' is not recognized as a command", args.get(
+                                0)));
+            }
+            paramsStartingIndex = 0;
         }
         
         // Determine whether we're using explicit, or implicit, options for this command.
         // Only relevant if there are arguments given, so check args.size().
         POption currentOption = null;
-        if (args.size() > 1)
+        if (args.size() > paramsStartingIndex)
         {
-            String arg = args.get(1);
+            String arg = args.get(paramsStartingIndex);
             currentOption = command.OptionsMapped.get(arg);
         }
         
@@ -85,17 +106,16 @@ public class JavaCommander implements Runnable
         if (currentOption == null)
         {
             // If too many arguments were supplied, throw an error.
-            if (args.size() - 1 > finalArgs.length)
+            if (args.size() - paramsStartingIndex > finalArgs.length)
             {
-                throw new JavaCommanderException(String.format("Too many arguments "
-                        + "supplied for command '%s'", args.get(0)));
+                throw new JavaCommanderException("Too many arguments supplied for this command");
             }
             
             // Now simply iterate over the arguments, parsing them and placing
             // them in finalArgs as we go.
-            for (int i = 1; i < args.size(); i++)
+            for (int i = paramsStartingIndex; i < args.size(); i++)
             {
-                int iminus = i - 1;
+                int iminus = i - paramsStartingIndex;
                 currentOption = command.Options.get(iminus);
                 Object parsedArg = parseValue(args.get(i), currentOption.Translator,
                             currentOption.Type);
@@ -105,7 +125,7 @@ public class JavaCommander implements Runnable
         // Else if the retrieved option is not null, then use explicit options.
         else
         {
-            for (int i = 2; i < args.size(); i++)
+            for (int i = paramsStartingIndex + 1; i < args.size(); i++)
             {
                 String arg = args.get(i);
 
@@ -119,8 +139,7 @@ public class JavaCommander implements Runnable
                     // implicit and try parse the value to the current parameter.
                     if (currentOption == null)
                     {
-                        throw new JavaCommanderException(String.format("'%s' is not recognized as "
-                                + "an option for command '%s'", arg, args.get(0)));
+                        throw new JavaCommanderException("'%s' is not recognized as an option for this command");
                     }
                 } // Else, try to parse the value.
                 else
@@ -168,9 +187,7 @@ public class JavaCommander implements Runnable
         } catch (IllegalAccessException | IllegalArgumentException |
                 InvocationTargetException ex)
         {
-            throw new JavaCommanderException(String.format(
-                    "Failed to invoke method behind command '%s'",
-                    args.get(0)), ex);
+            throw new JavaCommanderException("Failed to invoke method behind this command", ex);
         }
 
     }

@@ -352,4 +352,38 @@ public class JavaCommanderTest
         // Unregister object
         testUnregisterObject();
     }
+    
+    /**
+     * Tests using the master command.
+     * @throws JavaCommanderException 
+     */
+    @Test
+    public void testMasterCommand() throws JavaCommanderException
+    {
+        // Register object
+        testRegisterObject();
+        
+        // Make a call, using a single implicit option
+        String args = "'some value'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Make a call, using a single explicit option
+        args = "arg0 'some value'";
+        try
+        {
+            jc.execute(args);
+        } catch (JavaCommanderException ex)
+        {
+            fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
+        }
+        
+        // Unregister object
+        testUnregisterObject();
+    }
 }
