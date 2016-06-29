@@ -13,7 +13,6 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 /**
@@ -23,11 +22,6 @@ import java.util.TreeMap;
  */
 public class JavaCommander implements Runnable
 {
-
-    /**
-     * Welcoming message printed when run() is called
-     */
-    protected final String WelcomeMsg;
     /**
      * The parsed commands, each command mapped to its primary name, in
      * alphabetical order.
@@ -47,26 +41,11 @@ public class JavaCommander implements Runnable
     /**
      * @param createBasicCommands whether or not to create basic utility
      * commands such as a 'help' command and a 'quit' command
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException
      */
     public JavaCommander(boolean createBasicCommands) throws
             JavaCommanderException
     {
-        this(true, null);
-    }
-
-    /**
-     * @param createBasicCommands whether or not to create basic utility
-     * commands such as a 'help' command and a 'quit' command
-     * @param welcomeMsg a welcoming message printed when run() is called. Leave
-     * it null or empty to have no message printed.
-     * @throws com.github.agadar.javacommander.JavaCommanderException
-     */
-    public JavaCommander(boolean createBasicCommands, String welcomeMsg) throws
-            JavaCommanderException
-    {
-        this.WelcomeMsg = welcomeMsg;
-
         if (createBasicCommands)
         {
             this.registerObject(this);
@@ -78,7 +57,7 @@ public class JavaCommander implements Runnable
      * and execute the command defined in it.
      *
      * @param string the string to parse
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException
      */
     public final void execute(String string) throws JavaCommanderException
     {
@@ -90,7 +69,7 @@ public class JavaCommander implements Runnable
      * tokens.
      *
      * @param args the list of argument tokens
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException
      */
     public final void execute(List<String> args) throws JavaCommanderException
     {
@@ -220,7 +199,7 @@ public class JavaCommander implements Runnable
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException
      */
     public final void registerObject(Object obj) throws JavaCommanderException
     {
@@ -286,12 +265,6 @@ public class JavaCommander implements Runnable
     @Override
     public final void run()
     {
-        // Print welcoming message and instantiate BufferedReader.
-        if (WelcomeMsg != null && !WelcomeMsg.isEmpty())
-        {
-            System.out.println(WelcomeMsg + System.lineSeparator());
-        }
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         // Thread loop.
@@ -300,16 +273,15 @@ public class JavaCommander implements Runnable
             try
             {
                 String command = br.readLine();
-                System.out.println("--------------------");
                 execute(command);
-            } catch (IOException | JavaCommanderException ex)
+            } 
+            catch (IOException | JavaCommanderException ex)
             {
                 System.out.println(ex.getMessage());
             }
             finally
             {
-                System.out.println("--------------------");
-                System.out.println();
+                System.out.println();   // always print a newline after a command
             }
         }
     }
@@ -399,12 +371,12 @@ public class JavaCommander implements Runnable
                     hasDefaultValue = true))
     public void usage(String commandName)
     {
-        String toString;
+        String toString = "--------------------\n";
 
         // If no command name given, then list general info of all commands
         if (commandName == null || commandName.isEmpty())
         {
-            toString = "Displaying help. Use option '-command' to display a specific "
+            toString += "Displaying help. Use option '-command' to display a specific "
                     + "command's help.\n\nAvailable commands:";
 
             // Iterate over the commands to find the info
@@ -430,7 +402,7 @@ public class JavaCommander implements Runnable
             }
 
             // Build string
-            toString = "Description:\n" + (command.hasDescription() ? command.Description : "No description available.") + "\n\n";
+            toString += "Description:\n" + (command.hasDescription() ? command.Description : "No description available.") + "\n\n";
 
             // If there are synonyms, then list them.
             toString += "Synonyms:\n" + command.Names[0];
@@ -460,7 +432,7 @@ public class JavaCommander implements Runnable
             }
         }
         // Print help
-        System.out.println(toString);
+        System.out.println(toString + "\n--------------------");
     }
 
     /**
