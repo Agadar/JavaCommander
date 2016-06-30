@@ -1,12 +1,10 @@
-JavaCommander
-==========
+# JavaCommander
 
 Java framework for annotating functions such that they can be called via interpreting string inputs. 
 
 Example usages: command-line interface applications, chat applications, processing strings sent via sockets.
 
-Usage
-==========
+## Usage
 
 Annotating functions of a class:
 
