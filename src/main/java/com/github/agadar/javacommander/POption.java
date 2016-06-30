@@ -7,7 +7,7 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
  * A command option parsed from an Option annotation.
  * 
  * @author Agadar
- * @param <T>
+ * @param <T> the type of this option's value
  */
 public class POption<T>
 {
@@ -32,7 +32,7 @@ public class POption<T>
     /**
      * Convenience method for getting the primary name.
      * 
-     * @return 
+     * @return this option's primary name
      */
     public final String getPrimaryName()
     {
@@ -42,7 +42,7 @@ public class POption<T>
     /**
      * Convenience method for checking whether this option has a description.
      *
-     * @return
+     * @return whether this option has a description
      */
     public final boolean hasDescription()
     {
@@ -52,7 +52,7 @@ public class POption<T>
     /**
      * Convenience method for checking whether this option has a translator set.
      * 
-     * @return 
+     * @return whether this option has a translator set
      */
     public final boolean hasTranslator()
     {

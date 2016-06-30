@@ -44,7 +44,7 @@ public class PCommand
     /**
      * Convenience method for getting the primary name.
      * 
-     * @return 
+     * @return this command's primary name
      */
     public final String getPrimaryName()
     {
@@ -54,7 +54,7 @@ public class PCommand
     /**
      * Convenience method for checking whether this command has any options.
      *
-     * @return
+     * @return whether this command has any options 
      */
     public final boolean hasOptions()
     {
@@ -64,7 +64,7 @@ public class PCommand
     /**
      * Convenience method for checking whether this command has any synonyms.
      *
-     * @return
+     * @return whether this command has any synonyms
      */
     public final boolean hasSynonyms()
     {
@@ -74,7 +74,7 @@ public class PCommand
     /**
      * Convenience method for checking whether this command has a description.
      *
-     * @return
+     * @return whether this command has a description
      */
     public final boolean hasDescription()
     {

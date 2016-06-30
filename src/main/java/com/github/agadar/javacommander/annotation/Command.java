@@ -19,14 +19,14 @@ public @interface Command
      * other entries are considered synonyms. If no name is supplied, then the
      * name of the annotated method will be used for the name of the command.
      *
-     * @return
+     * @return names this command is known by
      */
     String[] names() default {};
 
     /**
      * A brief description of the command.
      *
-     * @return
+     * @return description of this command
      */
     String description() default "";
 
@@ -34,7 +34,7 @@ public @interface Command
      * This command's options. Alternatively, these may be defined as parameter
      * annotations on the method's parameters instead, or even in conjunction.
      *
-     * @return
+     * @return options of this command
      */
     Option[] options() default 
     {

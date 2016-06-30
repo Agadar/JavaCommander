@@ -16,7 +16,7 @@ public interface OptionTranslator<T>
      *
      * @param s the string to translate
      * @return a value of type T
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException if translating failed
      */
     public abstract T translateString(String s) throws JavaCommanderException;
 
@@ -30,7 +30,7 @@ public interface OptionTranslator<T>
      * @param s    the string to parse
      * @param type the type to parse to
      * @return the parsed string
-     * @throws com.github.agadar.javacommander.JavaCommanderException
+     * @throws JavaCommanderException if parsing failed
      */
     public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException, 
                                                                          NumberFormatException,

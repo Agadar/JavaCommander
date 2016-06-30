@@ -47,7 +47,7 @@ public class JavaCommander implements Runnable
      * and execute the command defined in it.
      *
      * @param string the string to parse
-     * @throws JavaCommanderException
+     * @throws JavaCommanderException if parsing or execution failed
      */
     public final void execute(String string) throws JavaCommanderException
     {
@@ -59,7 +59,7 @@ public class JavaCommander implements Runnable
      * tokens.
      *
      * @param args the list of argument tokens
-     * @throws JavaCommanderException
+     * @throws JavaCommanderException if parsing or execution failed
      */
     public final void execute(List<String> args) throws JavaCommanderException
     {
@@ -193,10 +193,10 @@ public class JavaCommander implements Runnable
     }
 
     /**
-     * Creates the basic 'help' and 'exit' commands.
+     * Registers the basic 'help' and 'exit' commands.
      *
      * @return this JavaCommander instance
-     * @throws JavaCommanderException
+     * @throws JavaCommanderException if registering the commands failed
      */
     public final JavaCommander createBasicCommands() throws JavaCommanderException
     {
@@ -209,7 +209,7 @@ public class JavaCommander implements Runnable
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
-     * @throws JavaCommanderException
+     * @throws JavaCommanderException if registering the commands failed
      */
     public final void registerObject(Object obj) throws JavaCommanderException
     {
@@ -244,7 +244,7 @@ public class JavaCommander implements Runnable
     /**
      * Unregisters all commands found in the supplied Object.
      *
-     * @param obj
+     * @param obj the object whose commands to unregister
      */
     public final void unregisterObject(Object obj)
     {
@@ -373,7 +373,7 @@ public class JavaCommander implements Runnable
      * the given command is given, listing its options. May be overridden to
      * implement custom help message.
      *
-     * @param commandName
+     * @param commandName name of the command to print the help of
      */
     @Command(names =
     {

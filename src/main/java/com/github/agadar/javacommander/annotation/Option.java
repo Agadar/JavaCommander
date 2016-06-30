@@ -24,14 +24,14 @@ public @interface Option
      * name of the option will be 'arg{#}' where {#} is the parameter's index.
      * (e.g. 'arg0', 'arg1', 'arg2', etc.)
      *
-     * @return
+     * @return names this option is known by
      */
     String[] names() default {};
 
     /**
      * A brief description of the option.
      *
-     * @return
+     * @return description of this option
      */
     String description() default "";
 
@@ -40,14 +40,14 @@ public @interface Option
      * value MUST be supplied by the caller for this option, else it is
      * optional.
      *
-     * @return
+     * @return whether or not this option has a default value
      */
     boolean hasDefaultValue() default false;
 
     /**
      * This option's default value.
      *
-     * @return
+     * @return this option's default value
      */
     String defaultValue() default "";
 
@@ -59,7 +59,7 @@ public @interface Option
      * to home-brewed implementations of OptionTranslator for more complex types
      * and collections.
      *
-     * @return
+     * @return this option's translator type
      */
     Class<? extends OptionTranslator> translator() default NoTranslator.class;
 
