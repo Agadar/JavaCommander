@@ -12,7 +12,7 @@ Annotating functions of a class:
 public class SomeClass 
 {
     @Command(
-        names = { "printStringInArray", "psia"}, 
+        names = {"printStringInArray", "psia"}, 
         description = "Print the string at the index of the string array.",
         options = { 
             @Option(names = "-index", description = "The index of the string to print.", 
@@ -23,7 +23,7 @@ public class SomeClass
     )
     public void printStringInArray(int index, String[] array)
     {
-      System.out.println(array[index]);
+        System.out.println(array[index]);
     }
 }
 ```
