@@ -68,7 +68,7 @@ public class TestClass
     {
     }
 
-    @Command(names = JavaCommander.MASTER_COMMAND,
+    @Command(names = JavaCommander.EMPTY_COMMAND,
             options = @Option(hasDefaultValue = false))
     public void e(String arg0)
     {

@@ -40,7 +40,7 @@ public class JavaCommander implements Runnable
      * command name can be found in a given string input, then an attempt to
      * call the master command is made, using said input.
      */
-    public static final String MASTER_COMMAND = "_MASTER";
+    public static final String EMPTY_COMMAND = "";
 
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
@@ -80,7 +80,7 @@ public class JavaCommander implements Runnable
         if (command == null)
         {
             // If the master command was also not found, then throw an error.
-            command = commandToPrimaryName.get(MASTER_COMMAND);
+            command = commandToPrimaryName.get(EMPTY_COMMAND);
 
             if (command == null)
             {
