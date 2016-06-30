@@ -11,24 +11,15 @@ Annotating functions of a class:
 ```java
 public class SomeClass 
 {
-    @Command
-    (
-      names = { "printStringInArray", "psia"}, 
-      description = "Print the string at the index of the string array.",
-      options = { 
-                  @Option
-                  (
-                    names = "-index", 
-                    description = "The index of the string to print.",
-                    hasDefaultValue = true,
-                    defaultValue = "0"
-                  ),
-                  @Option
-                  (
-                    names = "-array",
-                    description = "The string array.",
-                    translator = StringArrayTranslator.class)
-      }
+    @Command(
+        names = { "printStringInArray", "psia"}, 
+        description = "Print the string at the index of the string array.",
+        options = { 
+            @Option(names = "-index", description = "The index of the string to print.", 
+                hasDefaultValue = true, defaultValue = "0"),
+            @Option(names = "-array", description = "The string array.", 
+                translator = StringArrayTranslator.class)
+        }
     )
     public void printStringInArray(int index, String[] array)
     {
