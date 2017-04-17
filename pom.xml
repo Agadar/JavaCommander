@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     
     <!-- General properties -->
-    <groupId>com.github.agadar</groupId>
+    <groupId>com.github.agadar.javacommander</groupId>
     <artifactId>javacommander</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>   
     <name>JavaCommander</name>
     <description>Java framework for annotating functions in such a way that they can be called via interpreting string inputs.</description>

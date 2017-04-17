@@ -20,8 +20,7 @@ import java.util.TreeMap;
  *
  * @author Agadar
  */
-public class JavaCommander implements Runnable
-{
+public class JavaCommander implements Runnable {
 
     /**
      * The parsed commands, each command mapped to its primary name, in
@@ -49,8 +48,7 @@ public class JavaCommander implements Runnable
      * @param string the string to parse
      * @throws JavaCommanderException if parsing or execution failed
      */
-    public final void execute(String string) throws JavaCommanderException
-    {
+    public final void execute(String string) throws JavaCommanderException {
         this.execute(stringAsArgs(string));
     }
 
@@ -61,11 +59,9 @@ public class JavaCommander implements Runnable
      * @param args the list of argument tokens
      * @throws JavaCommanderException if parsing or execution failed
      */
-    public final void execute(List<String> args) throws JavaCommanderException
-    {
+    public final void execute(List<String> args) throws JavaCommanderException {
         // If no args are given, just return and do nothing.
-        if (args == null || args.isEmpty())
-        {
+        if (args == null || args.isEmpty()) {
             return;
         }
 
@@ -77,13 +73,11 @@ public class JavaCommander implements Runnable
 
         // Retrieve the command. If none was found, attempt to get the master command.
         PCommand command = commandToAllNames.get(args.get(0));
-        if (command == null)
-        {
+        if (command == null) {
             // If the master command was also not found, then throw an error.
             command = commandToPrimaryName.get(EMPTY_COMMAND);
 
-            if (command == null)
-            {
+            if (command == null) {
                 throw new JavaCommanderException(String.format(
                         "'%s' is not recognized as a command", args.get(
                                 0)));
@@ -94,8 +88,7 @@ public class JavaCommander implements Runnable
         // Determine whether we're using explicit, or implicit, options for this command.
         // Only relevant if there are arguments given, so check args.size().
         POption currentOption = null;
-        if (args.size() > paramsStartingIndex)
-        {
+        if (args.size() > paramsStartingIndex) {
             String arg = args.get(paramsStartingIndex);
             currentOption = command.OptionsMapped.get(arg);
         }
@@ -104,18 +97,15 @@ public class JavaCommander implements Runnable
         Object[] finalArgs = new Object[command.Options.size()];
 
         // If the retrieved option is null, then use implicit options.
-        if (currentOption == null)
-        {
+        if (currentOption == null) {
             // If too many arguments were supplied, throw an error.
-            if (args.size() - paramsStartingIndex > finalArgs.length)
-            {
+            if (args.size() - paramsStartingIndex > finalArgs.length) {
                 throw new JavaCommanderException("Too many arguments supplied for this command");
             }
 
             // Now simply iterate over the arguments, parsing them and placing
             // them in finalArgs as we go.
-            for (int i = paramsStartingIndex; i < args.size(); i++)
-            {
+            for (int i = paramsStartingIndex; i < args.size(); i++) {
                 int iminus = i - paramsStartingIndex;
                 currentOption = command.Options.get(iminus);
                 Object parsedArg = parseValue(args.get(i), currentOption.Translator,
@@ -123,27 +113,22 @@ public class JavaCommander implements Runnable
                 finalArgs[iminus] = parsedArg;
             }
         } // Else if the retrieved option is not null, then use explicit options.
-        else
-        {
-            for (int i = paramsStartingIndex + 1; i < args.size(); i++)
-            {
+        else {
+            for (int i = paramsStartingIndex + 1; i < args.size(); i++) {
                 String arg = args.get(i);
 
                 // If we're not currently finding a value for an option, then
                 // try find the option.
-                if (currentOption == null)
-                {
+                if (currentOption == null) {
                     currentOption = command.OptionsMapped.get(arg);
 
                     // If the option is not recognized, assume the option name is
                     // implicit and try parse the value to the current parameter.
-                    if (currentOption == null)
-                    {
+                    if (currentOption == null) {
                         throw new JavaCommanderException("'%s' is not recognized as an option for this command");
                     }
                 } // Else, try to parse the value.
-                else
-                {
+                else {
                     Object parsedArg = parseValue(arg, currentOption.Translator,
                             currentOption.Type);
                     finalArgs[command.Options.indexOf(currentOption)] = parsedArg;
@@ -152,8 +137,7 @@ public class JavaCommander implements Runnable
             }
 
             // If the last parameter was not given a value, throw an error.
-            if (currentOption != null)
-            {
+            if (currentOption != null) {
                 throw new JavaCommanderException(String.format(
                         "No value found for option '%s'", currentOption.getPrimaryName()));
             }
@@ -161,32 +145,26 @@ public class JavaCommander implements Runnable
 
         // For each entry in finalArgs that is still null, check whether there
         // is a default value. If there is, use that. Else, throw an error.
-        for (int i = 0; i < finalArgs.length; i++)
-        {
+        for (int i = 0; i < finalArgs.length; i++) {
             Object val = finalArgs[i];
 
-            if (val == null)
-            {
+            if (val == null) {
                 POption option = command.Options.get(i);
 
-                if (option.HasDefaultValue)
-                {
+                if (option.HasDefaultValue) {
                     finalArgs[i] = option.DefaultValue;
-                } else
-                {
+                } else {
                     throw new JavaCommanderException(String.format("Option '%s' is required",
                             option.getPrimaryName()));
                 }
             }
         }
 
-        try
-        {
+        try {
             // Finally, invoke the method on the object
             command.ToInvoke.invoke(command.ToInvokeOn, finalArgs);
         } catch (IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException ex)
-        {
+                InvocationTargetException ex) {
             throw new JavaCommanderException("Failed to invoke method behind this command", ex);
         }
 
@@ -198,8 +176,7 @@ public class JavaCommander implements Runnable
      * @return this JavaCommander instance
      * @throws JavaCommanderException if registering the commands failed
      */
-    public final JavaCommander createBasicCommands() throws JavaCommanderException
-    {
+    public final JavaCommander createBasicCommands() throws JavaCommanderException {
         this.registerObject(this);
         return this;
     }
@@ -211,14 +188,11 @@ public class JavaCommander implements Runnable
      * @param obj the Object where commands are located within
      * @throws JavaCommanderException if registering the commands failed
      */
-    public final void registerObject(Object obj) throws JavaCommanderException
-    {
+    public final void registerObject(Object obj) throws JavaCommanderException {
         // iterate through the obj's class' methods
-        for (final Method method : obj.getClass().getMethods())
-        {
+        for (final Method method : obj.getClass().getMethods()) {
             // if we've found an annotated method, get to work.
-            if (method.isAnnotationPresent(Command.class))
-            {
+            if (method.isAnnotationPresent(Command.class)) {
                 // Obtain the command and derive the needed values
                 Command commandAnnotation = ((Command) method.getAnnotation(
                         Command.class));
@@ -227,10 +201,8 @@ public class JavaCommander implements Runnable
                 List<POption> options = parseOptions(commandAnnotation, method);
 
                 // if no names were given, simply use the name of the method
-                if (names.length <= 0)
-                {
-                    names = new String[]
-                    {
+                if (names.length <= 0) {
+                    names = new String[]{
                         method.getName()
                     };
                 }
@@ -246,28 +218,24 @@ public class JavaCommander implements Runnable
      *
      * @param obj the object whose commands to unregister
      */
-    public final void unregisterObject(Object obj)
-    {
+    public final void unregisterObject(Object obj) {
         // Keys which are to be removed from the maps
         List<String> keysToRemove = new ArrayList<>();
 
         // Collect keys to remove from commandToPrimaryName
         commandToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().ToInvokeOn.equals(obj))).forEach((entry)
-                -> 
-                {
+                -> {
                     keysToRemove.add(entry.getKey());
-        });
+                });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
         keysToRemove.stream().map((s) -> commandToPrimaryName.remove(s)).forEach((command)
-                -> 
-                {
-                    for (String ss : command.Names)
-                    {
+                -> {
+                    for (String ss : command.Names) {
                         commandToAllNames.remove(ss);
                     }
-        });
+                });
     }
 
     /**
@@ -275,22 +243,17 @@ public class JavaCommander implements Runnable
      * JavaCommanderExceptions are printed, but don't stop the loop.
      */
     @Override
-    public final void run()
-    {
+    public final void run() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         // Thread loop.
-        while (!Thread.currentThread().isInterrupted())
-        {
-            try
-            {
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
                 String command = br.readLine();
                 execute(command);
-            } catch (IOException | JavaCommanderException ex)
-            {
+            } catch (IOException | JavaCommanderException ex) {
                 System.out.println(ex.getMessage());
-            } finally
-            {
+            } finally {
                 System.out.println();   // always print a newline after a command
             }
         }
@@ -302,8 +265,7 @@ public class JavaCommander implements Runnable
      * @param string a string to parse to a list of argument tokens
      * @return a list of argument tokens
      */
-    public final List<String> stringAsArgs(String string)
-    {
+    public final List<String> stringAsArgs(String string) {
         string = string.trim();
         List<String> tokens = new ArrayList<>();        // the token list to be returned
         StringBuilder curToken = new StringBuilder();   // current token
@@ -311,43 +273,34 @@ public class JavaCommander implements Runnable
         boolean escapeNextChar = false; // must we escape the current char?
 
         // Iterate over all chars in the string
-        for (char c : string.toCharArray())
-        {
+        for (char c : string.toCharArray()) {
             // If we are to escape the next char, then append it to the token
             // and turn off the escape option.
-            if (escapeNextChar)
-            {
+            if (escapeNextChar) {
                 curToken.append(c);
                 escapeNextChar = false;
             } // Else if the character is a quote mark, then toggle insideQuote.
-            else if (c == '"' || c == '\'')
-            {
+            else if (c == '"' || c == '\'') {
                 insideQuote = !insideQuote;
             } // Else if the character is the escape character, then set escapeNextChar on.
-            else if (c == '\\')
-            {
+            else if (c == '\\') {
                 escapeNextChar = true;
             } // Else if the character is a space...
-            else if (c == ' ')
-            {
+            else if (c == ' ') {
                 // ...and we're not in a quote...
-                if (!insideQuote)
-                {
+                if (!insideQuote) {
                     // ...and the current token is at least 1 character long,
                     // then the current token is finished.
-                    if (curToken.length() > 0)
-                    {
+                    if (curToken.length() > 0) {
                         tokens.add(curToken.toString());
                         curToken.delete(0, curToken.length());
                     }
                 } // ...and we're in a quote, then append it to the token.
-                else
-                {
+                else {
                     curToken.append(c);
                 }
             } // Else, append to the token.
-            else
-            {
+            else {
                 curToken.append(c);
             }
         }
@@ -362,8 +315,7 @@ public class JavaCommander implements Runnable
      *
      * @return a list of all parsed commands
      */
-    public final List<PCommand> getParsedCommands()
-    {
+    public final List<PCommand> getParsedCommands() {
         return new ArrayList<>(commandToPrimaryName.values());
     }
 
@@ -375,40 +327,34 @@ public class JavaCommander implements Runnable
      *
      * @param commandName name of the command to print the help of
      */
-    @Command(names =
-    {
-        "help", "usage", "?"
-    }, description = "Display the help.",
+    @Command(names
+            = {
+                "help", "usage", "?"
+            }, description = "Display the help.",
             options = @Option(names = "-command", description
                     = "Display a specific command's help.",
                     hasDefaultValue = true))
-    public void usage(String commandName)
-    {
+    public void usage(String commandName) {
         String toString = "--------------------\n";
 
         // If no command name given, then list general info of all commands
-        if (commandName == null || commandName.isEmpty())
-        {
+        if (commandName == null || commandName.isEmpty()) {
             toString += "Displaying help. Use option '-command' to display a specific "
                     + "command's help.\n\nAvailable commands:";
 
             // Iterate over the commands to find the info
-            for (PCommand command : getParsedCommands())
-            {
+            for (PCommand command : getParsedCommands()) {
                 toString += "\n" + command.Names[0];
-                for (int i = 1; i < command.Names.length; i++)
-                {
+                for (int i = 1; i < command.Names.length; i++) {
                     toString += ", " + command.Names[i];
                 }
                 toString += "\t\t" + (command.hasDescription() ? command.Description : "No description available.");
             }
         } // Else if a command name is given, then list info specific to that command
-        else
-        {
+        else {
             // Retrieve the command. If it does not exist, then return with an error message.
             PCommand command = commandToAllNames.get(commandName);
-            if (command == null)
-            {
+            if (command == null) {
                 System.out.println(String.format(
                         "'%s' is not recognized as a command", commandName));
                 return;
@@ -419,28 +365,23 @@ public class JavaCommander implements Runnable
 
             // If there are synonyms, then list them.
             toString += "Synonyms:\n" + command.Names[0];
-            for (int i = 1; i < command.Names.length; i++)
-            {
+            for (int i = 1; i < command.Names.length; i++) {
                 toString += ", " + command.Names[i];
             }
             toString += "\n\n";
 
             // If there are options, then list them.
             toString += "Available options:";
-            if (command.hasOptions())
-            {
-                for (POption option : command.Options)
-                {
+            if (command.hasOptions()) {
+                for (POption option : command.Options) {
                     toString += "\n" + option.Names[0];
-                    for (int i = 1; i < option.Names.length; i++)
-                    {
+                    for (int i = 1; i < option.Names.length; i++) {
                         toString += ", " + option.Names[i];
                     }
                     toString += "\t\t" + option.Description;
                 }
             } // Otherwise, inform the user there are no options.
-            else
-            {
+            else {
                 toString += "\nNo options available.";
             }
         }
@@ -451,12 +392,11 @@ public class JavaCommander implements Runnable
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names =
-    {
-        "exit", "quit"
-    }, description = "Exit the program.")
-    public void exitProgram()
-    {
+    @Command(names
+            = {
+                "exit", "quit"
+            }, description = "Exit the program.")
+    public void exitProgram() {
         System.exit(0);
     }
 
@@ -465,12 +405,10 @@ public class JavaCommander implements Runnable
      *
      * @param command
      */
-    private void registerCommand(PCommand command)
-    {
+    private void registerCommand(PCommand command) {
         commandToPrimaryName.put(command.Names[0], command);
 
-        for (String name : command.Names)
-        {
+        for (String name : command.Names) {
             commandToAllNames.put(name, command);
         }
     }
@@ -484,35 +422,28 @@ public class JavaCommander implements Runnable
      * @return
      */
     private List<POption> parseOptions(Command commandAnnotation, Method method)
-            throws JavaCommanderException
-    {
+            throws JavaCommanderException {
         List<POption> poptions = new ArrayList<>();
         Parameter[] params = method.getParameters();
 
         // If the number of options defined in the command annotation is equal to
         // the number of parameters, then we use those.
-        if (commandAnnotation.options().length == params.length)
-        {
+        if (commandAnnotation.options().length == params.length) {
             // Parse all options
-            for (int i = 0; i < params.length; i++)
-            {
+            for (int i = 0; i < params.length; i++) {
                 poptions.add(parseOption(commandAnnotation.options()[i],
                         params[i]));
             }
         } // Else, if there is not a single option defined in the command, we use
         // the options annotated on the parameters.
-        else if (commandAnnotation.options().length == 0)
-        {
-            for (Parameter param : params)
-            {
+        else if (commandAnnotation.options().length == 0) {
+            for (Parameter param : params) {
                 // If the parameter is properly annotated, parse it.
-                if (param.isAnnotationPresent(Option.class))
-                {
+                if (param.isAnnotationPresent(Option.class)) {
                     poptions.add(parseOption(param.getAnnotation(Option.class),
                             param));
                 } // If any parameter at all is not properly annotated, throw an exception.
-                else
-                {
+                else {
                     throw new JavaCommanderException("Not all parameters of "
                             + method.
                             getDeclaringClass().getSimpleName() + "." + method.
@@ -521,8 +452,7 @@ public class JavaCommander implements Runnable
             }
         } // Else, if there are options defined in the command, but not enough to
         // cover all parameters, then the annotations are wrong. Throw an error.
-        else
-        {
+        else {
             throw new JavaCommanderException("Not all parameters of " + method.
                     getDeclaringClass().getSimpleName() + "." + method.getName()
                     + " are properly annotated with @Option!");
@@ -540,14 +470,11 @@ public class JavaCommander implements Runnable
      * @return
      */
     private POption parseOption(Option optionAnnotation, Parameter param) throws
-            JavaCommanderException
-    {
+            JavaCommanderException {
         // Get the option names. If none is assigned, use the parameter name.
         String[] names = optionAnnotation.names();
-        if (names.length <= 0)
-        {
-            names = new String[]
-            {
+        if (names.length <= 0) {
+            names = new String[]{
                 param.getName()
             };
         }
@@ -560,8 +487,7 @@ public class JavaCommander implements Runnable
                 translator();
 
         // If there is a default value, then try to parse it.
-        if (hasDefaultValue)
-        {
+        if (hasDefaultValue) {
             Object value = parseValue(defaultValueStr, translatorClass, param.
                     getType());
 
@@ -570,8 +496,7 @@ public class JavaCommander implements Runnable
                     value, translatorClass);
 
         } // Else, just parse and return a new POption.
-        else
-        {
+        else {
             return new POption(names, description, hasDefaultValue, type, null,
                     translatorClass);
         }
@@ -589,27 +514,21 @@ public class JavaCommander implements Runnable
      */
     private <T> T parseValue(String value,
             Class<? extends OptionTranslator> translatorType, Class<T> toType)
-            throws JavaCommanderException
-    {
-        try
-        {
+            throws JavaCommanderException {
+        try {
             // If no translator is set, attempt a normal valueOf.
-            if (translatorType.equals(NoTranslator.class))
-            {
+            if (translatorType.equals(NoTranslator.class)) {
                 return OptionTranslator.parseToPrimitive(value, toType);
             } // If one is set, then attempt using that.
-            else
-            {
+            else {
                 OptionTranslator translator = translatorType.newInstance();
                 return (T) translator.translateString(value);
             }
-        } catch (InstantiationException | IllegalAccessException ex)
-        {
+        } catch (InstantiationException | IllegalAccessException ex) {
             throw new JavaCommanderException(
                     "Failed to instantiate translator '" + translatorType.
                     getSimpleName() + "'!", ex);
-        } catch (NumberFormatException | IndexOutOfBoundsException ex)
-        {
+        } catch (NumberFormatException | IndexOutOfBoundsException ex) {
             throw new JavaCommanderException(
                     "Failed to parse String '" + value + "' to type " + toType.getSimpleName()
                     + " using translator '" + translatorType.getSimpleName()

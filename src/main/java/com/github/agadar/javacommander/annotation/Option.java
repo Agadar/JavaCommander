@@ -16,8 +16,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Option
-{
+public @interface Option {
+
     /**
      * Names of the option. The first entry is considered its primary name, the
      * other entries are considered synonyms. If no name is supplied, then the
@@ -55,9 +55,9 @@ public @interface Option
      * The translator for this option. If this is not set, then
      * OptionTranslator.parseToPrimitive is used for translating the string
      * value supplied by this option to the method parameter it corresponds to.
-     * As this only works on primitives and Strings, users must set this manually
-     * to home-brewed implementations of OptionTranslator for more complex types
-     * and collections.
+     * As this only works on primitives and Strings, users must set this
+     * manually to home-brewed implementations of OptionTranslator for more
+     * complex types and collections.
      *
      * @return this option's translator type
      */

@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Command
-{
+public @interface Command {
+
     /**
      * Names of the command. The first entry is considered its primary name, the
      * other entries are considered synonyms. If no name is supplied, then the
@@ -36,7 +36,5 @@ public @interface Command
      *
      * @return options of this command
      */
-    Option[] options() default 
-    {
-    };
+    Option[] options() default {};
 }

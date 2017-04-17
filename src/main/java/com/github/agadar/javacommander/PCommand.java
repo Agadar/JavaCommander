@@ -10,8 +10,7 @@ import java.util.Map;
  *
  * @author Agadar
  */
-public class PCommand
-{
+public class PCommand {
 
     public final String[] Names;
     public final String Description;
@@ -21,8 +20,7 @@ public class PCommand
     public final Object ToInvokeOn;
 
     public PCommand(String[] Names, String Description, List<POption> Options,
-            Method ToInvoke, Object ToInvokeOn)
-    {
+            Method ToInvoke, Object ToInvokeOn) {
         this.Names = Names;
         this.Description = Description;
         this.Options = Options;
@@ -32,32 +30,28 @@ public class PCommand
 
         // Map all options
         Options.stream().forEach((option)
-                -> 
-                {
-                    for (String name : option.Names)
-                    {
+                -> {
+                    for (String name : option.Names) {
                         OptionsMapped.put(name, option);
                     }
-        });
+                });
     }
 
     /**
      * Convenience method for getting the primary name.
-     * 
+     *
      * @return this command's primary name
      */
-    public final String getPrimaryName()
-    {
+    public final String getPrimaryName() {
         return Names[0];
     }
-    
+
     /**
      * Convenience method for checking whether this command has any options.
      *
-     * @return whether this command has any options 
+     * @return whether this command has any options
      */
-    public final boolean hasOptions()
-    {
+    public final boolean hasOptions() {
         return Options != null && Options.size() > 0;
     }
 
@@ -66,8 +60,7 @@ public class PCommand
      *
      * @return whether this command has any synonyms
      */
-    public final boolean hasSynonyms()
-    {
+    public final boolean hasSynonyms() {
         return Names != null && Names.length > 1;
     }
 
@@ -76,8 +69,7 @@ public class PCommand
      *
      * @return whether this command has a description
      */
-    public final boolean hasDescription()
-    {
+    public final boolean hasDescription() {
         return Description != null && !Description.isEmpty();
     }
 }
