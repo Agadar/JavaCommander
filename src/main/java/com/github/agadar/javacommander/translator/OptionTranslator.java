@@ -21,20 +21,17 @@ public interface OptionTranslator<T> {
     public abstract T translateString(String s) throws JavaCommanderException;
 
     /**
-     * Attempts to parse the given string to the supplied class. If the supplied
-     * class is not a primitive type, a wrapper type for primitives, or String,
-     * then a JavaCommanderException is thrown. May also throw other types of
-     * exceptions if the parsing from String to primitive failed.
+     * Attempts to parse the given string to the supplied type. If the type is
+     * a primitive or a boxed primitive, then the valueOf(...) method of the
+     * given type is used. If the type is anything else, then the cast(...)
+     * method of the type is used as a last desperate attempt to parse the string.
      *
      * @param <V> the type to parse to
      * @param s the string to parse
      * @param type the type to parse to
      * @return the parsed string
-     * @throws JavaCommanderException if parsing failed
      */
-    public static <V> V parseToPrimitive(String s, Class<V> type) throws JavaCommanderException,
-            NumberFormatException,
-            IndexOutOfBoundsException {
+    public static <V> V parseToPrimitive(String s, Class<V> type) throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
         if (type.equals(String.class)) {
             return (V) s;
         }
@@ -70,10 +67,7 @@ public interface OptionTranslator<T> {
         if (type.equals(Boolean.class) || type.equals(boolean.class)) {
             return (V) Boolean.valueOf(s);
         }
-
-        throw new JavaCommanderException(
-                "Could not convert String value: type '" + type.getSimpleName()
-                + "' is not a primitive type, a primitive wrapper type, or String!");
+        return type.cast(s);
     }
 
 }
