@@ -14,18 +14,18 @@ public class JavaCommanderTest {
     /**
      * The JavaCommander instance we'll be testing.
      */
-    public JavaCommander jc;
+    private JavaCommander javaCommander;
 
     /**
      * Arbitrary test class we'll be testing with.
      */
-    public TestClass tc;
+    private TestClass testClass;
 
     /**
      * Number of commands in JavaCommander. Equal to number of basic commands
      * plus whatever is found in TestClass.
      */
-    public final static int nrOfCommands = TestClass.class.getDeclaredMethods().length;
+    private final static int NUMBER_OF_COMMANDS = TestClass.class.getDeclaredMethods().length;
 
     /**
      * Tests registering the test object.
@@ -33,23 +33,23 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     public void testRegisterObject() throws JavaCommanderException {
-        jc = new JavaCommander();
-        tc = new TestClass();
-        jc.registerObject(tc);
+        javaCommander = new JavaCommander();
+        testClass = new TestClass();
+        javaCommander.registerObject(testClass);
 
         // Ensure the object was registered.
-        List<PCommand> commands = jc.getParsedCommands();
-        assertEquals(nrOfCommands, commands.size());
+        List<JcCommand> commands = javaCommander.getParsedCommands();
+        assertEquals(NUMBER_OF_COMMANDS, commands.size());
     }
 
     /**
      * Tests unregistering the test object.
      */
     public void testUnregisterObject() {
-        jc.unregisterObject(tc);
+        javaCommander.unregisterObject(testClass);
 
         // Ensure the object was unregistered.
-        List<PCommand> commands = jc.getParsedCommands();
+        List<JcCommand> commands = javaCommander.getParsedCommands();
         assertEquals(0, commands.size());
     }
 
@@ -66,7 +66,7 @@ public class JavaCommanderTest {
         // Call command, no args. Should succeed.
         String args = "a";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -74,7 +74,7 @@ public class JavaCommanderTest {
         // Call command, with args. Should throw JavaCommanderException.
         args = "a -nonsense 5";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -97,7 +97,7 @@ public class JavaCommanderTest {
         // Call command, no arg. Should fail.
         String args = "b0";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -106,7 +106,7 @@ public class JavaCommanderTest {
         // Call command, with explicit arg. Should succeed.
         args = "b0 arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -114,7 +114,7 @@ public class JavaCommanderTest {
         // Call command, with implicit arg. Should succeed.
         args = "b0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -136,7 +136,7 @@ public class JavaCommanderTest {
         // Call command, no arg. Should succeed.
         String args = "b1";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -144,7 +144,7 @@ public class JavaCommanderTest {
         // Call command, with arg. Should succeed.
         args = "b1 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -166,7 +166,7 @@ public class JavaCommanderTest {
         // Call command, too few arguments, explicit options. Should fail.
         String args = "c0 arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -175,7 +175,7 @@ public class JavaCommanderTest {
         // Call command, too few arguments, implicit options. Should fail.
         args = "c0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -184,7 +184,7 @@ public class JavaCommanderTest {
         // Call command, too many arguments, explicit options. Should fail.
         args = "c0 arg0 'somevalue' arg1 '4,5,6' arg2 5";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -193,7 +193,7 @@ public class JavaCommanderTest {
         // Call command, too many arguments, implicit options. Should fail.
         args = "c0 'somevalue' '4,5,6' 5";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
         } catch (JavaCommanderException ex) {
             // Ignore, as this is what should happen.
@@ -202,7 +202,7 @@ public class JavaCommanderTest {
         // Call command with explicit options. Should succeed.
         args = "c0 arg1 '4,5,6' arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -210,7 +210,7 @@ public class JavaCommanderTest {
         // Call command with implicit options. Should succeed.
         args = "c0 'somevalue' '4,5,6'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -232,7 +232,7 @@ public class JavaCommanderTest {
         // Skipping default values, should succeed.
         String args = "c1 arg1 '4,5,6'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -240,7 +240,7 @@ public class JavaCommanderTest {
         // Filling in all values, should succeed.
         args = "c1 arg1 '4,5,6' arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -262,7 +262,7 @@ public class JavaCommanderTest {
         // Skipping default values, should succeed.
         String args = "c2";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -270,7 +270,7 @@ public class JavaCommanderTest {
         // Filling in all values, should succeed.
         args = "c2 arg1 '4,5,6' arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -293,7 +293,7 @@ public class JavaCommanderTest {
         // Skipping default values, should succeed.
         String args = "d arg1 '4,5,6'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -301,7 +301,7 @@ public class JavaCommanderTest {
         // Filling in all values, should succeed.
         args = "d arg1 '4,5,6' arg0 'somevalue'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -323,7 +323,7 @@ public class JavaCommanderTest {
         // Make a call, using a single implicit option
         String args = "'some value'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
@@ -331,7 +331,7 @@ public class JavaCommanderTest {
         // Make a call, using a single explicit option
         args = "arg0 'some value'";
         try {
-            jc.execute(args);
+            javaCommander.execute(args);
         } catch (JavaCommanderException ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }

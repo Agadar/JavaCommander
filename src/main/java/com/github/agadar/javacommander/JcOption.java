@@ -9,23 +9,23 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
  * @author Agadar
  * @param <T> the type of this option's value
  */
-public class POption<T> {
+public class JcOption<T> {
 
-    public final String[] Names;
-    public final String Description;
-    public final boolean HasDefaultValue;
-    public final Class<T> Type;
-    public final T DefaultValue;
-    public final Class<? extends OptionTranslator<T>> Translator;
+    public final String[] names;
+    public final String description;
+    public final boolean hasDefaultValue;
+    public final Class<T> type;
+    public final T defaultValue;
+    public final Class<? extends OptionTranslator<T>> translator;
 
-    public POption(String[] Names, String Description, boolean HasDefaultValue,
-            Class<T> Type, T DefaultValue, Class<? extends OptionTranslator<T>> Translator) {
-        this.Names = Names;
-        this.Description = Description;
-        this.HasDefaultValue = HasDefaultValue;
-        this.Type = Type;
-        this.DefaultValue = DefaultValue;
-        this.Translator = Translator;
+    public JcOption(String[] names, String description, boolean hasDefaultValue,
+            Class<T> type, T defaultValue, Class<? extends OptionTranslator<T>> translator) {
+        this.names = names;
+        this.description = description;
+        this.hasDefaultValue = hasDefaultValue;
+        this.type = type;
+        this.defaultValue = defaultValue;
+        this.translator = translator;
     }
 
     /**
@@ -34,7 +34,7 @@ public class POption<T> {
      * @return this option's primary name
      */
     public final String getPrimaryName() {
-        return Names[0];
+        return names[0];
     }
 
     /**
@@ -43,7 +43,7 @@ public class POption<T> {
      * @return whether this option has a description
      */
     public final boolean hasDescription() {
-        return Description != null && !Description.isEmpty();
+        return description != null && !description.isEmpty();
     }
 
     /**
@@ -52,6 +52,6 @@ public class POption<T> {
      * @return whether this option has a translator set
      */
     public final boolean hasTranslator() {
-        return !Translator.equals(NoTranslator.class);
+        return !translator.equals(NoTranslator.class);
     }
 }
