@@ -1,22 +1,15 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.annotation.Command;
-import com.github.agadar.javacommander.annotation.Option;
-import com.github.agadar.javacommander.translator.NoTranslator;
-import com.github.agadar.javacommander.translator.OptionTranslator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Manages an application's commands.
@@ -25,18 +18,9 @@ import java.util.TreeMap;
  */
 public class JavaCommander implements Runnable {
 
-    /**
-     * The parsed commands, each command mapped to its primary name, in
-     * alphabetical order.
-     */
-    private final Map<String, JcCommand> commandsToPrimaryName = new TreeMap<>();
-
-    /**
-     * The parsed commands, each command mapped once for each of its names, in
-     * alphabetical order.
-     */
-    private final Map<String, JcCommand> commandsToAllNames = new TreeMap<>();
-
+    /** The underlying command registry. */
+    public final JcRegistry jcRegistry;
+    
     /**
      * A special command name that can be used for a single command. If no known
      * command name can be found in a given string input, then an attempt to
@@ -44,6 +28,17 @@ public class JavaCommander implements Runnable {
      */
     public static final String EMPTY_COMMAND = "";
 
+    public JavaCommander() {
+        this(new JcRegistry());
+    }
+    
+    public JavaCommander(JcRegistry jcRegistry) {
+        if (jcRegistry == null) {
+            throw new IllegalArgumentException("'jcRegistry' may not be null");
+        }
+        this.jcRegistry = jcRegistry;
+    }
+    
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
@@ -59,10 +54,10 @@ public class JavaCommander implements Runnable {
      * Attempts to find and execute the command defined in a list of argument
      * tokens.
      *
-     * @param args the list of argument tokens
+     * @param args the collection of argument tokens
      * @throws JavaCommanderException if parsing or execution failed
      */
-    public final void execute(List<String> args) throws JavaCommanderException {
+    public final void execute(Collection<String> args) throws JavaCommanderException {
         // If no args are given, just return and do nothing.
         if (args == null || args.isEmpty()) {
             return;
@@ -174,17 +169,6 @@ public class JavaCommander implements Runnable {
     }
 
     /**
-     * Registers the basic 'help' and 'exit' commands.
-     *
-     * @return this JavaCommander instance
-     * @throws JavaCommanderException if registering the commands failed
-     */
-    public final JavaCommander createBasicCommands() throws JavaCommanderException {
-        this.registerObject(this);
-        return this;
-    }
-
-    /**
      * Registers all commands found in the supplied Object. Any commands of
      * which the name is already registered will override the old values.
      *
@@ -192,28 +176,7 @@ public class JavaCommander implements Runnable {
      * @throws JavaCommanderException if registering the commands failed
      */
     public final void registerObject(Object obj) throws JavaCommanderException {
-        // iterate through the obj's class' methods
-        for (final Method method : obj.getClass().getMethods()) {
-            // if we've found an annotated method, get to work.
-            if (method.isAnnotationPresent(Command.class)) {
-                // Obtain the command and derive the needed values
-                Command commandAnnotation = ((Command) method.getAnnotation(
-                        Command.class));
-                String[] names = commandAnnotation.names();
-                String description = commandAnnotation.description();
-                List<JcOption> options = parseOptions(commandAnnotation, method);
-
-                // if no names were given, simply use the name of the method
-                if (names.length <= 0) {
-                    names = new String[]{
-                        method.getName()
-                    };
-                }
-
-                // Create new PCommand object and register it.
-                registerCommand(new JcCommand(names, description, options, method, obj));
-            }
-        }
+        jcRegistry.registerObject(obj);
     }
 
     /**
@@ -222,23 +185,7 @@ public class JavaCommander implements Runnable {
      * @param obj the object whose commands to unregister
      */
     public final void unregisterObject(Object obj) {
-        // Keys which are to be removed from the maps
-        List<String> keysToRemove = new ArrayList<>();
-
-        // Collect keys to remove from commandToPrimaryName
-        commandsToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(obj))).forEach((entry)
-                -> {
-                    keysToRemove.add(entry.getKey());
-                });
-
-        // For each iteration, remove the key from commandToPrimaryName and use
-        // its synonyms to remove keys from commandToAllNames
-        keysToRemove.stream().map((s) -> commandsToPrimaryName.remove(s)).forEach((command)
-                -> {
-                    for (String ss : command.names) {
-                        commandsToAllNames.remove(ss);
-                    }
-                });
+        jcRegistry.unregisterObject(obj);
     }
 
     /**
@@ -268,7 +215,7 @@ public class JavaCommander implements Runnable {
      * @param string a string to parse to a list of argument tokens
      * @return a list of argument tokens
      */
-    public final List<String> stringAsArgs(String string) {
+    private List<String> stringAsArgs(String string) {
         string = string.trim();
         List<String> tokens = new ArrayList<>();        // the token list to be returned
         StringBuilder curToken = new StringBuilder();   // current token
@@ -310,225 +257,6 @@ public class JavaCommander implements Runnable {
         // Add the last token to the list and then return the list.
         tokens.add(curToken.toString());
         return tokens;
-    }
-
-    /**
-     * Returns a list of all parsed commands. The returned list should not be
-     * altered. Could for example be used to create a custom help command.
-     *
-     * @return a list of all parsed commands
-     */
-    public final List<JcCommand> getParsedCommands() {
-        return new ArrayList<>(commandsToPrimaryName.values());
-    }
-
-    /**
-     * Prints a list of all available commands. Called by the basic 'help'
-     * command. If the given commandName is not null or empty, then the help of
-     * the given command is given, listing its options. May be overridden to
-     * implement custom help message.
-     *
-     * @param commandName name of the command to print the help of
-     */
-    @Command(names = {"help", "usage", "?"}, description = "Display the help.", options
-            = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
-    public void usage(String commandName) {
-        String toString = "--------------------\n";
-
-        // If no command name given, then list general info of all commands
-        if (commandName == null || commandName.isEmpty()) {
-            toString += "Displaying help. Use option '-command' to display a specific "
-                    + "command's help.\n\nAvailable commands:";
-
-            // Iterate over the commands to find the info
-            for (JcCommand command : getParsedCommands()) {
-                toString += "\n" + command.names[0];
-                for (int i = 1; i < command.names.length; i++) {
-                    toString += ", " + command.names[i];
-                }
-                toString += "\t\t" + (command.hasDescription() ? command.description : "No description available.");
-            }
-        } // Else if a command name is given, then list info specific to that command
-        else {
-            // Retrieve the command. If it does not exist, then return with an error message.
-            JcCommand command = commandsToAllNames.get(commandName);
-            if (command == null) {
-                System.out.println(String.format(
-                        "'%s' is not recognized as a command", commandName));
-                return;
-            }
-
-            // Build string
-            toString += "Description:\n" + (command.hasDescription() ? command.description : "No description available.") + "\n\n";
-
-            // If there are synonyms, then list them.
-            toString += "Synonyms:\n" + command.names[0];
-            for (int i = 1; i < command.names.length; i++) {
-                toString += ", " + command.names[i];
-            }
-            toString += "\n\n";
-
-            // If there are options, then list them.
-            toString += "Available options:";
-            if (command.hasOptions()) {
-                for (JcOption option : command.options) {
-                    toString += "\n" + option.names[0];
-                    for (int i = 1; i < option.names.length; i++) {
-                        toString += ", " + option.names[i];
-                    }
-                    toString += "\t\t" + option.description;
-                }
-            } // Otherwise, inform the user there are no options.
-            else {
-                toString += "\nNo options available.";
-            }
-        }
-        // Print help
-        System.out.println(toString + "\n--------------------");
-    }
-
-    /**
-     * Calls System.Exit(0). Used for the basic exit command.
-     */
-    @Command(names = {"exit", "quit"}, description = "Exit the program.")
-    public void exitProgram() {
-        System.exit(0);
-    }
-
-    /**
-     * Registers the given command.
-     *
-     * @param command
-     */
-    private void registerCommand(JcCommand command) {
-        commandsToPrimaryName.put(command.names[0], command);
-
-        for (String name : command.names) {
-            commandsToAllNames.put(name, command);
-        }
-    }
-
-    /**
-     * Validates and parses all option annotations found in the command
-     * annotation or on the method parameters to an array of POptions.
-     *
-     * @param commandAnnotation
-     * @param method
-     * @return
-     */
-    private List<JcOption> parseOptions(Command commandAnnotation, Method method)
-            throws JavaCommanderException {
-        List<JcOption> poptions = new ArrayList<>();
-        Parameter[] params = method.getParameters();
-
-        // If the number of options defined in the command annotation is equal to
-        // the number of parameters, then we use those.
-        if (commandAnnotation.options().length == params.length) {
-            // Parse all options
-            for (int i = 0; i < params.length; i++) {
-                poptions.add(parseOption(commandAnnotation.options()[i],
-                        params[i]));
-            }
-        } // Else, if there is not a single option defined in the command, we use
-        // the options annotated on the parameters.
-        else if (commandAnnotation.options().length == 0) {
-            for (Parameter param : params) {
-                // If the parameter is properly annotated, parse it.
-                if (param.isAnnotationPresent(Option.class)) {
-                    poptions.add(parseOption(param.getAnnotation(Option.class),
-                            param));
-                } // If any parameter at all is not properly annotated, throw an exception.
-                else {
-                    throw new JavaCommanderException("Not all parameters of "
-                            + method.
-                            getDeclaringClass().getSimpleName() + "." + method.
-                            getName() + " are properly annotated with @Option!");
-                }
-            }
-        } // Else, if there are options defined in the command, but not enough to
-        // cover all parameters, then the annotations are wrong. Throw an error.
-        else {
-            throw new JavaCommanderException("Not all parameters of " + method.
-                    getDeclaringClass().getSimpleName() + "." + method.getName()
-                    + " are properly annotated with @Option!");
-        }
-
-        // Return the parsed poptions.
-        return poptions;
-    }
-
-    /**
-     * Validates and parses a single option annotation to a POption.
-     *
-     * @param optionAnnotation
-     * @param param
-     * @return
-     */
-    private JcOption parseOption(Option optionAnnotation, Parameter param) throws
-            JavaCommanderException {
-        // Get the option names. If none is assigned, use the parameter name.
-        String[] names = optionAnnotation.names();
-        if (names.length <= 0) {
-            names = new String[]{
-                param.getName()
-            };
-        }
-        // Get other fields
-        boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
-        String defaultValueStr = optionAnnotation.defaultValue();
-        String description = optionAnnotation.description();
-        Class type = param.getType();
-        Class<? extends OptionTranslator> translatorClass = optionAnnotation.
-                translator();
-
-        // If there is a default value, then try to parse it.
-        if (hasDefaultValue) {
-            Object value = parseValue(defaultValueStr, translatorClass, param.
-                    getType());
-
-            // Return parsed POption.
-            return new JcOption(names, description, hasDefaultValue, type,
-                    value, translatorClass);
-
-        } // Else, just parse and return a new POption.
-        else {
-            return new JcOption(names, description, hasDefaultValue, type, null,
-                    translatorClass);
-        }
-    }
-
-    /**
-     * Attempts to parse the given String value to the given type, using the
-     * given translator type.
-     *
-     * @param value
-     * @param translatorType
-     * @param toType
-     * @return
-     * @throws JavaCommanderException
-     */
-    private <T> T parseValue(String value,
-            Class<? extends OptionTranslator> translatorType, Class<T> toType)
-            throws JavaCommanderException {
-        try {
-            // If no translator is set, attempt a normal valueOf.
-            if (translatorType.equals(NoTranslator.class)) {
-                return OptionTranslator.parseToPrimitive(value, toType);
-            } // If one is set, then attempt using that.
-            else {
-                OptionTranslator translator = translatorType.newInstance();
-                return (T) translator.translateString(value);
-            }
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new JavaCommanderException(
-                    "Failed to instantiate translator '" + translatorType.
-                    getSimpleName() + "'!", ex);
-        } catch (NumberFormatException | IndexOutOfBoundsException ex) {
-            throw new JavaCommanderException(
-                    "Failed to parse String '" + value + "' to type " + toType.getSimpleName()
-                    + " using translator '" + translatorType.getSimpleName()
-                    + "'!", ex);
-        }
     }
 
 }
