@@ -1,7 +1,5 @@
 package com.github.agadar.javacommander.translator;
 
-import com.github.agadar.javacommander.JavaCommanderException;
-
 /**
  * Interface that can be used to translate the user's String input for a command
  * Option to the type of the method parameter it is to be passed to.
@@ -16,9 +14,8 @@ public interface OptionTranslator<T> {
      *
      * @param s the string to translate
      * @return a value of type T
-     * @throws JavaCommanderException if translating failed
      */
-    public abstract T translateString(String s) throws JavaCommanderException;
+    public abstract T translateString(String s);
 
     /**
      * Attempts to parse the given string to the supplied type. If the type is
@@ -31,7 +28,8 @@ public interface OptionTranslator<T> {
      * @param type the type to parse to
      * @return the parsed string
      */
-    public static <V> V parseToPrimitive(String s, Class<V> type) throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
+    public static <V> V parseToPrimitive(String s, Class<V> type) 
+            throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
         if (type.equals(String.class)) {
             return (V) s;
         }

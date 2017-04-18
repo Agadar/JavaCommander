@@ -5,6 +5,7 @@ import com.github.agadar.javacommander.JcCommand;
 import com.github.agadar.javacommander.JcOption;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
+import java.util.Optional;
 
 /**
  * Defines some custom commands that can be used, such as a 'help' command and
@@ -47,7 +48,7 @@ public class DefaultCommands {
                     + "command's help.\n\nAvailable commands:";
 
             // Iterate over the commands to find the info
-            for (JcCommand command : javaCommander.getParsedCommands()) {
+            for (JcCommand command : javaCommander.jcRegistry.getParsedCommands()) {
                 toString += "\n" + command.names[0];
                 for (int i = 1; i < command.names.length; i++) {
                     toString += ", " + command.names[i];
@@ -57,27 +58,26 @@ public class DefaultCommands {
         } // Else if a command name is given, then list info specific to that command
         else {
             // Retrieve the command. If it does not exist, then return with an error message.
-            JcCommand command = javaCommander.commandsToAllNames.get(commandName);
-            if (command == null) {
-                System.out.println(String.format(
-                        "'%s' is not recognized as a command", commandName));
+            final Optional<JcCommand> command = javaCommander.jcRegistry.getCommand(commandName);
+            if (!command.isPresent()) {
+                System.out.println(String.format("'%s' is not recognized as a command", commandName));
                 return;
             }
 
             // Build string
-            toString += "Description:\n" + (command.hasDescription() ? command.description : "No description available.") + "\n\n";
+            toString += "Description:\n" + (command.get().hasDescription() ? command.get().description : "No description available.") + "\n\n";
 
             // If there are synonyms, then list them.
-            toString += "Synonyms:\n" + command.names[0];
-            for (int i = 1; i < command.names.length; i++) {
-                toString += ", " + command.names[i];
+            toString += "Synonyms:\n" + command.get().names[0];
+            for (int i = 1; i < command.get().names.length; i++) {
+                toString += ", " + command.get().names[i];
             }
             toString += "\n\n";
 
             // If there are options, then list them.
             toString += "Available options:";
-            if (command.hasOptions()) {
-                for (JcOption option : command.options) {
+            if (command.get().hasOptions()) {
+                for (JcOption option : command.get().options) {
                     toString += "\n" + option.names[0];
                     for (int i = 1; i < option.names.length; i++) {
                         toString += ", " + option.names[i];

@@ -4,11 +4,15 @@ import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /**
@@ -36,9 +40,14 @@ public class JcRegistry {
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
-     * @throws JavaCommanderException if registering the commands failed
+     * @throws OptionAnnotationException
+     * @throws OptionTranslatorException
      */
-    public final void registerObject(Object obj) throws JavaCommanderException {
+    public final void registerObject(Object obj) throws OptionAnnotationException, OptionTranslatorException {
+        if (obj == null) {
+            throw new IllegalArgumentException("'obj' may not be null");
+        }
+
         // iterate through the obj's class' methods
         for (final Method method : obj.getClass().getMethods()) {
             // if we've found an annotated method, get to work.
@@ -69,27 +78,43 @@ public class JcRegistry {
      * @param obj the object whose commands to unregister
      */
     public final void unregisterObject(Object obj) {
+        if (obj == null) {
+            throw new IllegalArgumentException("'obj' may not be null");
+        }
+
         // Keys which are to be removed from the maps
         List<String> keysToRemove = new ArrayList<>();
 
         // Collect keys to remove from commandToPrimaryName
         commandsToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(obj))).forEach((entry)
                 -> {
-                    keysToRemove.add(entry.getKey());
-                });
+            keysToRemove.add(entry.getKey());
+        });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
         keysToRemove.stream().map((s) -> commandsToPrimaryName.remove(s)).forEach((command)
                 -> {
-                    for (String ss : command.names) {
-                        commandsToAllNames.remove(ss);
-                    }
-                });
+            for (String ss : command.names) {
+                commandsToAllNames.remove(ss);
+            }
+        });
     }
 
-    public final 
-    
+    /**
+     * Returns the command mapped to the given command name.
+     *
+     * @param commandName
+     * @return An Optional containing the command - or not.
+     */
+    public final Optional<JcCommand> getCommand(String commandName) {
+        return Optional.of(commandsToAllNames.get(commandName));
+    }
+
+    public final Collection<JcCommand> getParsedCommands() {
+        return commandsToPrimaryName.values();
+    }
+
     /**
      * Registers the given command.
      *
@@ -112,7 +137,7 @@ public class JcRegistry {
      * @return
      */
     private List<JcOption> parseOptions(Command commandAnnotation, Method method)
-            throws JavaCommanderException {
+            throws OptionAnnotationException, OptionTranslatorException {
         List<JcOption> poptions = new ArrayList<>();
         Parameter[] params = method.getParameters();
 
@@ -121,8 +146,7 @@ public class JcRegistry {
         if (commandAnnotation.options().length == params.length) {
             // Parse all options
             for (int i = 0; i < params.length; i++) {
-                poptions.add(parseOption(commandAnnotation.options()[i],
-                        params[i]));
+                poptions.add(parseOption(commandAnnotation.options()[i], params[i]));
             }
         } // Else, if there is not a single option defined in the command, we use
         // the options annotated on the parameters.
@@ -130,22 +154,16 @@ public class JcRegistry {
             for (Parameter param : params) {
                 // If the parameter is properly annotated, parse it.
                 if (param.isAnnotationPresent(Option.class)) {
-                    poptions.add(parseOption(param.getAnnotation(Option.class),
-                            param));
+                    poptions.add(parseOption(param.getAnnotation(Option.class), param));
                 } // If any parameter at all is not properly annotated, throw an exception.
                 else {
-                    throw new JavaCommanderException("Not all parameters of "
-                            + method.
-                            getDeclaringClass().getSimpleName() + "." + method.
-                            getName() + " are properly annotated with @Option!");
+                    throw new OptionAnnotationException(method);
                 }
             }
         } // Else, if there are options defined in the command, but not enough to
         // cover all parameters, then the annotations are wrong. Throw an error.
         else {
-            throw new JavaCommanderException("Not all parameters of " + method.
-                    getDeclaringClass().getSimpleName() + "." + method.getName()
-                    + " are properly annotated with @Option!");
+            throw new OptionAnnotationException(method);
         }
 
         // Return the parsed poptions.
@@ -159,8 +177,7 @@ public class JcRegistry {
      * @param param
      * @return
      */
-    private JcOption parseOption(Option optionAnnotation, Parameter param) throws
-            JavaCommanderException {
+    private JcOption parseOption(Option optionAnnotation, Parameter param) throws OptionTranslatorException {
         // Get the option names. If none is assigned, use the parameter name.
         String[] names = optionAnnotation.names();
         if (names.length <= 0) {
@@ -178,8 +195,7 @@ public class JcRegistry {
 
         // If there is a default value, then try to parse it.
         if (hasDefaultValue) {
-            Object value = parseValue(defaultValueStr, translatorClass, param.
-                    getType());
+            Object value = parseValue(defaultValueStr, translatorClass, param.getType());
 
             // Return parsed POption.
             return new JcOption(names, description, hasDefaultValue, type,
@@ -196,15 +212,15 @@ public class JcRegistry {
      * Attempts to parse the given String value to the given type, using the
      * given translator type.
      *
+     * @param <T>
      * @param value
      * @param translatorType
      * @param toType
      * @return
-     * @throws JavaCommanderException
+     * @throws com.github.agadar.javacommander.OptionTranslatorException
      */
-    private <T> T parseValue(String value,
-            Class<? extends OptionTranslator> translatorType, Class<T> toType)
-            throws JavaCommanderException {
+    final protected <T> T parseValue(String value, Class<? extends OptionTranslator> translatorType, Class<T> toType)
+            throws OptionTranslatorException {
         try {
             // If no translator is set, attempt a normal valueOf.
             if (translatorType.equals(NoTranslator.class)) {
@@ -215,14 +231,11 @@ public class JcRegistry {
                 return (T) translator.translateString(value);
             }
         } catch (InstantiationException | IllegalAccessException ex) {
-            throw new JavaCommanderException(
-                    "Failed to instantiate translator '" + translatorType.
-                    getSimpleName() + "'!", ex);
-        } catch (NumberFormatException | IndexOutOfBoundsException ex) {
-            throw new JavaCommanderException(
-                    "Failed to parse String '" + value + "' to type " + toType.getSimpleName()
-                    + " using translator '" + translatorType.getSimpleName()
-                    + "'!", ex);
+            throw new OptionTranslatorException("Failed to instantiate translator '" + translatorType.getSimpleName() + "'", ex);
+        } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
+            throw new OptionTranslatorException("Failed to parse String '" + value
+                    + "' to type '" + toType.getSimpleName() + "' using translator '"
+                    + translatorType.getSimpleName() + "'", ex);
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.github.agadar.javacommander;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,8 +7,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages an application's commands.
@@ -18,9 +19,11 @@ import java.util.List;
  */
 public class JavaCommander implements Runnable {
 
-    /** The underlying command registry. */
+    /**
+     * The underlying command registry.
+     */
     public final JcRegistry jcRegistry;
-    
+
     /**
      * A special command name that can be used for a single command. If no known
      * command name can be found in a given string input, then an attempt to
@@ -31,22 +34,31 @@ public class JavaCommander implements Runnable {
     public JavaCommander() {
         this(new JcRegistry());
     }
-    
+
     public JavaCommander(JcRegistry jcRegistry) {
         if (jcRegistry == null) {
             throw new IllegalArgumentException("'jcRegistry' may not be null");
         }
         this.jcRegistry = jcRegistry;
     }
-    
+
     /**
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
      *
      * @param string the string to parse
-     * @throws JavaCommanderException if parsing or execution failed
+     * @throws UnknownCommandException
+     * @throws UnknownOptionException
+     * @throws NoValueForOptionException
+     * @throws CommandInvocationException
+     * @throws com.github.agadar.javacommander.OptionTranslatorException
      */
-    public final void execute(String string) throws JavaCommanderException {
+    public final void execute(String string)
+            throws UnknownCommandException, UnknownOptionException, NoValueForOptionException,
+            CommandInvocationException, OptionTranslatorException {
+        if (string == null) {
+            throw new IllegalArgumentException("'string' may not be null");
+        }
         this.execute(stringAsArgs(string));
     }
 
@@ -55,12 +67,16 @@ public class JavaCommander implements Runnable {
      * tokens.
      *
      * @param args the collection of argument tokens
-     * @throws JavaCommanderException if parsing or execution failed
+     * @throws UnknownCommandException
+     * @throws UnknownOptionException
+     * @throws NoValueForOptionException
+     * @throws CommandInvocationException
+     * @throws OptionTranslatorException
      */
-    public final void execute(Collection<String> args) throws JavaCommanderException {
-        // If no args are given, just return and do nothing.
+    public final void execute(List<String> args)
+            throws UnknownCommandException, UnknownOptionException, NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
         if (args == null || args.isEmpty()) {
-            return;
+            throw new IllegalArgumentException("'args' may not be null");
         }
 
         // What index in args to start reading parameters from. If this is a
@@ -70,15 +86,14 @@ public class JavaCommander implements Runnable {
         int paramsStartingIndex = 1;
 
         // Retrieve the command. If none was found, attempt to get the master command.
-        JcCommand command = commandsToAllNames.get(args.get(0));
-        if (command == null) {
-            // If the master command was also not found, then throw an error.
-            command = commandsToPrimaryName.get(EMPTY_COMMAND);
+        Optional<JcCommand> command = jcRegistry.getCommand(args.get(0));
 
-            if (command == null) {
-                throw new JavaCommanderException(String.format(
-                        "'%s' is not recognized as a command", args.get(
-                                0)));
+        if (!command.isPresent()) {
+            // If the master command was also not found, then throw an error.
+            command = jcRegistry.getCommand(EMPTY_COMMAND);
+
+            if (!command.isPresent()) {
+                throw new UnknownCommandException(args.get(0));
             }
             paramsStartingIndex = 0;
         }
@@ -88,25 +103,25 @@ public class JavaCommander implements Runnable {
         JcOption currentOption = null;
         if (args.size() > paramsStartingIndex) {
             String arg = args.get(paramsStartingIndex);
-            currentOption = command.optionNamesToOptions.get(arg);
+            currentOption = command.get().optionNamesToOptions.get(arg);
         }
 
         // Arguments to be passed to the Method.invoke function.
-        Object[] finalArgs = new Object[command.options.size()];
+        Object[] finalArgs = new Object[command.get().options.size()];
 
         // If the retrieved option is null, then use implicit options.
         if (currentOption == null) {
             // If too many arguments were supplied, throw an error.
             if (args.size() - paramsStartingIndex > finalArgs.length) {
-                throw new JavaCommanderException("Too many arguments supplied for this command");
+                throw new IllegalArgumentException("Too many arguments supplied for this command");
             }
 
             // Now simply iterate over the arguments, parsing them and placing
             // them in finalArgs as we go.
             for (int i = paramsStartingIndex; i < args.size(); i++) {
                 int iminus = i - paramsStartingIndex;
-                currentOption = command.options.get(iminus);
-                Object parsedArg = parseValue(args.get(i), currentOption.translator,
+                currentOption = command.get().options.get(iminus);
+                Object parsedArg = jcRegistry.parseValue(args.get(i), currentOption.translator,
                         currentOption.type);
                 finalArgs[iminus] = parsedArg;
             }
@@ -118,26 +133,25 @@ public class JavaCommander implements Runnable {
                 // If we're not currently finding a value for an option, then
                 // try find the option.
                 if (currentOption == null) {
-                    currentOption = command.optionNamesToOptions.get(arg);
+                    currentOption = command.get().optionNamesToOptions.get(arg);
 
                     // If the option is not recognized, assume the option name is
                     // implicit and try parse the value to the current parameter.
                     if (currentOption == null) {
-                        throw new JavaCommanderException("'%s' is not recognized as an option for this command");
+                        throw new UnknownOptionException(args.get(0), arg);
                     }
                 } // Else, try to parse the value.
                 else {
-                    Object parsedArg = parseValue(arg, currentOption.translator,
+                    Object parsedArg = jcRegistry.parseValue(arg, currentOption.translator,
                             currentOption.type);
-                    finalArgs[command.options.indexOf(currentOption)] = parsedArg;
+                    finalArgs[command.get().options.indexOf(currentOption)] = parsedArg;
                     currentOption = null;
                 }
             }
 
             // If the last parameter was not given a value, throw an error.
             if (currentOption != null) {
-                throw new JavaCommanderException(String.format(
-                        "No value found for option '%s'", currentOption.getPrimaryName()));
+                throw new NoValueForOptionException(args.get(0), currentOption.getPrimaryName());
             }
         }
 
@@ -147,23 +161,21 @@ public class JavaCommander implements Runnable {
             Object val = finalArgs[i];
 
             if (val == null) {
-                JcOption option = command.options.get(i);
+                JcOption option = command.get().options.get(i);
 
                 if (option.hasDefaultValue) {
                     finalArgs[i] = option.defaultValue;
                 } else {
-                    throw new JavaCommanderException(String.format("Option '%s' is required",
-                            option.getPrimaryName()));
+                    throw new NoValueForOptionException(args.get(0), option.getPrimaryName());
                 }
             }
         }
 
         try {
             // Finally, invoke the method on the object
-            command.methodToInvoke.invoke(command.objectToInvokeOn, finalArgs);
-        } catch (IllegalAccessException | IllegalArgumentException |
-                InvocationTargetException ex) {
-            throw new JavaCommanderException("Failed to invoke method behind this command", ex);
+            command.get().methodToInvoke.invoke(command.get().objectToInvokeOn, finalArgs);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new CommandInvocationException(args.get(0), ex);
         }
 
     }
@@ -173,9 +185,10 @@ public class JavaCommander implements Runnable {
      * which the name is already registered will override the old values.
      *
      * @param obj the Object where commands are located within
-     * @throws JavaCommanderException if registering the commands failed
+     * @throws OptionAnnotationException
+     * @throws OptionTranslatorException
      */
-    public final void registerObject(Object obj) throws JavaCommanderException {
+    public final void registerObject(Object obj) throws OptionAnnotationException, OptionTranslatorException {
         jcRegistry.registerObject(obj);
     }
 
@@ -201,8 +214,11 @@ public class JavaCommander implements Runnable {
             try {
                 String command = br.readLine();
                 execute(command);
-            } catch (IOException | JavaCommanderException ex) {
+            } catch (IOException | UnknownCommandException | UnknownOptionException |
+                    NoValueForOptionException | CommandInvocationException ex) {
                 System.out.println(ex.getMessage());
+            } catch (OptionTranslatorException ex) {
+                Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
                 System.out.println();   // always print a newline after a command
             }
@@ -215,9 +231,9 @@ public class JavaCommander implements Runnable {
      * @param string a string to parse to a list of argument tokens
      * @return a list of argument tokens
      */
-    private List<String> stringAsArgs(String string) {
+    private ArrayList<String> stringAsArgs(String string) {
         string = string.trim();
-        List<String> tokens = new ArrayList<>();        // the token list to be returned
+        ArrayList<String> tokens = new ArrayList<>();        // the token list to be returned
         StringBuilder curToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
