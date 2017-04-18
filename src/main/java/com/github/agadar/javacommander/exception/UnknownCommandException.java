@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander;
+package com.github.agadar.javacommander.exception;
 
 /**
  * Thrown when a command was not found.

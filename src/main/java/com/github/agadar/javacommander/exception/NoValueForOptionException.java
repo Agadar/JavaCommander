@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander;
+package com.github.agadar.javacommander.exception;
 
 /**
  * Thrown when an option without a default value was not supplied a value.

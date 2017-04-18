@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.translator.NoTranslator;

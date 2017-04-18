@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander;
+package com.github.agadar.javacommander.exception;
 
 /**
  * Thrown when an option was supplied for a command that does not have that

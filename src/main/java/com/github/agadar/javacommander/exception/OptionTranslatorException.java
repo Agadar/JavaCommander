@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander;
+package com.github.agadar.javacommander.exception;
 
 /**
  * Thrown when an OptionTranslator failed to parse a string, or when the

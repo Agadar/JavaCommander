@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander;
+package com.github.agadar.javacommander.exception;
 
 /**
  * Thrown when an underlying exception caused a command invocation to fail.
