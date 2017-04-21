@@ -6,6 +6,7 @@ import com.github.agadar.javacommander.exception.CommandInvocationException;
 import com.github.agadar.javacommander.exception.NoValueForOptionException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -57,7 +58,7 @@ public class JavaCommander implements Runnable {
      * @throws UnknownOptionException
      * @throws NoValueForOptionException
      * @throws CommandInvocationException
-     * @throws com.github.agadar.javacommander.OptionTranslatorException
+     * @throws OptionTranslatorException
      */
     public final void execute(String string)
             throws UnknownCommandException, UnknownOptionException, NoValueForOptionException,
@@ -127,8 +128,7 @@ public class JavaCommander implements Runnable {
             for (int i = paramsStartingIndex; i < args.size(); i++) {
                 int iminus = i - paramsStartingIndex;
                 currentOption = command.get().options.get(iminus);
-                Object parsedArg = jcRegistry.parseValue(args.get(i), currentOption.translator,
-                        currentOption.type);
+                Object parsedArg = jcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
                 finalArgs[iminus] = parsedArg;
             }
         } // Else if the retrieved option is not null, then use explicit options.
@@ -148,8 +148,7 @@ public class JavaCommander implements Runnable {
                     }
                 } // Else, try to parse the value.
                 else {
-                    Object parsedArg = jcRegistry.parseValue(arg, currentOption.translator,
-                            currentOption.type);
+                    Object parsedArg = jcRegistry.parseString(arg, currentOption.translator, currentOption.type);
                     finalArgs[command.get().options.indexOf(currentOption)] = parsedArg;
                     currentOption = null;
                 }
