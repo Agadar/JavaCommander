@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used for marking a method as being available as a command.
+ * Annotation used for marking a method as a command.
  *
  * @author Agadar
  */
@@ -15,26 +15,26 @@ import java.lang.annotation.Target;
 public @interface Command {
 
     /**
-     * Names of the command. The first entry is considered its primary name, the
-     * other entries are considered synonyms. If no name is supplied, then the
-     * name of the annotated method will be used for the name of the command.
+     * Names of the command. The first entry is the primary name. The other
+     * entries are synonyms. If no name is supplied, then the name of the
+     * command is set to the name of the annotated method.
      *
-     * @return names this command is known by
+     * @return The names of this command.
      */
     String[] names() default {};
 
     /**
-     * A brief description of the command.
+     * A description of the command.
      *
-     * @return description of this command
+     * @return A description of the command.
      */
     String description() default "";
 
     /**
      * This command's options. Alternatively, these may be defined as parameter
-     * annotations on the method's parameters instead, or even in conjunction.
+     * annotations on the method's parameters instead.
      *
-     * @return options of this command
+     * @return This command's options.
      */
     Option[] options() default {};
 }

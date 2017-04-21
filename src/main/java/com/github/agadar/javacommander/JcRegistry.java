@@ -90,17 +90,17 @@ public class JcRegistry {
         // Collect keys to remove from commandToPrimaryName
         commandsToPrimaryName.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(obj))).forEach((entry)
                 -> {
-            keysToRemove.add(entry.getKey());
-        });
+                    keysToRemove.add(entry.getKey());
+                });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
         keysToRemove.stream().map((s) -> commandsToPrimaryName.remove(s)).forEach((command)
                 -> {
-            for (String ss : command.names) {
-                commandsToAllNames.remove(ss);
-            }
-        });
+                    for (String ss : command.names) {
+                        commandsToAllNames.remove(ss);
+                    }
+                });
     }
 
     /**
@@ -219,6 +219,8 @@ public class JcRegistry {
      * @param translatorType
      * @param toType
      * @return
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      * @throws com.github.agadar.javacommander.OptionTranslatorException
      */
     final protected <T> T parseValue(String value, Class<? extends OptionTranslator> translatorType, Class<T> toType)
@@ -226,7 +228,7 @@ public class JcRegistry {
         try {
             // If no translator is set, attempt a normal valueOf.
             if (translatorType.equals(NoTranslator.class)) {
-                return OptionTranslator.parseToPrimitive(value, toType);
+                return OptionTranslator.parseString(value, toType);
             } // If one is set, then attempt using that.
             else {
                 OptionTranslator translator = translatorType.newInstance();

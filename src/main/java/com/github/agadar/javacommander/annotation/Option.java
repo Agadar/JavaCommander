@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation used for marking a method parameter as a command option.
  * Alternatively, these may be defined in the 'options' field of the Command
- * annotation instead, or even in conjunction.
+ * annotation instead.
  *
  * @author Agadar
  */
@@ -20,45 +20,41 @@ import java.lang.annotation.Target;
 public @interface Option {
 
     /**
-     * Names of the option. The first entry is considered its primary name, the
-     * other entries are considered synonyms. If no name is supplied, then the
-     * name of the option will be 'arg{#}' where {#} is the parameter's index.
-     * (e.g. 'arg0', 'arg1', 'arg2', etc.)
+     * Names of the option. The first entry is its primary name. The other
+     * entries are synonyms. If no name is supplied, then the name of the option
+     * is set to 'arg[x]' where '[x]' is the parameter's index. (e.g. 'arg0',
+     * 'arg1', 'arg2', etc.)
      *
-     * @return names this option is known by
+     * @return Names of the option.
      */
     String[] names() default {};
 
     /**
-     * A brief description of the option.
+     * A description of the option.
      *
-     * @return description of this option
+     * @return A description of the option.
      */
     String description() default "";
 
     /**
-     * Whether or not this option has a default value. If it does not, then a
-     * value MUST be supplied by the caller for this option, else it is
-     * optional.
+     * Whether or not this option has a default value.
      *
-     * @return whether or not this option has a default value
+     * @return Whether or not this option has a default value.
      */
     boolean hasDefaultValue() default false;
 
     /**
-     * This option's default value.
+     * This option's default value. If 'hasDefaultValue' is set to false, then
+     * this value is ignored.
      *
-     * @return this option's default value
+     * @return This option's default value.
      */
     String defaultValue() default "";
 
     /**
-     * The translator for this option. If this is not set, then
-     * OptionTranslator.parseToPrimitive is used for translating the string
-     * value supplied by this option to the method parameter it corresponds to.
-     * As this only works on primitives and Strings, users must set this
-     * manually to home-brewed implementations of OptionTranslator for more
-     * complex types and collections.
+     * The translator used to parse a string to the option's type. If the
+     * option's type is a primitive, a boxed primitive, or a string, then no
+     * translator needs to be supplied.
      *
      * @return this option's translator type
      */

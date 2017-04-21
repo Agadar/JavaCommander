@@ -2,7 +2,7 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
-import com.github.agadar.javacommander.translator.IntArrayTranslator;
+import com.github.agadar.javacommander.example.IntArrayTranslator;
 
 /**
  * Used by JavaCommanderTest for testing
