@@ -20,14 +20,24 @@ public class ExampleCommands {
     /**
      * Reference to a JavaCommander instance.
      */
-    private final JavaCommander javaCommander;
+    public final JavaCommander javaCommander;
 
+    /**
+     * Constructor. Assigns a new JavaCommander to this.
+     */
+    public ExampleCommands() {
+        this(new JavaCommander());
+    }
+    
     /**
      * Constructor.
      *
      * @param javaCommander Reference to a JavaCommander instance.
      */
     public ExampleCommands(JavaCommander javaCommander) {
+        if (javaCommander == null) {
+            throw new IllegalArgumentException("'javaCommander' may not be null");
+        }
         this.javaCommander = javaCommander;
     }
 

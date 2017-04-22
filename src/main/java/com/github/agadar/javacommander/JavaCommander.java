@@ -7,24 +7,18 @@ import com.github.agadar.javacommander.exception.NoValueForOptionException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Manages an application's commands.
  *
  * @author Agadar
  */
-public class JavaCommander implements Runnable {
+public class JavaCommander {
 
     /**
      * The underlying command registry.
@@ -204,30 +198,6 @@ public class JavaCommander implements Runnable {
      */
     public final void unregisterObject(Object obj) {
         jcRegistry.unregisterObject(obj);
-    }
-
-    /**
-     * Blocking method that continuously reads input from a BufferedReader.
-     * JavaCommanderExceptions are printed, but don't stop the loop.
-     */
-    @Override
-    public final void run() {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        // Thread loop.
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                String command = br.readLine();
-                execute(command);
-            } catch (IOException | UnknownCommandException | UnknownOptionException |
-                    NoValueForOptionException | CommandInvocationException ex) {
-                System.out.println(ex.getMessage());
-            } catch (OptionTranslatorException ex) {
-                Logger.getLogger(JavaCommander.class.getName()).log(Level.SEVERE, null, ex);
-            } finally {
-                System.out.println();   // always print a newline after a command
-            }
-        }
     }
 
     /**
