@@ -1,5 +1,6 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.CommandInvocationException;
@@ -32,10 +33,18 @@ public class JavaCommander {
      */
     public static final String EMPTY_COMMAND = "";
 
+    /**
+     * Constructor. Assigns a new JcRegistry to this.
+     */
     public JavaCommander() {
         this(new JcRegistry());
     }
 
+    /**
+     * Constructor.
+     *
+     * @param jcRegistry The JcRegistry instance to use.
+     */
     public JavaCommander(JcRegistry jcRegistry) {
         if (jcRegistry == null) {
             throw new IllegalArgumentException("'jcRegistry' may not be null");
@@ -47,20 +56,17 @@ public class JavaCommander {
      * Parses a string to a list of argument tokens, and then attempts to find
      * and execute the command defined in it.
      *
-     * @param string the string to parse
+     * @param string The string to parse and execute the corresponding command
+     * of.
      * @throws UnknownCommandException
      * @throws UnknownOptionException
      * @throws NoValueForOptionException
      * @throws CommandInvocationException
      * @throws OptionTranslatorException
      */
-    public final void execute(String string)
-            throws UnknownCommandException, UnknownOptionException, NoValueForOptionException,
-            CommandInvocationException, OptionTranslatorException {
-        if (string == null) {
-            throw new IllegalArgumentException("'string' may not be null");
-        }
-        this.execute(stringAsArgs(string));
+    public final void execute(String string) throws UnknownCommandException, UnknownOptionException,
+            NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
+        this.execute(stringAsArgs(string != null ? string : ""));
     }
 
     /**
@@ -74,10 +80,10 @@ public class JavaCommander {
      * @throws CommandInvocationException
      * @throws OptionTranslatorException
      */
-    public final void execute(List<String> args)
-            throws UnknownCommandException, UnknownOptionException, NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
-        if (args == null || args.isEmpty()) {
-            throw new IllegalArgumentException("'args' may not be null");
+    public final void execute(List<String> args) throws UnknownCommandException, UnknownOptionException,
+            NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
+        if (args == null) {
+            args = new ArrayList<>();
         }
 
         // What index in args to start reading parameters from. If this is a
@@ -85,25 +91,27 @@ public class JavaCommander {
         // is the command name. If this is the master command, then the
         // parameters start at index 0, as there is no command name.
         int paramsStartingIndex = 1;
+        Optional<JcCommand> command;
+        String commandName;
 
-        // Retrieve the command. If none was found, attempt to get the master command.
-        Optional<JcCommand> command = jcRegistry.getCommand(args.get(0));
-
-        if (!command.isPresent()) {
-            // If the master command was also not found, then throw an error.
-            command = jcRegistry.getCommand(EMPTY_COMMAND);
-
-            if (!command.isPresent()) {
-                throw new UnknownCommandException(args.get(0));
-            }
+        // Retrieve the command. If no arguments were provided, attempt to get the master command.
+        if (args.size() > 0) {
+            command = jcRegistry.getCommand(commandName = args.get(0));
+        } else {
+            command = jcRegistry.getCommand(commandName = EMPTY_COMMAND);
             paramsStartingIndex = 0;
+        }
+
+        // If the command was not found, throw an exception.
+        if (!command.isPresent()) {
+            throw new UnknownCommandException(commandName);
         }
 
         // Determine whether we're using explicit, or implicit, options for this command.
         // Only relevant if there are arguments given, so check args.size().
         JcOption currentOption = null;
         if (args.size() > paramsStartingIndex) {
-            String arg = args.get(paramsStartingIndex);
+            final String arg = args.get(paramsStartingIndex);
             currentOption = command.get().optionNamesToOptions.get(arg);
         }
 
@@ -112,21 +120,9 @@ public class JavaCommander {
 
         // If the retrieved option is null, then use implicit options.
         if (currentOption == null) {
-            // If too many arguments were supplied, throw an error.
-            if (args.size() - paramsStartingIndex > finalArgs.length) {
-                throw new IllegalArgumentException("Too many arguments supplied for this command");
-            }
-
-            // Now simply iterate over the arguments, parsing them and placing
-            // them in finalArgs as we go.
-            for (int i = paramsStartingIndex; i < args.size(); i++) {
-                int iminus = i - paramsStartingIndex;
-                currentOption = command.get().options.get(iminus);
-                Object parsedArg = jcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
-                finalArgs[iminus] = parsedArg;
-            }
+            finalArgs = parseArgumentsImplicit(args, command.get(), paramsStartingIndex);
         } // Else if the retrieved option is not null, then use explicit options.
-        else {
+        else {//////////////////////////////////////////////////////////////////////////////////// <<<<<<<<<<<<<<<<<< Last time.
             for (int i = paramsStartingIndex + 1; i < args.size(); i++) {
                 String arg = args.get(i);
 
@@ -201,6 +197,36 @@ public class JavaCommander {
     }
 
     /**
+     * Implicitly parses the argument list, i.e. no option names are given, only
+     * option values.
+     *
+     * @param args
+     * @param command
+     * @param paramsStartingIndex
+     * @return
+     * @throws OptionTranslatorException
+     */
+    private Object[] parseArgumentsImplicit(List<String> args, JcCommand command, int paramsStartingIndex)
+            throws OptionTranslatorException {
+        final Object[] finalArgs = new Object[command.options.size()];
+
+        // If too many arguments were supplied, throw an error.
+        if (args.size() - paramsStartingIndex > finalArgs.length) {
+            throw new IllegalArgumentException("Too many arguments supplied for this command");
+        }
+
+        // Now simply iterate over the arguments, parsing them and placing
+        // them in finalArgs as we go.
+        for (int i = paramsStartingIndex; i < args.size(); i++) {
+            final int iminus = i - paramsStartingIndex;
+            final JcOption currentOption = command.options.get(iminus);
+            final Object parsedArg = jcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+            finalArgs[iminus] = parsedArg;
+        }
+        return finalArgs;
+    }
+
+    /**
      * Parses a string to a list of argument tokens.
      *
      * @param string a string to parse to a list of argument tokens
@@ -208,8 +234,8 @@ public class JavaCommander {
      */
     private ArrayList<String> stringAsArgs(String string) {
         string = string.trim();
-        ArrayList<String> tokens = new ArrayList<>();        // the token list to be returned
-        StringBuilder curToken = new StringBuilder();   // current token
+        final ArrayList<String> tokens = new ArrayList<>();        // the token list to be returned
+        final StringBuilder curToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
 
