@@ -1,6 +1,5 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.CommandInvocationException;
@@ -31,7 +30,7 @@ public class JavaCommander {
      * command name can be found in a given string input, then an attempt to
      * call the master command is made, using said input.
      */
-    public static final String EMPTY_COMMAND = "";
+    public static final String MASTER_COMMAND = "";
 
     /**
      * Constructor. Assigns a new JcRegistry to this.
@@ -98,7 +97,7 @@ public class JavaCommander {
         if (args.size() > 0) {
             command = jcRegistry.getCommand(commandName = args.get(0));
         } else {
-            command = jcRegistry.getCommand(commandName = EMPTY_COMMAND);
+            command = jcRegistry.getCommand(commandName = MASTER_COMMAND);
             paramsStartingIndex = 0;
         }
 
@@ -232,7 +231,7 @@ public class JavaCommander {
      * @param string a string to parse to a list of argument tokens
      * @return a list of argument tokens
      */
-    private ArrayList<String> stringAsArgs(String string) {
+    private static ArrayList<String> stringAsArgs(String string) {
         string = string.trim();
         final ArrayList<String> tokens = new ArrayList<>();        // the token list to be returned
         final StringBuilder curToken = new StringBuilder();   // current token

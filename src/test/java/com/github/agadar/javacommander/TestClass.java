@@ -60,7 +60,7 @@ public class TestClass {
             @Option(hasDefaultValue = false, translator = IntArrayTranslator.class) int[] arg1) {
     }
 
-    @Command(names = JavaCommander.EMPTY_COMMAND,
+    @Command(names = JavaCommander.MASTER_COMMAND,
             options = @Option(hasDefaultValue = false))
     public void e(String arg0) {
     }

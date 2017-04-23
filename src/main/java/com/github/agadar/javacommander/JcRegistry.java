@@ -138,7 +138,7 @@ public final class JcRegistry {
      * @throws OptionAnnotationException If a parameter is not properly
      * annotated with the @Option annotation.
      */
-    private ArrayList<JcOption> parseOptions(Command commandAnnotation, Method method)
+    private static ArrayList<JcOption> parseOptions(Command commandAnnotation, Method method)
             throws OptionAnnotationException, OptionTranslatorException {
         final ArrayList<JcOption> jcOptions = new ArrayList<>();
         final Parameter[] parameters = method.getParameters();
@@ -181,7 +181,7 @@ public final class JcRegistry {
      * parse the default value if it has one, or when the translator itself
      * failed to be instantiated.
      */
-    private JcOption parseOption(Option optionAnnotation, Parameter parameter) throws OptionTranslatorException {
+    private static JcOption parseOption(Option optionAnnotation, Parameter parameter) throws OptionTranslatorException {
         // Get the option names. If none is assigned, use the parameter name.
         final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names() : new String[]{parameter.getName()};
 
@@ -215,7 +215,7 @@ public final class JcRegistry {
      * parse the default value, or when the translator itself failed to be
      * instantiated.
      */
-    public <T> T parseString(String stringToParse, Class<? extends OptionTranslator> translatorType, Class<T> toType)
+    public static <T> T parseString(String stringToParse, Class<? extends OptionTranslator> translatorType, Class<T> toType)
             throws OptionTranslatorException {
         try {
             // If no translator is set, attempt a normal valueOf.

@@ -1,5 +1,12 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.CommandInvocationException;
+import com.github.agadar.javacommander.exception.NoValueForOptionException;
+import com.github.agadar.javacommander.exception.OptionAnnotationException;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.UnknownCommandException;
+import com.github.agadar.javacommander.exception.UnknownOptionException;
+import java.util.Collection;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -30,15 +37,14 @@ public class JavaCommanderTest {
     /**
      * Tests registering the test object.
      *
-     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
-    public void testRegisterObject() throws JavaCommanderException {
+    public void testRegisterObject() throws OptionAnnotationException, OptionTranslatorException {
         javaCommander = new JavaCommander();
         testClass = new TestClass();
         javaCommander.registerObject(testClass);
 
         // Ensure the object was registered.
-        List<JcCommand> commands = javaCommander.getParsedCommands();
+        Collection<JcCommand> commands = javaCommander.jcRegistry.getParsedCommands();
         assertEquals(NUMBER_OF_COMMANDS, commands.size());
     }
 
@@ -49,17 +55,16 @@ public class JavaCommanderTest {
         javaCommander.unregisterObject(testClass);
 
         // Ensure the object was unregistered.
-        List<JcCommand> commands = javaCommander.getParsedCommands();
+        Collection<JcCommand> commands = javaCommander.jcRegistry.getParsedCommands();
         assertEquals(0, commands.size());
     }
 
     /**
      * No-arguments command
      *
-     * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testNoArguments() throws JavaCommanderException {
+    public void testNoArguments() throws OptionAnnotationException, OptionTranslatorException, UnknownCommandException, UnknownOptionException, NoValueForOptionException, CommandInvocationException {
         // Register object
         testRegisterObject();
 
@@ -67,7 +72,7 @@ public class JavaCommanderTest {
         String args = "a";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -76,7 +81,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -90,7 +95,7 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testSingleArgumentWithNoDefault() throws JavaCommanderException {
+    public void testSingleArgumentWithNoDefault() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -99,7 +104,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -107,7 +112,7 @@ public class JavaCommanderTest {
         args = "b0 arg0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -115,7 +120,7 @@ public class JavaCommanderTest {
         args = "b0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -129,7 +134,7 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testSingleArgumentWithDefault() throws JavaCommanderException {
+    public void testSingleArgumentWithDefault() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -137,7 +142,7 @@ public class JavaCommanderTest {
         String args = "b1";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -145,7 +150,7 @@ public class JavaCommanderTest {
         args = "b1 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -159,7 +164,7 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentNoDefaults() throws JavaCommanderException {
+    public void testMultiArgumentNoDefaults() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -168,7 +173,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -177,7 +182,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -186,7 +191,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -195,7 +200,7 @@ public class JavaCommanderTest {
         try {
             javaCommander.execute(args);
             fail("Input '" + args + "' succeeded even though it shouldn't have!");
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             // Ignore, as this is what should happen.
         }
 
@@ -203,7 +208,7 @@ public class JavaCommanderTest {
         args = "c0 arg1 '4,5,6' arg0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -211,7 +216,7 @@ public class JavaCommanderTest {
         args = "c0 'somevalue' '4,5,6'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -225,7 +230,7 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentSomeDefaults() throws JavaCommanderException {
+    public void testMultiArgumentSomeDefaults() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -233,7 +238,7 @@ public class JavaCommanderTest {
         String args = "c1 arg1 '4,5,6'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -241,7 +246,7 @@ public class JavaCommanderTest {
         args = "c1 arg1 '4,5,6' arg0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -255,7 +260,7 @@ public class JavaCommanderTest {
      * @throws com.github.agadar.javacommander.JavaCommanderException
      */
     @Test
-    public void testMultiArgumentAllDefaults() throws JavaCommanderException {
+    public void testMultiArgumentAllDefaults() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -263,7 +268,7 @@ public class JavaCommanderTest {
         String args = "c2";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -271,7 +276,7 @@ public class JavaCommanderTest {
         args = "c2 arg1 '4,5,6' arg0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -286,7 +291,7 @@ public class JavaCommanderTest {
      * @throws JavaCommanderException
      */
     @Test
-    public void testParameterAnnotations() throws JavaCommanderException {
+    public void testParameterAnnotations() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -294,7 +299,7 @@ public class JavaCommanderTest {
         String args = "d arg1 '4,5,6'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -302,7 +307,7 @@ public class JavaCommanderTest {
         args = "d arg1 '4,5,6' arg0 'somevalue'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -316,7 +321,7 @@ public class JavaCommanderTest {
      * @throws JavaCommanderException
      */
     @Test
-    public void testMasterCommand() throws JavaCommanderException {
+    public void testMasterCommand() throws OptionAnnotationException, OptionTranslatorException {
         // Register object
         testRegisterObject();
 
@@ -324,7 +329,7 @@ public class JavaCommanderTest {
         String args = "'some value'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
@@ -332,7 +337,7 @@ public class JavaCommanderTest {
         args = "arg0 'some value'";
         try {
             javaCommander.execute(args);
-        } catch (JavaCommanderException ex) {
+        } catch (Exception ex) {
             fail("Input '" + args + "' failed even though it shouldn't have! Exception message: " + ex.getMessage());
         }
 
