@@ -5,13 +5,18 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class UnknownCommandException extends Exception {
+public class UnknownCommandException extends RuntimeException {
 
     /**
      * The name of the command that was not found.
      */
     public final String commandName;
 
+    /**
+     * Constructor.
+     *
+     * @param commandName The name of the command that was not found.
+     */
     public UnknownCommandException(String commandName) {
         super(String.format("Command '%s' was not found", commandName));
         this.commandName = commandName;

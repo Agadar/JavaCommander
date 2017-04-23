@@ -1,19 +1,27 @@
 package com.github.agadar.javacommander.exception;
 
+import com.github.agadar.javacommander.JcCommand;
+
 /**
  * Thrown when an underlying exception caused a command invocation to fail.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class CommandInvocationException extends Exception {
+public class CommandInvocationException extends RuntimeException {
 
     /**
-     * The name of the command.
+     * The command that failed to be invoked.
      */
-    public final String commandName;
+    public final JcCommand jcCommand;
 
-    public CommandInvocationException(String commandName, Throwable cause) {
-        super(String.format("Failed to invoke command '%s'", commandName), cause);
-        this.commandName = commandName;
+    /**
+     * Constructor.
+     *
+     * @param jcCommand The command that failed to be invoked.
+     * @param cause The exception that caused the failure.
+     */
+    public CommandInvocationException(JcCommand jcCommand, Throwable cause) {
+        super(String.format("Failed to invoke command '%s'", jcCommand.names[0]), cause);
+        this.jcCommand = jcCommand;
     }
 }

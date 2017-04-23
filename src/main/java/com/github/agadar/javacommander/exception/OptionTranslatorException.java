@@ -6,8 +6,14 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class OptionTranslatorException extends Exception {
+public class OptionTranslatorException extends RuntimeException {
 
+    /**
+     * Constructor.
+     *
+     * @param message A message elaborating what went wrong.
+     * @param cause The underlying cause.
+     */
     public OptionTranslatorException(String message, Throwable cause) {
         super(message, cause);
     }

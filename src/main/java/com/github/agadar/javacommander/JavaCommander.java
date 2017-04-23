@@ -133,11 +133,11 @@ public class JavaCommander {
                     // If the option is not recognized, assume the option name is
                     // implicit and try parse the value to the current parameter.
                     if (currentOption == null) {
-                        throw new UnknownOptionException(args.get(0), arg);
+                        throw new UnknownOptionException(command.get(), arg);
                     }
                 } // Else, try to parse the value.
                 else {
-                    Object parsedArg = jcRegistry.parseString(arg, currentOption.translator, currentOption.type);
+                    Object parsedArg = JcRegistry.parseString(arg, currentOption.translator, currentOption.type);
                     finalArgs[command.get().options.indexOf(currentOption)] = parsedArg;
                     currentOption = null;
                 }
@@ -145,7 +145,7 @@ public class JavaCommander {
 
             // If the last parameter was not given a value, throw an error.
             if (currentOption != null) {
-                throw new NoValueForOptionException(args.get(0), currentOption.getPrimaryName());
+                throw new NoValueForOptionException(command.get(), currentOption);
             }
         }
 
@@ -160,7 +160,7 @@ public class JavaCommander {
                 if (option.hasDefaultValue) {
                     finalArgs[i] = option.defaultValue;
                 } else {
-                    throw new NoValueForOptionException(args.get(0), option.getPrimaryName());
+                    throw new NoValueForOptionException(command.get(), option);
                 }
             }
         }
@@ -169,7 +169,7 @@ public class JavaCommander {
             // Finally, invoke the method on the object
             command.get().methodToInvoke.invoke(command.get().objectToInvokeOn, finalArgs);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new CommandInvocationException(args.get(0), ex);
+            throw new CommandInvocationException(command.get(), ex);
         }
 
     }
@@ -205,7 +205,7 @@ public class JavaCommander {
      * @return
      * @throws OptionTranslatorException
      */
-    private Object[] parseArgumentsImplicit(List<String> args, JcCommand command, int paramsStartingIndex)
+    private static Object[] parseArgumentsImplicit(List<String> args, JcCommand command, int paramsStartingIndex)
             throws OptionTranslatorException {
         final Object[] finalArgs = new Object[command.options.size()];
 
@@ -219,7 +219,7 @@ public class JavaCommander {
         for (int i = paramsStartingIndex; i < args.size(); i++) {
             final int iminus = i - paramsStartingIndex;
             final JcOption currentOption = command.options.get(iminus);
-            final Object parsedArg = jcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+            final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
             finalArgs[iminus] = parsedArg;
         }
         return finalArgs;
