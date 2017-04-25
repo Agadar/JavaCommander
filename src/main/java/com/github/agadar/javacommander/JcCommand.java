@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author Agadar
  */
-public class JcCommand {
+public final class JcCommand {
 
     /**
      * Names of the command. The first entry is the primary name. The other

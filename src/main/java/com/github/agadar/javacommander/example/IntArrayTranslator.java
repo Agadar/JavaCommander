@@ -9,7 +9,7 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
  *
  * @author Agadar
  */
-public class IntArrayTranslator implements OptionTranslator<int[]> {
+public final class IntArrayTranslator implements OptionTranslator<int[]> {
 
     @Override
     public int[] translateString(String stringToParse) {

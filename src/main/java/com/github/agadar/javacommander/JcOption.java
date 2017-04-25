@@ -9,7 +9,7 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
  * @author Agadar
  * @param <T> The type of this option's underlying parameter.
  */
-public class JcOption<T> {
+public final class JcOption<T> {
 
     /**
      * Names of the option. The first entry is its primary name. The other

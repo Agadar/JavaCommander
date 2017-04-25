@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Agadar
  */
-public class JavaCommander {
+public final class JavaCommander {
 
     /**
      * The underlying command registry.

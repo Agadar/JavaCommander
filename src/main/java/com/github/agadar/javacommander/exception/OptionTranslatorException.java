@@ -6,7 +6,7 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class OptionTranslatorException extends RuntimeException {
+public final class OptionTranslatorException extends RuntimeException {
 
     /**
      * Constructor.

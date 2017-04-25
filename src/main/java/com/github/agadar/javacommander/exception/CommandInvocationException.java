@@ -7,7 +7,7 @@ import com.github.agadar.javacommander.JcCommand;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class CommandInvocationException extends RuntimeException {
+public final class CommandInvocationException extends RuntimeException {
 
     /**
      * The command that failed to be invoked.

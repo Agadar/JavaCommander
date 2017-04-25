@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class TerminalInputReader implements Runnable {
+public final class TerminalInputReader implements Runnable {
 
     /**
      * The JavaCommander instance this reader sends input to.

@@ -15,7 +15,7 @@ import java.util.Optional;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class ExampleCommands {
+public final class ExampleCommands {
 
     /**
      * Reference to a JavaCommander instance.

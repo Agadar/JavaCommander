@@ -8,7 +8,7 @@ import com.github.agadar.javacommander.JcCommand;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class UnknownOptionException extends RuntimeException {
+public final class UnknownOptionException extends RuntimeException {
 
     /**
      * The command of which an option was supplied that it does not have.

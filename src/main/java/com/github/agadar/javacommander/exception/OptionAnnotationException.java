@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class OptionAnnotationException extends RuntimeException {
+public final class OptionAnnotationException extends RuntimeException {
 
     /**
      * The method of which a parameter was not properly annotated.

@@ -7,7 +7,7 @@ package com.github.agadar.javacommander.translator;
  *
  * @author Agadar
  */
-public class NoTranslator implements OptionTranslator<String> {
+public final class NoTranslator implements OptionTranslator<String> {
 
     @Override
     public String translateString(String stringToParse) {
