@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Manages an application's commands.
@@ -73,7 +72,7 @@ public class JavaCommander {
      * tokens.
      *
      * @param args the collection of argument tokens
-     * @throws UnknownCommandException
+     * @throws UnknownCommandException If the command was not found.
      * @throws UnknownOptionException
      * @throws NoValueForOptionException
      * @throws CommandInvocationException
@@ -90,62 +89,38 @@ public class JavaCommander {
         // is the command name. If this is the master command, then the
         // parameters start at index 0, as there is no command name.
         int paramsStartingIndex = 1;
-        Optional<JcCommand> command;
-        String commandName;
+        JcCommand command;
 
-        // Retrieve the command. If no arguments were provided, attempt to get the master command.
+        // Determine and retrieve the command to use.
         if (args.size() > 0) {
-            command = jcRegistry.getCommand(commandName = args.get(0));
-        } else {
-            command = jcRegistry.getCommand(commandName = MASTER_COMMAND);
+            if (jcRegistry.hasCommand(args.get(0))) {
+                command = jcRegistry.getCommand(args.get(0)).get();
+            }
+            if (jcRegistry.hasCommand(MASTER_COMMAND)) {
+                command = jcRegistry.getCommand(MASTER_COMMAND).get();
+                paramsStartingIndex = 0;
+            } else {
+                throw new UnknownCommandException(args.get(0));
+            }
+        } else if (jcRegistry.hasCommand(MASTER_COMMAND)) {
+            command = jcRegistry.getCommand(MASTER_COMMAND).get();
             paramsStartingIndex = 0;
-        }
-
-        // If the command was not found, throw an exception.
-        if (!command.isPresent()) {
-            throw new UnknownCommandException(commandName);
-        }
-
-        // Determine whether we're using explicit, or implicit, options for this command.
-        // Only relevant if there are arguments given, so check args.size().
-        JcOption currentOption = null;
-        if (args.size() > paramsStartingIndex) {
-            final String arg = args.get(paramsStartingIndex);
-            currentOption = command.get().optionNamesToOptions.get(arg);
+        } else {
+            throw new UnknownCommandException(MASTER_COMMAND);
         }
 
         // Arguments to be passed to the Method.invoke function.
-        Object[] finalArgs = new Object[command.get().options.size()];
+        final Object[] finalArgs = new Object[command.options.size()];
 
-        // If the retrieved option is null, then use implicit options.
-        if (currentOption == null) {
-            finalArgs = parseArgumentsImplicit(args, command.get(), paramsStartingIndex);
-        } // Else if the retrieved option is not null, then use explicit options.
-        else {//////////////////////////////////////////////////////////////////////////////////// <<<<<<<<<<<<<<<<<< Last time.
-            for (int i = paramsStartingIndex + 1; i < args.size(); i++) {
-                String arg = args.get(i);
+        // If there's arguments left to parse to options, let's parse them.
+        if (args.size() > paramsStartingIndex) {
 
-                // If we're not currently finding a value for an option, then
-                // try find the option.
-                if (currentOption == null) {
-                    currentOption = command.get().optionNamesToOptions.get(arg);
-
-                    // If the option is not recognized, assume the option name is
-                    // implicit and try parse the value to the current parameter.
-                    if (currentOption == null) {
-                        throw new UnknownOptionException(command.get(), arg);
-                    }
-                } // Else, try to parse the value.
-                else {
-                    Object parsedArg = JcRegistry.parseString(arg, currentOption.translator, currentOption.type);
-                    finalArgs[command.get().options.indexOf(currentOption)] = parsedArg;
-                    currentOption = null;
-                }
-            }
-
-            // If the last parameter was not given a value, throw an error.
-            if (currentOption != null) {
-                throw new NoValueForOptionException(command.get(), currentOption);
+            // If the first argument is a valid option, use explicit parsing.
+            // Otherwise, use implicit parsing.
+            if (command.hasOption(args.get(paramsStartingIndex))) {
+                parseArgumentsExplicit(finalArgs, args, command, paramsStartingIndex);
+            } else {
+                parseArgumentsImplicit(finalArgs, args, command, paramsStartingIndex);
             }
         }
 
@@ -155,21 +130,21 @@ public class JavaCommander {
             Object val = finalArgs[i];
 
             if (val == null) {
-                JcOption option = command.get().options.get(i);
+                JcOption option = command.options.get(i);
 
                 if (option.hasDefaultValue) {
                     finalArgs[i] = option.defaultValue;
                 } else {
-                    throw new NoValueForOptionException(command.get(), option);
+                    throw new NoValueForOptionException(command, option);
                 }
             }
         }
 
         try {
             // Finally, invoke the method on the object
-            command.get().methodToInvoke.invoke(command.get().objectToInvokeOn, finalArgs);
+            command.methodToInvoke.invoke(command.objectToInvokeOn, finalArgs);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new CommandInvocationException(command.get(), ex);
+            throw new CommandInvocationException(command, ex);
         }
 
     }
@@ -197,17 +172,17 @@ public class JavaCommander {
 
     /**
      * Implicitly parses the argument list, i.e. no option names are given, only
-     * option values.
+     * option values. Example: 'commandName 5 true 120'.
      *
      * @param args
      * @param command
      * @param paramsStartingIndex
      * @return
      * @throws OptionTranslatorException
+     * @throws IllegalArgumentException
      */
-    private static Object[] parseArgumentsImplicit(List<String> args, JcCommand command, int paramsStartingIndex)
+    private static Object[] parseArgumentsImplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex)
             throws OptionTranslatorException {
-        final Object[] finalArgs = new Object[command.options.size()];
 
         // If too many arguments were supplied, throw an error.
         if (args.size() - paramsStartingIndex > finalArgs.length) {
@@ -216,11 +191,58 @@ public class JavaCommander {
 
         // Now simply iterate over the arguments, parsing them and placing
         // them in finalArgs as we go.
-        for (int i = paramsStartingIndex; i < args.size(); i++) {
-            final int iminus = i - paramsStartingIndex;
-            final JcOption currentOption = command.options.get(iminus);
-            final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
-            finalArgs[iminus] = parsedArg;
+        if (paramsStartingIndex == 1) {
+            for (int i = 1; i < args.size(); i++) {
+                final JcOption currentOption = command.options.get(i - 1);
+                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+                finalArgs[i - 1] = parsedArg;
+            }
+        } else {
+            for (int i = 0; i < args.size(); i++) {
+                final JcOption currentOption = command.options.get(i);
+                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+                finalArgs[i] = parsedArg;
+            }
+        }
+        return finalArgs;
+    }
+
+    /**
+     * Explicitly parses the argument list, i.e. option names are given.
+     * Example: 'commandName -amount 5 -add true -times 120'.
+     *
+     * @param args
+     * @param command
+     * @param paramsStartingIndex
+     * @return
+     */
+    private static Object[] parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex) {
+        JcOption currentOption = command.optionNamesToOptions.get(args.get(paramsStartingIndex));
+        boolean parsingOption = false;
+
+        // Iterate over all the arguments.
+        for (int i = paramsStartingIndex + 1; i < args.size(); i++) {
+
+            // If we're not currently finding a value for an option, then
+            // try find the option. Else, try to parse the value.                
+            if (parsingOption) {
+                currentOption = command.optionNamesToOptions.get(args.get(i));
+
+                // If the option was not found, throw an exception.
+                if (currentOption == null) {
+                    throw new UnknownOptionException(command, args.get(i));
+                }
+            } else {
+                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+                finalArgs[command.options.indexOf(currentOption)] = parsedArg;
+                currentOption = null;
+            }
+            parsingOption = !parsingOption;
+        }
+
+        // If the last parameter was not given a value, throw an error.
+        if (currentOption != null) {
+            throw new NoValueForOptionException(command, currentOption);
         }
         return finalArgs;
     }

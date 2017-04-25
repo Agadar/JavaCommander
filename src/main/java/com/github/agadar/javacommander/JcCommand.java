@@ -111,4 +111,14 @@ public class JcCommand {
     public final boolean hasDescription() {
         return description != null && !description.isEmpty();
     }
+
+    /**
+     * Returns whether this command has an option with the specified name.
+     *
+     * @param optionName The option name to check.
+     * @return Whether this command has an option with the specified name.
+     */
+    public final boolean hasOption(String optionName) {
+        return optionNamesToOptions.containsKey(optionName);
+    }
 }

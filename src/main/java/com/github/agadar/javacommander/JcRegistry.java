@@ -27,13 +27,13 @@ public final class JcRegistry {
      * The parsed commands, each command mapped to its primary name, in
      * alphabetical order.
      */
-    private final TreeMap<String, JcCommand> commandsToPrimaryNames = new TreeMap<>();
+    private final TreeMap<String, JcCommand> primaryNamesToCommands = new TreeMap<>();
 
     /**
      * The parsed commands, each command mapped to each of its names, in
      * alphabetical order.
      */
-    private final TreeMap<String, JcCommand> commandsToAllNames = new TreeMap<>();
+    private final TreeMap<String, JcCommand> allNamesToCommands = new TreeMap<>();
 
     /**
      * Registers all commands found in the supplied object. Any commands of
@@ -80,15 +80,15 @@ public final class JcRegistry {
         final ArrayList<String> keysToRemove = new ArrayList<>();
 
         // Collect keys to remove from commandToPrimaryName
-        commandsToPrimaryNames.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(object))).forEach((entry) -> {
+        primaryNamesToCommands.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(object))).forEach((entry) -> {
             keysToRemove.add(entry.getKey());
         });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
-        keysToRemove.stream().map((s) -> commandsToPrimaryNames.remove(s)).forEach((command) -> {
+        keysToRemove.stream().map((s) -> primaryNamesToCommands.remove(s)).forEach((command) -> {
             for (String ss : command.names) {
-                commandsToAllNames.remove(ss);
+                allNamesToCommands.remove(ss);
             }
         });
     }
@@ -100,7 +100,7 @@ public final class JcRegistry {
      * @return An Optional containing the command - or not.
      */
     public final Optional<JcCommand> getCommand(String commandName) {
-        final JcCommand jcCommand = commandsToAllNames.get(commandName);
+        final JcCommand jcCommand = allNamesToCommands.get(commandName);
         return jcCommand != null ? Optional.of(jcCommand) : Optional.empty();
     }
 
@@ -110,7 +110,17 @@ public final class JcRegistry {
      * @return All registered JcCommands.
      */
     public final Collection<JcCommand> getParsedCommands() {
-        return commandsToPrimaryNames.values();
+        return primaryNamesToCommands.values();
+    }
+
+    /**
+     * Returns whether or not a command name is known by this registry.
+     *
+     * @param commandName The command name to check.
+     * @return Whether the command name is known by this registry.
+     */
+    public final boolean hasCommand(String commandName) {
+        return allNamesToCommands.containsKey(commandName);
     }
 
     /**
@@ -120,9 +130,9 @@ public final class JcRegistry {
      */
     private void registerCommand(JcCommand jcCommand) {
         for (String name : jcCommand.names) {
-            commandsToAllNames.put(name, jcCommand);
+            allNamesToCommands.put(name, jcCommand);
         }
-        commandsToPrimaryNames.put(jcCommand.names[0], jcCommand);
+        primaryNamesToCommands.put(jcCommand.names[0], jcCommand);
     }
 
     /**
