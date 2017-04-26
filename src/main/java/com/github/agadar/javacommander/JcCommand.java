@@ -66,8 +66,8 @@ public final class JcCommand {
 
         // Map all options
         options.stream().forEach((option) -> {
-            for (String name : option.names) {
-                optionNamesToOptions.put(name, option);
+            for (int i = 0; i < option.numberOfNames(); i++) {
+                optionNamesToOptions.put(option.getNameByIndex(i), option);
             }
         });
     }

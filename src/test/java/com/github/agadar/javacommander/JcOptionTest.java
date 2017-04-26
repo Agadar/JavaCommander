@@ -49,8 +49,12 @@ public final class JcOptionTest {
     public void testHasTranslator() {
         System.out.println("hasTranslator");
 
-        // Test false.
-        JcOption instance = new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", NoTranslator.class);
+        // Test false with null.
+        JcOption instance = new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", null);
+        assertFalse(instance.hasTranslator());
+
+        // Test false with NoTranslator.class.
+        instance = new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", NoTranslator.class);
         assertFalse(instance.hasTranslator());
 
         // Test true.
@@ -65,5 +69,39 @@ public final class JcOptionTest {
             return stringToParse;
         }
 
+    }
+
+    /**
+     * Test of getNameByIndex method, of class JcOption.
+     */
+    @Test
+    public void testGetNameByIndex() {
+        System.out.println("getNameByIndex");
+        final JcOption instance = new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", null);
+
+        // Check lower bounding.
+        assertEquals("one", instance.getNameByIndex(-1));
+
+        // Check upper bounding.
+        assertEquals("three", instance.getNameByIndex(3));
+
+        // Check within bounding.
+        assertEquals("two", instance.getNameByIndex(1));
+    }
+
+    /**
+     * Test of numberOfNames method, of class JcOption.
+     */
+    @Test
+    public void testNumberOfNames() {
+        System.out.println("numberOfNames");
+
+        // Test with 3
+        JcOption instance = new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", null);
+        assertEquals(3, instance.numberOfNames());
+
+        // Test with 6
+        instance = new JcOption<>(new String[]{"one", "two", "three", "four", "five", "six"}, "description", false, String.class, "defaultValue", null);
+        assertEquals(6, instance.numberOfNames());
     }
 }

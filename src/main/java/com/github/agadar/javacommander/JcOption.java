@@ -15,7 +15,7 @@ public final class JcOption<T> {
      * Names of the option. The first entry is its primary name. The other
      * entries are synonyms.
      */
-    public final String[] names;
+    private final String[] names;
 
     /**
      * A description of the option.
@@ -58,12 +58,38 @@ public final class JcOption<T> {
      */
     public JcOption(String[] names, String description, boolean hasDefaultValue,
             Class<T> type, T defaultValue, Class<? extends OptionTranslator<T>> translator) {
+        if (names == null || names.length < 1 || names[0] == null) {
+            throw new IllegalArgumentException("'names' should not be null or empty, and its first value should not be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("'type' should not be null");
+        }
         this.names = names;
-        this.description = description;
+        this.description = description != null ? description : "";
         this.hasDefaultValue = hasDefaultValue;
         this.type = type;
         this.defaultValue = defaultValue;
         this.translator = translator;
+    }
+
+    /**
+     * Returns the name at the index, where index is bounded between 0 and the
+     * number of names.
+     *
+     * @param index The index of the name to return.
+     * @return The name at the index.
+     */
+    public final String getNameByIndex(int index) {
+        return names[Math.max(Math.min(index, names.length - 1), 0)];
+    }
+
+    /**
+     * Returns the number of names this JcOption has.
+     *
+     * @return The number of names this JcOption has.
+     */
+    public final int numberOfNames() {
+        return names.length;
     }
 
     /**
@@ -76,12 +102,13 @@ public final class JcOption<T> {
     }
 
     /**
-     * Convenience method for checking whether this option has a description.
+     * Convenience method for checking whether this option has a description
+     * set.
      *
-     * @return Whether this option has a description.
+     * @return Whether this option has a description set.
      */
     public final boolean hasDescription() {
-        return description != null && !description.isEmpty();
+        return !description.isEmpty();
     }
 
     /**
@@ -90,6 +117,6 @@ public final class JcOption<T> {
      * @return Whether this option has a translator set.
      */
     public final boolean hasTranslator() {
-        return !translator.equals(NoTranslator.class);
+        return translator != null ? !translator.equals(NoTranslator.class) : false;
     }
 }

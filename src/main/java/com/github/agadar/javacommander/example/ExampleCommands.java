@@ -119,11 +119,11 @@ public final class ExampleCommands {
      */
     protected void optionToString(JcOption jcOption, StringBuilder stringBuilder) {
         stringBuilder.append("\n");
-        stringBuilder.append(jcOption.names[0]);
+        stringBuilder.append(jcOption.getPrimaryName());
 
-        for (int i = 1; i < jcOption.names.length; i++) {
+        for (int i = 1; i < jcOption.numberOfNames(); i++) {
             stringBuilder.append(", ");
-            stringBuilder.append(jcOption.names[i]);
+            stringBuilder.append(jcOption.getNameByIndex(i));
         }
         stringBuilder.append("\t\t");
         stringBuilder.append(jcOption.description);
