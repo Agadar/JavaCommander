@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Manages an application's commands.
@@ -217,7 +218,7 @@ public final class JavaCommander {
      * @return
      */
     private static Object[] parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex) {
-        JcOption currentOption = command.optionNamesToOptions.get(args.get(paramsStartingIndex));
+        Optional<JcOption> currentOption = command.getOptionByName(args.get(paramsStartingIndex));
         boolean parsingOption = false;
 
         // Iterate over all the arguments.
@@ -226,15 +227,15 @@ public final class JavaCommander {
             // If we're not currently finding a value for an option, then
             // try find the option. Else, try to parse the value.                
             if (parsingOption) {
-                currentOption = command.optionNamesToOptions.get(args.get(i));
+                currentOption = command.getOptionByName(args.get(i));
 
                 // If the option was not found, throw an exception.
-                if (currentOption == null) {
+                if (!currentOption.isPresent()) {
                     throw new UnknownOptionException(command, args.get(i));
                 }
             } else {
-                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
-                finalArgs[command.indexOfOption(currentOption)] = parsedArg;
+                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.get().translator, currentOption.get().type);
+                finalArgs[command.indexOfOption(currentOption.get())] = parsedArg;
                 currentOption = null;
             }
             parsingOption = !parsingOption;
@@ -242,7 +243,7 @@ public final class JavaCommander {
 
         // If the last parameter was not given a value, throw an error.
         if (currentOption != null) {
-            throw new NoValueForOptionException(command, currentOption);
+            throw new NoValueForOptionException(command, currentOption.get());
         }
         return finalArgs;
     }

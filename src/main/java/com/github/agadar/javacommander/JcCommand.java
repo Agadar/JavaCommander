@@ -25,14 +25,14 @@ public final class JcCommand {
     private final JcOption[] options;
 
     /**
+     * This command's options, each option mapped to each of its names.
+     */
+    private final HashMap<String, JcOption> optionNamesToOptions = new HashMap<>();
+
+    /**
      * A description of the command.
      */
     public final String description;
-
-    /**
-     * This command's options, each option mapped to each of its names.
-     */
-    public final HashMap<String, JcOption> optionNamesToOptions = new HashMap<>();
 
     /**
      * The method to invoke when this command is executed.
@@ -94,9 +94,9 @@ public final class JcCommand {
      * @throws IllegalArgumentException If one of the parameter values is
      * invalid.
      */
-    //public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
-     //   this(names == null ? new String[0] : names.toArray(new String[names.size()]), description, options, methodToInvoke, objectToInvokeOn);
-    //}
+    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
+        this(names == null ? null : names.toArray(new String[names.size()]), description, options, methodToInvoke, objectToInvokeOn);
+    }
 
     /**
      * Returns the name at the index, where index is bound between 0 and the
@@ -176,6 +176,19 @@ public final class JcCommand {
             return Optional.empty();
         }
         return Optional.of(options[Math.max(Math.min(index, options.length - 1), 0)]);
+    }
+
+    /**
+     * Gets the option that has the supplied name.
+     *
+     * @param optionName The name of the option to find.
+     * @return The supplied option.
+     */
+    public final Optional<JcOption> getOptionByName(String optionName) {
+        if (optionNamesToOptions.containsKey(optionName)) {
+            return Optional.of(optionNamesToOptions.get(optionName));
+        }
+        return Optional.empty();
     }
 
     /**
