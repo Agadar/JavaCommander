@@ -141,12 +141,8 @@ public final class JavaCommander {
             }
         }
 
-        try {
-            // Finally, invoke the method on the object
-            command.methodToInvoke.invoke(command.objectToInvokeOn, finalArgs);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new CommandInvocationException(command, ex);
-        }
+        // Finally, invoke the method on the object
+        command.invoke(finalArgs);
 
     }
 

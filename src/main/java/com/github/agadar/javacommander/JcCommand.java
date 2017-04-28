@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.CommandInvocationException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.HashMap;
@@ -30,19 +32,19 @@ public final class JcCommand {
     private final HashMap<String, JcOption> optionNamesToOptions = new HashMap<>();
 
     /**
-     * A description of the command.
-     */
-    public final String description;
-
-    /**
      * The method to invoke when this command is executed.
      */
-    public final Method methodToInvoke;
+    private final Method methodToInvoke;
 
     /**
      * The object to invoke the above method on.
      */
-    public final Object objectToInvokeOn;
+    private final Object objectToInvokeOn;
+
+    /**
+     * A description of the command.
+     */
+    public final String description;
 
     /**
      * Constructor.
@@ -240,4 +242,28 @@ public final class JcCommand {
         return (this.getPrimaryName().equals(((JcCommand) obj).getPrimaryName()));
     }
 
+    /**
+     * Invokes this command, using the supplied array of arguments.
+     *
+     * @param args The arguments.
+     * @throws CommandInvocationException If invoking the command failed.
+     */
+    public final void invoke(Object[] args) throws CommandInvocationException {
+        try {
+            methodToInvoke.invoke(objectToInvokeOn, args);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new CommandInvocationException(this, ex);
+        }
+    }
+
+    /**
+     * Returns whether the supplied object is the same object this command will
+     * invoke a method on when invoked.
+     *
+     * @param object The object to check.
+     * @return True if the above is the case, otherwise false.
+     */
+    public final boolean isMyObject(Object object) {
+        return this.objectToInvokeOn == object;
+    }
 }

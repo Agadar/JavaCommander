@@ -80,7 +80,7 @@ public final class JcRegistry {
         final ArrayList<String> keysToRemove = new ArrayList<>();
 
         // Collect keys to remove from commandToPrimaryName
-        primaryNamesToCommands.entrySet().stream().filter((entry) -> (entry.getValue().objectToInvokeOn.equals(object))).forEach((entry) -> {
+        primaryNamesToCommands.entrySet().stream().filter((entry) -> (entry.getValue().isMyObject(object))).forEach((entry) -> {
             keysToRemove.add(entry.getKey());
         });
 
