@@ -28,7 +28,7 @@ public final class ExampleCommands {
     public ExampleCommands() {
         this(new JavaCommander());
     }
-    
+
     /**
      * Constructor.
      *
@@ -98,9 +98,9 @@ public final class ExampleCommands {
             // If there are options, then list them.
             stringBuilder.append("Available options:");
             if (command.get().hasOptions()) {
-                command.get().options.stream().forEach((jcOption) -> {
-                    optionToString(jcOption, stringBuilder);
-                });
+                for (int i = 0; i < command.get().numberOfOptions(); i++) {
+                    optionToString(command.get().getOptionByIndex(i).get(), stringBuilder);
+                }
             } // Otherwise, inform the user there are no options.
             else {
                 stringBuilder.append("\nNo options available.");

@@ -110,7 +110,7 @@ public final class JavaCommander {
         }
 
         // Arguments to be passed to the Method.invoke function.
-        final Object[] finalArgs = new Object[command.options.size()];
+        final Object[] finalArgs = new Object[command.numberOfOptions()];
 
         // If there's arguments left to parse to options, let's parse them.
         if (args.size() > paramsStartingIndex) {
@@ -130,7 +130,7 @@ public final class JavaCommander {
             Object val = finalArgs[i];
 
             if (val == null) {
-                JcOption option = command.options.get(i);
+                JcOption option = command.getOptionByIndex(i).get();
 
                 if (option.hasDefaultValue) {
                     finalArgs[i] = option.defaultValue;
@@ -193,13 +193,13 @@ public final class JavaCommander {
         // them in finalArgs as we go.
         if (paramsStartingIndex == 1) {
             for (int i = 1; i < args.size(); i++) {
-                final JcOption currentOption = command.options.get(i - 1);
+                final JcOption currentOption = command.getOptionByIndex(i - 1).get();
                 final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
                 finalArgs[i - 1] = parsedArg;
             }
         } else {
             for (int i = 0; i < args.size(); i++) {
-                final JcOption currentOption = command.options.get(i);
+                final JcOption currentOption = command.getOptionByIndex(i).get();
                 final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
                 finalArgs[i] = parsedArg;
             }
@@ -234,7 +234,7 @@ public final class JavaCommander {
                 }
             } else {
                 final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
-                finalArgs[command.options.indexOf(currentOption)] = parsedArg;
+                finalArgs[command.indexOfOption(currentOption)] = parsedArg;
                 currentOption = null;
             }
             parsingOption = !parsingOption;

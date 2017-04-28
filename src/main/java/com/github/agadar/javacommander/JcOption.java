@@ -121,4 +121,25 @@ public final class JcOption<T> {
     public final boolean hasTranslator() {
         return (translator != null) ? (!translator.equals(NoTranslator.class)) : false;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 43 * hash + this.getPrimaryName().hashCode();
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        return this.getPrimaryName().equals(((JcOption) obj).getPrimaryName());
+    }
 }
