@@ -55,6 +55,8 @@ public final class JcOption<T> {
      * set to false, then this value is ignored.
      * @param translator The translator used to parse a string to the option's
      * type.
+     * @throws IllegalArgumentException If one of the parameter values is
+     * invalid.
      */
     public JcOption(String[] names, String description, boolean hasDefaultValue,
             Class<T> type, T defaultValue, Class<? extends OptionTranslator<T>> translator) {
@@ -65,7 +67,7 @@ public final class JcOption<T> {
             throw new IllegalArgumentException("'type' should not be null");
         }
         this.names = names;
-        this.description = description != null ? description : "";
+        this.description = (description == null) ? "" : description;
         this.hasDefaultValue = hasDefaultValue;
         this.type = type;
         this.defaultValue = defaultValue;
@@ -73,7 +75,7 @@ public final class JcOption<T> {
     }
 
     /**
-     * Returns the name at the index, where index is bounded between 0 and the
+     * Returns the name at the index, where index is bound between 0 and the
      * number of names.
      *
      * @param index The index of the name to return.
@@ -84,9 +86,9 @@ public final class JcOption<T> {
     }
 
     /**
-     * Returns the number of names this JcOption has.
+     * Returns the number of names this instance has.
      *
-     * @return The number of names this JcOption has.
+     * @return The number of names this instance has.
      */
     public final int numberOfNames() {
         return names.length;
@@ -117,6 +119,6 @@ public final class JcOption<T> {
      * @return Whether this option has a translator set.
      */
     public final boolean hasTranslator() {
-        return translator != null ? !translator.equals(NoTranslator.class) : false;
+        return (translator != null) ? (!translator.equals(NoTranslator.class)) : false;
     }
 }

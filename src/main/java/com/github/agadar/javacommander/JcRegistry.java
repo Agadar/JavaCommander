@@ -87,8 +87,8 @@ public final class JcRegistry {
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
         keysToRemove.stream().map((s) -> primaryNamesToCommands.remove(s)).forEach((command) -> {
-            for (String ss : command.names) {
-                allNamesToCommands.remove(ss);
+            for (int i = 0; i < command.numberOfNames(); i++) {
+                allNamesToCommands.remove(command.getNameByIndex(i));
             }
         });
     }
@@ -129,10 +129,10 @@ public final class JcRegistry {
      * @param jcCommand The command to register.
      */
     private void registerCommand(JcCommand jcCommand) {
-        for (String name : jcCommand.names) {
-            allNamesToCommands.put(name, jcCommand);
+        for (int i = 0; i < jcCommand.numberOfNames(); i++) {
+            allNamesToCommands.put(jcCommand.getNameByIndex(i), jcCommand);
         }
-        primaryNamesToCommands.put(jcCommand.names[0], jcCommand);
+        primaryNamesToCommands.put(jcCommand.getPrimaryName(), jcCommand);
     }
 
     /**

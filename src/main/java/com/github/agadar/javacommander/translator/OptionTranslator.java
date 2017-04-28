@@ -29,8 +29,7 @@ public interface OptionTranslator<T> {
      * @param type The type to parse to.
      * @return The string parsed to a value of type V.
      */
-    public static <V> V parseString(String stringToParse, Class<V> type)
-            throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
+    public static <V> V parseString(String stringToParse, Class<V> type) throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
         if (type.equals(String.class)) {
             return (V) stringToParse;
         }

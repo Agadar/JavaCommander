@@ -27,7 +27,7 @@ public final class NoValueForOptionException extends RuntimeException {
      * @param jcOption The option that was not supplied with a value.
      */
     public NoValueForOptionException(JcCommand jcCommand, JcOption jcOption) {
-        super(String.format("Option '%s' of command '%s' was not supplied a value", jcOption.getPrimaryName(), jcCommand.names[0]));
+        super(String.format("Option '%s' of command '%s' was not supplied a value", jcOption.getPrimaryName(), jcCommand.getPrimaryName()));
         this.jcCommand = jcCommand;
         this.jcOption = jcOption;
     }

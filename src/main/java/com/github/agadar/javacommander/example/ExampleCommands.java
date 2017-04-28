@@ -62,11 +62,11 @@ public final class ExampleCommands {
             // Iterate over the commands to find the info
             javaCommander.jcRegistry.getParsedCommands().forEach((command) -> {
                 stringBuilder.append("\n");
-                stringBuilder.append(command.names[0]);
+                stringBuilder.append(command.getPrimaryName());
 
-                for (int i = 1; i < command.names.length; i++) {
+                for (int i = 1; i < command.numberOfNames(); i++) {
                     stringBuilder.append(", ");
-                    stringBuilder.append(command.names[i]);
+                    stringBuilder.append(command.getNameByIndex(i));
                 }
                 stringBuilder.append("\t\t");
                 stringBuilder.append(command.hasDescription() ? command.description : "No description available.");
@@ -87,11 +87,11 @@ public final class ExampleCommands {
 
             // If there are synonyms, then list them.
             stringBuilder.append("Synonyms:\n");
-            stringBuilder.append(command.get().names[0]);
+            stringBuilder.append(command.get().getPrimaryName());
 
-            for (int i = 1; i < command.get().names.length; i++) {
+            for (int i = 1; i < command.get().numberOfNames(); i++) {
                 stringBuilder.append(", ");
-                stringBuilder.append(command.get().names[i]);
+                stringBuilder.append(command.get().getNameByIndex(i));
             }
             stringBuilder.append("\n\n");
 

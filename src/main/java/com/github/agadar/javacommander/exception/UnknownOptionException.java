@@ -29,7 +29,7 @@ public final class UnknownOptionException extends RuntimeException {
      * command.
      */
     public UnknownOptionException(JcCommand jcCommand, String optionName) {
-        super(String.format("'%s' is not a valid option for command '%s'", optionName, jcCommand.names[0]));
+        super(String.format("'%s' is not a valid option for command '%s'", optionName, jcCommand.getPrimaryName()));
         this.jcCommand = jcCommand;
         this.optionName = optionName;
     }

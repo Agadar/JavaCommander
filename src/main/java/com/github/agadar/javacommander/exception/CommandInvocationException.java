@@ -21,7 +21,7 @@ public final class CommandInvocationException extends RuntimeException {
      * @param cause The exception that caused the failure.
      */
     public CommandInvocationException(JcCommand jcCommand, Throwable cause) {
-        super(String.format("Failed to invoke command '%s'", jcCommand.names[0]), cause);
+        super(String.format("Failed to invoke command '%s'", jcCommand.getPrimaryName()), cause);
         this.jcCommand = jcCommand;
     }
 }

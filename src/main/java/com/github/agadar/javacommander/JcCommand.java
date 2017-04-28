@@ -1,10 +1,10 @@
 package com.github.agadar.javacommander;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * A command parsed from a Command annotation.
@@ -17,7 +17,7 @@ public final class JcCommand {
      * Names of the command. The first entry is the primary name. The other
      * entries are synonyms.
      */
-    public final String[] names;
+    private final String[] names;
 
     /**
      * A description of the command.
@@ -32,7 +32,7 @@ public final class JcCommand {
     /**
      * This command's options, each option mapped to each of its names.
      */
-    public final HashMap<String, JcOption> optionNamesToOptions;
+    public final HashMap<String, JcOption> optionNamesToOptions = new HashMap<>();
 
     /**
      * The method to invoke when this command is executed.
@@ -54,15 +54,24 @@ public final class JcCommand {
      * parameters.
      * @param methodToInvoke The method to invoke when this command is executed.
      * @param objectToInvokeOn The object to invoke the above method on.
+     * @throws IllegalArgumentException If one of the parameter values is
+     * invalid.
      */
-    public JcCommand(String[] names, String description, List<JcOption> options,
-            Method methodToInvoke, Object objectToInvokeOn) {
+    public JcCommand(String[] names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
+        if (names == null || names.length < 1 || names[0] == null) {
+            throw new IllegalArgumentException("'names' should not be null or empty, and its first value should not be null");
+        }
+        if (methodToInvoke == null) {
+            throw new IllegalArgumentException("'methodToInvoke' should not be null");
+        }
+        if (objectToInvokeOn == null) {
+            throw new IllegalArgumentException("'objectToInvokeOn' should not be null");
+        }
         this.names = names;
-        this.description = description;
-        this.options = options;
+        this.description = (description == null) ? "" : description;
+        this.options = (options == null) ? new ArrayList<>() : options;
         this.methodToInvoke = methodToInvoke;
         this.objectToInvokeOn = objectToInvokeOn;
-        this.optionNamesToOptions = new HashMap<>();
 
         // Map all options
         options.stream().forEach((option) -> {
@@ -73,16 +82,32 @@ public final class JcCommand {
     }
 
     /**
-     * Convenience method for getting the primary name. If this command is the
-     * master command (i.e. it has no names) then the value is empty.
+     * Returns the name at the index, where index is bound between 0 and the
+     * number of names.
+     *
+     * @param index The index of the name to return.
+     * @return The name at the index.
+     */
+    public final String getNameByIndex(int index) {
+        return names[Math.max(Math.min(index, names.length - 1), 0)];
+    }
+
+    /**
+     * Returns the number of names this instance has.
+     *
+     * @return The number of names this instance has.
+     */
+    public final int numberOfNames() {
+        return names.length;
+    }
+
+    /**
+     * Convenience method for getting the primary name.
      *
      * @return This command's primary name.
      */
-    public final Optional<String> getPrimaryName() {
-        if (names.length > 1) {
-            return Optional.of(names[0]);
-        }
-        return Optional.empty();
+    public final String getPrimaryName() {
+        return names[0];
     }
 
     /**
@@ -91,7 +116,7 @@ public final class JcCommand {
      * @return Whether this command has any options.
      */
     public final boolean hasOptions() {
-        return options != null && options.size() > 0;
+        return options.size() > 0;
     }
 
     /**
@@ -100,7 +125,7 @@ public final class JcCommand {
      * @return whether this command has any synonyms
      */
     public final boolean hasSynonyms() {
-        return names != null && names.length > 1;
+        return names.length > 1;
     }
 
     /**
@@ -109,7 +134,7 @@ public final class JcCommand {
      * @return Whether this command has a description.
      */
     public final boolean hasDescription() {
-        return description != null && !description.isEmpty();
+        return !description.isEmpty();
     }
 
     /**

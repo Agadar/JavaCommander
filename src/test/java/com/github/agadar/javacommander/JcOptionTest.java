@@ -7,7 +7,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
+ * Tests com.github.agadar.javacommander.JcOption.
+ * 
  * @author Agadar (https://github.com/Agadar/)
  */
 public final class JcOptionTest {
