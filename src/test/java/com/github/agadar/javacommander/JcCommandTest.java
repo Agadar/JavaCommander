@@ -22,7 +22,7 @@ public final class JcCommandTest {
     private static Method methodToInvokeOn;
 
     @BeforeClass
-    public static void BeforeClass() throws NoSuchMethodException {
+    public static void SetupClass() throws NoSuchMethodException {
         objectToInvokeOn = new Foo();
         methodToInvokeOn = Foo.class.getMethod("Bar");
     }
