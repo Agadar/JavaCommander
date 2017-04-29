@@ -7,12 +7,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 /**
  * Tests com.github.agadar.javacommander.JcCommand.
@@ -28,18 +25,6 @@ public final class JcCommandTest {
     public static void BeforeClass() throws NoSuchMethodException {
         objectToInvokeOn = new Foo();
         methodToInvokeOn = Foo.class.getMethod("Bar");
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     /**
@@ -129,12 +114,6 @@ public final class JcCommandTest {
         jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
-    }
-
-    private static final class Foo {
-
-        public void Bar() {
-        }
     }
 
     /**
@@ -245,6 +224,21 @@ public final class JcCommandTest {
     public void testIndexOfOption() {
         System.out.println("indexOfOption");
 
+        final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class, "defaultValue", NoTranslator.class);
+
+        final ArrayList<JcOption> jcOptions = new ArrayList<>();
+        jcOptions.add(jcOption1);
+        jcOptions.add(jcOption2);
+
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+
+        // Test existing.
+        assertEquals(1, jcCommand.indexOfOption(jcOption2));
+
+        // Test non-existing.
+        assertEquals(-1, jcCommand.indexOfOption(jcOption3));
     }
 
     /**
@@ -254,6 +248,14 @@ public final class JcCommandTest {
     public void testHashCode() {
         System.out.println("hashCode");
 
+        // True result.
+        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn, objectToInvokeOn);
+        assertEquals(jcCommand1.hashCode(), jcCommand2.hashCode());
+
+        // False result.
+        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn, objectToInvokeOn);
+        assertNotEquals(jcCommand1.hashCode(), jcCommand3.hashCode());
     }
 
     /**
@@ -263,15 +265,33 @@ public final class JcCommandTest {
     public void testEquals() {
         System.out.println("equals");
 
+        // True result.
+        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn, objectToInvokeOn);
+        assertEquals(jcCommand1, jcCommand2);
+
+        // False result.
+        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn, objectToInvokeOn);
+        assertNotEquals(jcCommand1, jcCommand3);
     }
 
     /**
      * Test of invoke method, of class JcCommand.
+     *
+     * @throws java.lang.NoSuchMethodException
      */
     @Test
-    public void testInvoke() {
+    public void testInvoke() throws NoSuchMethodException {
         System.out.println("invoke");
 
+        // Invoke without parameters.
+        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null, methodToInvokeOn, objectToInvokeOn);
+        jcCommand1.invoke();
+
+        // Invoke with parameters.
+        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
+                FooWithParams.class.getMethod("Bar", String.class, int.class, boolean.class), new FooWithParams());
+        jcCommand2.invoke("stringParam", 15, true);
     }
 
     /**
@@ -280,6 +300,20 @@ public final class JcCommandTest {
     @Test
     public void testIsMyObject() {
         System.out.println("isMyObject");
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null, methodToInvokeOn, objectToInvokeOn);
+        assertTrue(jcCommand.isMyObject(objectToInvokeOn));
 
+    }
+
+    private static final class Foo {
+
+        public void Bar() {
+        }
+    }
+
+    private static final class FooWithParams {
+
+        public void Bar(String stringParam, int intParam, boolean boolParam) {
+        }
     }
 }

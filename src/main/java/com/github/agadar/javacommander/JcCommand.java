@@ -241,7 +241,7 @@ public final class JcCommand {
      * @param args The arguments.
      * @throws CommandInvocationException If invoking the command failed.
      */
-    public final void invoke(Object[] args) throws CommandInvocationException {
+    public final void invoke(Object... args) throws CommandInvocationException {
         try {
             methodToInvoke.invoke(objectToInvokeOn, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {

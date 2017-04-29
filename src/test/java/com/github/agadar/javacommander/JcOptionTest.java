@@ -4,12 +4,8 @@ import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 import java.util.Arrays;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  * Tests com.github.agadar.javacommander.JcOption.
@@ -17,22 +13,6 @@ import org.junit.BeforeClass;
  * @author Agadar (https://github.com/Agadar/)
  */
 public final class JcOptionTest {
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     /**
      * Test of getPrimaryName method, of class JcOption.
@@ -154,10 +134,10 @@ public final class JcOptionTest {
         // True result.
         final JcOption instance1 = new JcOption<>(Arrays.asList("one", "two", "three"), "description1", false, String.class, "defaultValue", null);
         final JcOption instance2 = new JcOption<>(Arrays.asList("one"), "description2", true, Integer.class, 10, null);
-        assertTrue(instance1.equals(instance2));
+        assertEquals(instance1, instance2);
 
         // False result.
         final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, 10, null);
-        assertFalse(instance1.equals(instance3));
+        assertNotEquals(instance1, instance3);
     }
 }
