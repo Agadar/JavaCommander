@@ -5,9 +5,11 @@ import com.github.agadar.javacommander.exception.CommandInvocationException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * A command parsed from a Command annotation.
@@ -20,12 +22,12 @@ public final class JcCommand {
      * Names of the command. The first entry is the primary name. The other
      * entries are synonyms.
      */
-    private final String[] names;
+    private final List<String> names;
 
     /**
      * This command's options, in order of the method's parameters
      */
-    private final JcOption[] options;
+    private final List<JcOption> options;
 
     /**
      * This command's options, each option mapped to each of its names.
@@ -60,45 +62,42 @@ public final class JcCommand {
      * @throws IllegalArgumentException If one of the parameter values is
      * invalid.
      */
-    public JcCommand(String[] names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
-        if (names == null || names.length < 1 || names[0] == null) {
-            throw new IllegalArgumentException("'names' should not be null or empty, and its first value should not be null");
+    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
+
+        // Make sure names is not null.
+        if (names == null) {
+            throw new IllegalArgumentException("'names' should not be null");
         }
+
+        // Filter null values from names.
+        names = names.stream().filter(name -> name != null).collect(Collectors.toList());
+
+        // Make sure after filtering, names is now not empty.
+        if (names.isEmpty()) {
+            throw new IllegalArgumentException("'names' should not be empty");
+        }
+
+        // Make sure methodToInvoke and objectToInvokeOn aren't null.
         if (methodToInvoke == null) {
             throw new IllegalArgumentException("'methodToInvoke' should not be null");
         }
         if (objectToInvokeOn == null) {
             throw new IllegalArgumentException("'objectToInvokeOn' should not be null");
         }
+
+        // Assign values to fields.
         this.names = names;
         this.description = (description == null) ? "" : description;
-        this.options = (options == null) ? new JcOption[0] : options.toArray(new JcOption[options.size()]);
+        this.options = (options == null) ? new ArrayList<>() : options.stream().filter(option -> option != null).collect(Collectors.toList());
         this.methodToInvoke = methodToInvoke;
         this.objectToInvokeOn = objectToInvokeOn;
 
         // Map all options
-        for (JcOption option : this.options) {
+        this.options.stream().forEach((option) -> {
             for (int j = 0; j < option.numberOfNames(); j++) {
                 optionNamesToOptions.put(option.getNameByIndex(j), option);
             }
-        }
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param names Names of the command. The first entry is the primary name.
-     * The other entries are synonyms.
-     * @param description A description of the command.
-     * @param options This command's options, in order of the method's
-     * parameters.
-     * @param methodToInvoke The method to invoke when this command is executed.
-     * @param objectToInvokeOn The object to invoke the above method on.
-     * @throws IllegalArgumentException If one of the parameter values is
-     * invalid.
-     */
-    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
-        this(names == null ? null : names.toArray(new String[names.size()]), description, options, methodToInvoke, objectToInvokeOn);
+        });
     }
 
     /**
@@ -109,7 +108,7 @@ public final class JcCommand {
      * @return The name at the index.
      */
     public final String getNameByIndex(int index) {
-        return names[Math.max(Math.min(index, names.length - 1), 0)];
+        return names.get(Math.max(Math.min(index, names.size() - 1), 0));
     }
 
     /**
@@ -118,7 +117,7 @@ public final class JcCommand {
      * @return The number of names this instance has.
      */
     public final int numberOfNames() {
-        return names.length;
+        return names.size();
     }
 
     /**
@@ -127,7 +126,7 @@ public final class JcCommand {
      * @return This command's primary name.
      */
     public final String getPrimaryName() {
-        return names[0];
+        return names.get(0);
     }
 
     /**
@@ -136,7 +135,7 @@ public final class JcCommand {
      * @return Whether this command has any options.
      */
     public final boolean hasOptions() {
-        return options.length > 0;
+        return options.size() > 0;
     }
 
     /**
@@ -145,7 +144,7 @@ public final class JcCommand {
      * @return whether this command has any synonyms
      */
     public final boolean hasSynonyms() {
-        return names.length > 1;
+        return names.size() > 1;
     }
 
     /**
@@ -175,10 +174,10 @@ public final class JcCommand {
      * @return The option at the bound index, or empty if this has no options.
      */
     public final Optional<JcOption> getOptionByIndex(int index) {
-        if (options.length < 1) {
+        if (options.size() < 1) {
             return Optional.empty();
         }
-        return Optional.of(options[Math.max(Math.min(index, options.length - 1), 0)]);
+        return Optional.of(options.get(Math.max(Math.min(index, options.size() - 1), 0)));
     }
 
     /**
@@ -201,7 +200,7 @@ public final class JcCommand {
      * @return The number of names this instance has.
      */
     public final int numberOfOptions() {
-        return options.length;
+        return options.size();
     }
 
     /**
@@ -212,15 +211,7 @@ public final class JcCommand {
      * null.
      */
     public final int indexOfOption(JcOption option) {
-        if (option == null) {
-            return -1;
-        }
-        for (int i = 0; i < options.length; i++) {
-            if (option.equals(options[i])) {
-                return i;
-            }
-        }
-        return -1;
+        return options.indexOf(option);
     }
 
     @Override

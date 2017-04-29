@@ -48,7 +48,7 @@ public final class JcCommandTest {
     @Test
     public void testGetPrimaryName() {
         System.out.println("getPrimaryName");
-        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertEquals("one", jcCommand.getPrimaryName());
     }
 
@@ -60,13 +60,13 @@ public final class JcCommandTest {
         System.out.println("hasOptions");
 
         // Test false.
-        JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasOptions());
 
         // Test true.
         final ArrayList<JcOption> jcOptions = new ArrayList<>();
         jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOptions());
     }
 
@@ -78,11 +78,11 @@ public final class JcCommandTest {
         System.out.println("hasSynonyms");
 
         // Test false.
-        JcCommand jcCommand = new JcCommand(new String[]{"one"}, "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        JcCommand jcCommand = new JcCommand(Arrays.asList("one"), "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasSynonyms());
 
         // Test true.
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasSynonyms());
     }
 
@@ -94,15 +94,15 @@ public final class JcCommandTest {
         System.out.println("hasDescription");
 
         // Test false with null.
-        JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, null, new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), null, new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasDescription());
 
         // Test false with empty.
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasDescription());
 
         // Test true.
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasDescription());
     }
 
@@ -115,19 +115,19 @@ public final class JcCommandTest {
 
         // Test false.
         ArrayList<JcOption> jcOptions = new ArrayList<>();
-        JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasOption("one"));
 
         // Test true with primary name.
         jcOptions = new ArrayList<>();
         jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOption("one"));
 
         // test true with synonym.
         jcOptions = new ArrayList<>();
         jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
-        jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
     }
 
@@ -143,7 +143,7 @@ public final class JcCommandTest {
     @Test
     public void testGetNameByIndex() {
         System.out.println("getNameByIndex");
-        final JcCommand instance = new JcCommand(new String[]{"one", "two", "three"}, "description", null, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand instance = new JcCommand(Arrays.asList("one", "two", "three"), "description", null, methodToInvokeOn, objectToInvokeOn);
 
         // Check lower bounding.
         assertEquals("one", instance.getNameByIndex(-1));
@@ -161,7 +161,7 @@ public final class JcCommandTest {
     @Test
     public void testNumberOfNames() {
         System.out.println("numberOfNames");
-        final JcCommand instance = new JcCommand(new String[]{"one", "two", "three"}, "description", null, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand instance = new JcCommand(Arrays.asList("one", "two", "three"), "description", null, methodToInvokeOn, objectToInvokeOn);
         assertEquals(3, instance.numberOfNames());
     }
 
@@ -181,7 +181,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
 
         // Check lower bounding.
         assertSame(jcOption1, jcCommand.getOptionByIndex(-1).get());
@@ -209,7 +209,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
 
         // Test one that exists.
         assertSame(jcOption2, jcCommand.getOptionByName("two").get());
@@ -234,7 +234,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertEquals(3, jcCommand.numberOfOptions());
     }
 

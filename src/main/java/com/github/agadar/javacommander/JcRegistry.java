@@ -62,7 +62,7 @@ public final class JcRegistry {
                 final ArrayList<JcOption> options = parseOptions(commandAnnotation, method);
 
                 // Create new JcCommand object and register it.
-                registerCommand(new JcCommand(names, description, options, method, object));
+                registerCommand(new JcCommand(Arrays.asList(names), description, options, method, object));
             }
         }
     }

@@ -82,7 +82,7 @@ public final class JcOption<T> {
             throw new IllegalArgumentException("'type' should not be null");
         }
 
-        // Assign values.
+        // Assign values to fields.
         this.names = names;
         this.description = (description == null) ? "" : description;
         this.hasDefaultValue = hasDefaultValue;
