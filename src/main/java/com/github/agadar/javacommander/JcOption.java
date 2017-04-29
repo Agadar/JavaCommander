@@ -3,6 +3,9 @@ package com.github.agadar.javacommander;
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * A command option parsed from an Option annotation.
  *
@@ -15,7 +18,7 @@ public final class JcOption<T> {
      * Names of the option. The first entry is its primary name. The other
      * entries are synonyms.
      */
-    private final String[] names;
+    private final List<String> names;
 
     /**
      * A description of the option.
@@ -58,14 +61,28 @@ public final class JcOption<T> {
      * @throws IllegalArgumentException If one of the parameter values is
      * invalid.
      */
-    public JcOption(String[] names, String description, boolean hasDefaultValue,
+    public JcOption(List<String> names, String description, boolean hasDefaultValue,
             Class<T> type, T defaultValue, Class<? extends OptionTranslator<T>> translator) {
-        if (names == null || names.length < 1 || names[0] == null) {
-            throw new IllegalArgumentException("'names' should not be null or empty, and its first value should not be null");
+
+        // Make sure names is not null.
+        if (names == null) {
+            throw new IllegalArgumentException("'names' should not be null");
         }
+
+        // Filter null values from names.
+        names = names.stream().filter(name -> name != null).collect(Collectors.toList());
+        
+        // Make sure after filtering, names is now not empty.
+        if (names.isEmpty()) {
+            throw new IllegalArgumentException("'names' should not be empty");
+        }
+
+        // Make sure type is not null.
         if (type == null) {
             throw new IllegalArgumentException("'type' should not be null");
         }
+
+        // Assign values.
         this.names = names;
         this.description = (description == null) ? "" : description;
         this.hasDefaultValue = hasDefaultValue;
@@ -82,7 +99,7 @@ public final class JcOption<T> {
      * @return The name at the index.
      */
     public final String getNameByIndex(int index) {
-        return names[Math.max(Math.min(index, names.length - 1), 0)];
+        return names.get(Math.max(Math.min(index, names.size() - 1), 0));
     }
 
     /**
@@ -91,7 +108,7 @@ public final class JcOption<T> {
      * @return The number of names this instance has.
      */
     public final int numberOfNames() {
-        return names.length;
+        return names.size();
     }
 
     /**
@@ -100,7 +117,7 @@ public final class JcOption<T> {
      * @return This option's primary name.
      */
     public final String getPrimaryName() {
-        return names[0];
+        return names.get(0);
     }
 
     /**

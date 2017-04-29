@@ -1,13 +1,14 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.translator.NoTranslator;
+
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.AfterClass;
-
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
@@ -64,7 +65,7 @@ public final class JcCommandTest {
 
         // Test true.
         final ArrayList<JcOption> jcOptions = new ArrayList<>();
-        jcOptions.add(new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", NoTranslator.class));
+        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
         jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOptions());
     }
@@ -119,13 +120,13 @@ public final class JcCommandTest {
 
         // Test true with primary name.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", NoTranslator.class));
+        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
         jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOption("one"));
 
         // test true with synonym.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcOption<>(new String[]{"one", "two", "three"}, "description", false, String.class, "defaultValue", NoTranslator.class));
+        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class));
         jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
     }
@@ -171,9 +172,9 @@ public final class JcCommandTest {
     public void testGetOptionByIndex() {
         System.out.println("getOptionByIndex");
 
-        final JcOption jcOption1 = new JcOption<>(new String[]{"one"}, "description", false, String.class, "defaultValue", NoTranslator.class);
-        final JcOption jcOption2 = new JcOption<>(new String[]{"two"}, "description", false, String.class, "defaultValue", NoTranslator.class);
-        final JcOption jcOption3 = new JcOption<>(new String[]{"three"}, "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class, "defaultValue", NoTranslator.class);
 
         final ArrayList<JcOption> jcOptions = new ArrayList<>();
         jcOptions.add(jcOption1);
@@ -198,7 +199,23 @@ public final class JcCommandTest {
     @Test
     public void testGetOptionByName() {
         System.out.println("getOptionByName");
-        
+
+        final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class, "defaultValue", NoTranslator.class);
+
+        final ArrayList<JcOption> jcOptions = new ArrayList<>();
+        jcOptions.add(jcOption1);
+        jcOptions.add(jcOption2);
+        jcOptions.add(jcOption3);
+
+        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+
+        // Test one that exists.
+        assertSame(jcOption2, jcCommand.getOptionByName("two").get());
+
+        // Test one that doesn't exist.
+        assertFalse(jcCommand.getOptionByName("four").isPresent());
     }
 
     /**
@@ -207,7 +224,18 @@ public final class JcCommandTest {
     @Test
     public void testNumberOfOptions() {
         System.out.println("numberOfOptions");
-        
+
+        final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class, "defaultValue", NoTranslator.class);
+        final JcOption jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class, "defaultValue", NoTranslator.class);
+
+        final ArrayList<JcOption> jcOptions = new ArrayList<>();
+        jcOptions.add(jcOption1);
+        jcOptions.add(jcOption2);
+        jcOptions.add(jcOption3);
+
+        final JcCommand jcCommand = new JcCommand(new String[]{"one", "two", "three"}, "description", jcOptions, methodToInvokeOn, objectToInvokeOn);
+        assertEquals(3, jcCommand.numberOfOptions());
     }
 
     /**
@@ -216,7 +244,7 @@ public final class JcCommandTest {
     @Test
     public void testIndexOfOption() {
         System.out.println("indexOfOption");
-        
+
     }
 
     /**
@@ -225,7 +253,7 @@ public final class JcCommandTest {
     @Test
     public void testHashCode() {
         System.out.println("hashCode");
-        
+
     }
 
     /**
@@ -234,7 +262,7 @@ public final class JcCommandTest {
     @Test
     public void testEquals() {
         System.out.println("equals");
-        
+
     }
 
     /**
@@ -243,7 +271,7 @@ public final class JcCommandTest {
     @Test
     public void testInvoke() {
         System.out.println("invoke");
-        
+
     }
 
     /**
@@ -252,6 +280,6 @@ public final class JcCommandTest {
     @Test
     public void testIsMyObject() {
         System.out.println("isMyObject");
-        
+
     }
 }

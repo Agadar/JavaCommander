@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -205,11 +206,11 @@ public final class JcRegistry {
         // If there is a default value, then try to parse it.
         if (hasDefaultValue) {
             final Object value = parseString(defaultValueStr, translatorClass, parameter.getType());
-            return new JcOption(names, description, hasDefaultValue, type, value, translatorClass); // Return parsed POption.
+            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, value, translatorClass); // Return parsed POption.
 
         } // Else, just parse and return a new JcOption.
         else {
-            return new JcOption(names, description, hasDefaultValue, type, null, translatorClass);
+            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, null, translatorClass);
         }
     }
 
