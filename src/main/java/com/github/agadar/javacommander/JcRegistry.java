@@ -13,6 +13,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -74,7 +75,7 @@ public final class JcRegistry {
      */
     public final void unregisterObject(Object object) {
         if (object == null) {
-            throw new IllegalArgumentException("'obj' may not be null");
+            return;
         }
 
         // Keys which are to be removed from the maps
@@ -111,7 +112,7 @@ public final class JcRegistry {
      * @return All registered JcCommands.
      */
     public final Collection<JcCommand> getParsedCommands() {
-        return primaryNamesToCommands.values();
+        return Collections.unmodifiableCollection(primaryNamesToCommands.values());
     }
 
     /**
@@ -206,7 +207,7 @@ public final class JcRegistry {
         // If there is a default value, then try to parse it.
         if (hasDefaultValue) {
             final Object value = parseString(defaultValueStr, translatorClass, parameter.getType());
-            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, value, translatorClass); // Return parsed POption.
+            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, value, translatorClass);
 
         } // Else, just parse and return a new JcOption.
         else {
@@ -230,7 +231,7 @@ public final class JcRegistry {
             throws OptionTranslatorException {
         try {
             // If no translator is set, attempt a normal valueOf.
-            if (translatorType.equals(NoTranslator.class)) {
+            if (translatorType == null || translatorType.equals(NoTranslator.class)) {
                 return OptionTranslator.parseString(stringToParse, toType);
             } // If one is set, then attempt using that.
             else {
