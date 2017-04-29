@@ -1,6 +1,7 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -76,11 +77,11 @@ public final class JcCommand {
         this.objectToInvokeOn = objectToInvokeOn;
 
         // Map all options
-        options.stream().forEach((option) -> {
-            for (int i = 0; i < option.numberOfNames(); i++) {
-                optionNamesToOptions.put(option.getNameByIndex(i), option);
+        for (JcOption option : this.options) {
+            for (int j = 0; j < option.numberOfNames(); j++) {
+                optionNamesToOptions.put(option.getNameByIndex(j), option);
             }
-        });
+        }
     }
 
     /**
@@ -102,7 +103,7 @@ public final class JcCommand {
 
     /**
      * Returns the name at the index, where index is bound between 0 and the
-     * number of names.
+     * number of names minus 1.
      *
      * @param index The index of the name to return.
      * @return The name at the index.
@@ -168,10 +169,10 @@ public final class JcCommand {
 
     /**
      * Returns the option at the index, where index is bound between 0 and the
-     * number of names.
+     * number of options minus 1.
      *
      * @param index The index of the option to return.
-     * @return The option at the index.
+     * @return The option at the bound index, or empty if this has no options.
      */
     public final Optional<JcOption> getOptionByIndex(int index) {
         if (options.length < 1) {
@@ -184,7 +185,8 @@ public final class JcCommand {
      * Gets the option that has the supplied name.
      *
      * @param optionName The name of the option to find.
-     * @return The supplied option.
+     * @return The supplied option, or empty if this has no option with that
+     * name.
      */
     public final Optional<JcOption> getOptionByName(String optionName) {
         if (optionNamesToOptions.containsKey(optionName)) {

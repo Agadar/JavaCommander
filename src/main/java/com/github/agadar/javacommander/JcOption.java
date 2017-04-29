@@ -76,7 +76,7 @@ public final class JcOption<T> {
 
     /**
      * Returns the name at the index, where index is bound between 0 and the
-     * number of names.
+     * number of names minus 1.
      *
      * @param index The index of the name to return.
      * @return The name at the index.

@@ -2,9 +2,9 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
+
 import org.junit.After;
 import org.junit.AfterClass;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
