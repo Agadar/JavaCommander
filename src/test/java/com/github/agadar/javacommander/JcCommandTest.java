@@ -4,10 +4,14 @@ import com.github.agadar.javacommander.translator.NoTranslator;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
+import java.util.Optional;
+import org.junit.After;
+import org.junit.AfterClass;
 
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  * Tests com.github.agadar.javacommander.JcCommand.
@@ -23,6 +27,18 @@ public final class JcCommandTest {
     public static void BeforeClass() throws NoSuchMethodException {
         objectToInvokeOn = new Foo();
         methodToInvokeOn = Foo.class.getMethod("Bar");
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     /**
@@ -118,5 +134,150 @@ public final class JcCommandTest {
 
         public void Bar() {
         }
+    }
+
+    /**
+     * Test of getNameByIndex method, of class JcCommand.
+     */
+    @Test
+    public void testGetNameByIndex() {
+        System.out.println("getNameByIndex");
+        int index = 0;
+        JcCommand instance = null;
+        String expResult = "";
+        String result = instance.getNameByIndex(index);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of numberOfNames method, of class JcCommand.
+     */
+    @Test
+    public void testNumberOfNames() {
+        System.out.println("numberOfNames");
+        JcCommand instance = null;
+        int expResult = 0;
+        int result = instance.numberOfNames();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getOptionByIndex method, of class JcCommand.
+     */
+    @Test
+    public void testGetOptionByIndex() {
+        System.out.println("getOptionByIndex");
+        int index = 0;
+        JcCommand instance = null;
+        Optional<JcOption> expResult = null;
+        Optional<JcOption> result = instance.getOptionByIndex(index);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of getOptionByName method, of class JcCommand.
+     */
+    @Test
+    public void testGetOptionByName() {
+        System.out.println("getOptionByName");
+        String optionName = "";
+        JcCommand instance = null;
+        Optional<JcOption> expResult = null;
+        Optional<JcOption> result = instance.getOptionByName(optionName);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of numberOfOptions method, of class JcCommand.
+     */
+    @Test
+    public void testNumberOfOptions() {
+        System.out.println("numberOfOptions");
+        JcCommand instance = null;
+        int expResult = 0;
+        int result = instance.numberOfOptions();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of indexOfOption method, of class JcCommand.
+     */
+    @Test
+    public void testIndexOfOption() {
+        System.out.println("indexOfOption");
+        JcOption option = null;
+        JcCommand instance = null;
+        int expResult = 0;
+        int result = instance.indexOfOption(option);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of hashCode method, of class JcCommand.
+     */
+    @Test
+    public void testHashCode() {
+        System.out.println("hashCode");
+        JcCommand instance = null;
+        int expResult = 0;
+        int result = instance.hashCode();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of equals method, of class JcCommand.
+     */
+    @Test
+    public void testEquals() {
+        System.out.println("equals");
+        Object obj = null;
+        JcCommand instance = null;
+        boolean expResult = false;
+        boolean result = instance.equals(obj);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of invoke method, of class JcCommand.
+     */
+    @Test
+    public void testInvoke() {
+        System.out.println("invoke");
+        Object[] args = null;
+        JcCommand instance = null;
+        instance.invoke(args);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of isMyObject method, of class JcCommand.
+     */
+    @Test
+    public void testIsMyObject() {
+        System.out.println("isMyObject");
+        Object object = null;
+        JcCommand instance = null;
+        boolean expResult = false;
+        boolean result = instance.isMyObject(object);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

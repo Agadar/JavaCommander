@@ -2,16 +2,36 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
+import org.junit.After;
+import org.junit.AfterClass;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  * Tests com.github.agadar.javacommander.JcOption.
- * 
+ *
  * @author Agadar (https://github.com/Agadar/)
  */
 public final class JcOptionTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
 
     /**
      * Test of getPrimaryName method, of class JcOption.
@@ -104,5 +124,39 @@ public final class JcOptionTest {
         // Test with 6
         instance = new JcOption<>(new String[]{"one", "two", "three", "four", "five", "six"}, "description", false, String.class, "defaultValue", null);
         assertEquals(6, instance.numberOfNames());
+    }
+
+    /**
+     * Test of hashCode method, of class JcOption.
+     */
+    @Test
+    public void testHashCode() {
+        System.out.println("hashCode");
+
+        // True result.
+        final JcOption instance1 = new JcOption<>(new String[]{"one", "two", "three"}, "description1", false, String.class, "defaultValue", null);
+        final JcOption instance2 = new JcOption<>(new String[]{"one"}, "description2", true, Integer.class, 10, null);
+        assertEquals(instance1.hashCode(), instance2.hashCode());
+
+        // False result.
+        final JcOption instance3 = new JcOption<>(new String[]{"one1"}, "description2", true, Integer.class, 10, null);
+        assertNotEquals(instance1.hashCode(), instance3.hashCode());
+    }
+
+    /**
+     * Test of equals method, of class JcOption.
+     */
+    @Test
+    public void testEquals() {
+        System.out.println("equals");
+
+        // True result.
+        final JcOption instance1 = new JcOption<>(new String[]{"one", "two", "three"}, "description1", false, String.class, "defaultValue", null);
+        final JcOption instance2 = new JcOption<>(new String[]{"one"}, "description2", true, Integer.class, 10, null);
+        assertTrue(instance1.equals(instance2));
+
+        // False result.
+        final JcOption instance3 = new JcOption<>(new String[]{"one1"}, "description2", true, Integer.class, 10, null);
+        assertFalse(instance1.equals(instance3));
     }
 }
