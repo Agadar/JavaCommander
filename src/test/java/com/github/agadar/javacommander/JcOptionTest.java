@@ -1,13 +1,18 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.example.IntArrayTranslator;
 import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.testclass.DataClassTranslator;
 import com.github.agadar.javacommander.translator.NoTranslator;
 
 import java.util.Arrays;
+import org.junit.After;
+import org.junit.AfterClass;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  * Tests com.github.agadar.javacommander.JcOption.
@@ -15,6 +20,22 @@ import static org.junit.Assert.*;
  * @author Agadar (https://github.com/Agadar/)
  */
 public final class JcOptionTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
 
     /**
      * Test of getPrimaryName method, of class JcOption.
@@ -132,5 +153,25 @@ public final class JcOptionTest {
         // False result.
         final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, "10", null);
         assertNotEquals(instance1, instance3);
+    }
+
+    /**
+     * Test of translate method, of class JcOption.
+     */
+    @Test
+    public void testTranslate() {
+        System.out.println("translate");
+
+        // Test primitive option, that has no translator.
+        final JcOption instance1 = new JcOption<>(Arrays.asList("one", "two", "three"), "description1", false, int.class, null, null);
+        assertEquals(15, instance1.translate("15"));
+
+        // Test primitive option, that has a translator.
+        final JcOption<int[]> instance2 = new JcOption<>(Arrays.asList("one", "two", "three"), "description2", false, int[].class, null, IntArrayTranslator.class);
+        assertArrayEquals(new int[]{15, 10, 5}, instance2.translate("15,10,5"));
+
+        // Test object option, that has a translator.
+        final JcOption instance3 = new JcOption<>(Arrays.asList("one", "two", "three"), "description3", false, DataClass.class, null, DataClassTranslator.class);
+        assertEquals(new DataClass("dataClassString"), instance3.translate("dataClassString"));
     }
 }
