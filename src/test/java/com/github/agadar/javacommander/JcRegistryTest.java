@@ -31,12 +31,25 @@ public class JcRegistryTest {
     }
 
     /**
-     * Test of unregisterObject method, of class JcRegistry.
+     * Test of unregisterObject method, of class JcRegistry. Currently identical
+     * to testGetParsedCommands().
      */
     @Test
     public void testUnregisterObject() {
         System.out.println("unregisterObject");
 
+        // Assert the registry is empty, then register the object.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
+        jcRegistry.registerObject(foo);
+
+        // Assert the annotations of the methods within foo have been parsed.
+        assertEquals(4, jcRegistry.getParsedCommands().size());
+
+        // Unregister the object.
+        jcRegistry.unregisterObject(foo);
+
+        // Assert the commands have been removed.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
     }
 
     /**
@@ -46,15 +59,61 @@ public class JcRegistryTest {
     public void testGetCommand() {
         System.out.println("getCommand");
 
+        // Assert the commands are not present.
+        assertFalse(jcRegistry.getCommand("Bar").isPresent());
+        assertFalse(jcRegistry.getCommand("bar").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
+
+        jcRegistry.registerObject(foo); // Register foo.
+
+        // Assert the commands are present.
+        assertTrue(jcRegistry.getCommand("Bar").isPresent());
+        assertTrue(jcRegistry.getCommand("bar").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithParams").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithParams").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithDefaultParams").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithDefaultParams").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithBazParam").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithBazParam").isPresent());
+
+        jcRegistry.unregisterObject(foo);   // Unregister foo.
+
+        // Assert the commands are no longer present.
+        assertFalse(jcRegistry.getCommand("Bar").isPresent());
+        assertFalse(jcRegistry.getCommand("bar").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
     }
 
     /**
-     * Test of getParsedCommands method, of class JcRegistry.
+     * Test of getParsedCommands method, of class JcRegistry. Currently
+     * identical to testUnregisterObject().
      */
     @Test
     public void testGetParsedCommands() {
         System.out.println("getParsedCommands");
 
+        // Assert the registry is empty, then register the object.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
+        jcRegistry.registerObject(foo);
+
+        // Assert the annotations of the methods within foo have been parsed.
+        assertEquals(4, jcRegistry.getParsedCommands().size());
+
+        // Unregister the object.
+        jcRegistry.unregisterObject(foo);
+
+        // Assert the commands have been removed.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
     }
 
     /**
@@ -64,6 +123,39 @@ public class JcRegistryTest {
     public void testHasCommand() {
         System.out.println("hasCommand");
 
+        // Assert the commands are not present.
+        assertFalse(jcRegistry.hasCommand("Bar"));
+        assertFalse(jcRegistry.hasCommand("bar"));
+        assertFalse(jcRegistry.hasCommand("BarWithParams"));
+        assertFalse(jcRegistry.hasCommand("barWithParams"));
+        assertFalse(jcRegistry.hasCommand("BarWithDefaultParams"));
+        assertFalse(jcRegistry.hasCommand("barWithDefaultParams"));
+        assertFalse(jcRegistry.hasCommand("BarWithBazParam"));
+        assertFalse(jcRegistry.hasCommand("barWithBazParam"));
+
+        jcRegistry.registerObject(foo); // Register foo.
+
+        // Assert the commands are present.
+        assertTrue(jcRegistry.hasCommand("Bar"));
+        assertTrue(jcRegistry.hasCommand("bar"));
+        assertTrue(jcRegistry.hasCommand("BarWithParams"));
+        assertTrue(jcRegistry.hasCommand("barWithParams"));
+        assertTrue(jcRegistry.hasCommand("BarWithDefaultParams"));
+        assertTrue(jcRegistry.hasCommand("barWithDefaultParams"));
+        assertTrue(jcRegistry.hasCommand("BarWithBazParam"));
+        assertTrue(jcRegistry.hasCommand("barWithBazParam"));
+
+        jcRegistry.unregisterObject(foo);   // Unregister foo.
+
+        // Assert the commands are no longer present.
+        assertFalse(jcRegistry.hasCommand("Bar"));
+        assertFalse(jcRegistry.hasCommand("bar"));
+        assertFalse(jcRegistry.hasCommand("BarWithParams"));
+        assertFalse(jcRegistry.hasCommand("barWithParams"));
+        assertFalse(jcRegistry.hasCommand("BarWithDefaultParams"));
+        assertFalse(jcRegistry.hasCommand("barWithDefaultParams"));
+        assertFalse(jcRegistry.hasCommand("BarWithBazParam"));
+        assertFalse(jcRegistry.hasCommand("barWithBazParam"));
     }
 
     /**
@@ -78,7 +170,7 @@ public class JcRegistryTest {
     /**
      * Test of registerObject method, of class JcRegistry.
      *
-     * Due to the nature of JcRegistry, this also uses other functions of
+     * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
      */
     @Test
