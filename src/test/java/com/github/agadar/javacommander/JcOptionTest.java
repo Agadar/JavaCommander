@@ -62,7 +62,7 @@ public final class JcOptionTest {
         assertFalse(instance.hasTranslator());
 
         // Test true.
-        instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, DataClass.class, new DataClass("defaultValue"), DataClassTranslator.class);
+        instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, DataClass.class, "defaultValue", DataClassTranslator.class);
         assertTrue(instance.hasTranslator());
     }
 
@@ -109,11 +109,11 @@ public final class JcOptionTest {
 
         // True result.
         final JcOption instance1 = new JcOption<>(Arrays.asList("one", "two", "three"), "description1", false, String.class, "defaultValue", null);
-        final JcOption instance2 = new JcOption<>(Arrays.asList("one"), "description2", true, Integer.class, 10, null);
+        final JcOption instance2 = new JcOption<>(Arrays.asList("one"), "description2", true, Integer.class, "10", null);
         assertEquals(instance1.hashCode(), instance2.hashCode());
 
         // False result.
-        final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, 10, null);
+        final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, "10", null);
         assertNotEquals(instance1.hashCode(), instance3.hashCode());
     }
 
@@ -126,11 +126,11 @@ public final class JcOptionTest {
 
         // True result.
         final JcOption instance1 = new JcOption<>(Arrays.asList("one", "two", "three"), "description1", false, String.class, "defaultValue", null);
-        final JcOption instance2 = new JcOption<>(Arrays.asList("one"), "description2", true, Integer.class, 10, null);
+        final JcOption instance2 = new JcOption<>(Arrays.asList("one"), "description2", true, Integer.class, "10", null);
         assertEquals(instance1, instance2);
 
         // False result.
-        final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, 10, null);
+        final JcOption instance3 = new JcOption<>(Arrays.asList("one1"), "description2", true, Integer.class, "10", null);
         assertNotEquals(instance1, instance3);
     }
 }

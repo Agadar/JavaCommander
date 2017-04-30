@@ -189,7 +189,7 @@ public final class JcRegistry {
      * @param optionAnnotation The @Option annotation to parse.
      * @param parameter The annotated or corresponding parameter.
      * @return The parsing result.
-     * @throws OptionTranslatorException If the supplied translator failed to
+     * @throws OptionTranslatorException If the option translator failed to
      * parse the default value if it has one, or when the translator itself
      * failed to be instantiated.
      */
@@ -206,43 +206,11 @@ public final class JcRegistry {
 
         // If there is a default value, then try to parse it.
         if (hasDefaultValue) {
-            final Object value = parseString(defaultValueStr, translatorClass, parameter.getType());
-            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, value, translatorClass);
+            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
 
         } // Else, just parse and return a new JcOption.
         else {
             return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, null, translatorClass);
-        }
-    }
-
-    /**
-     * Parses a string to a type using a translator.
-     *
-     * @param <T> The type to parse to.
-     * @param stringToParse The string to parse.
-     * @param translatorType The type of the translator to use for parsing.
-     * @param toType The type to parse to.
-     * @return The parsed value.
-     * @throws OptionTranslatorException If the supplied translator failed to
-     * parse the default value, or when the translator itself failed to be
-     * instantiated.
-     */
-    public static <T> T parseString(String stringToParse, Class<? extends OptionTranslator> translatorType, Class<T> toType)
-            throws OptionTranslatorException {
-        try {
-            // If no translator is set, attempt a normal valueOf.
-            if (translatorType == null || translatorType.equals(NoTranslator.class)) {
-                return OptionTranslator.parseString(stringToParse, toType);
-            } // If one is set, then attempt using that.
-            else {
-                return (T) translatorType.newInstance().translateString(stringToParse);
-            }
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new OptionTranslatorException("Failed to instantiate translator '" + translatorType.getSimpleName() + "'", ex);
-        } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
-            throw new OptionTranslatorException("Failed to parse String '" + stringToParse
-                    + "' to type '" + toType.getSimpleName() + "' using translator '"
-                    + translatorType.getSimpleName() + "'", ex);
         }
     }
 }

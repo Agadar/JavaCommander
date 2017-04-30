@@ -7,8 +7,6 @@ import com.github.agadar.javacommander.exception.NoValueForOptionException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 
-import java.lang.reflect.InvocationTargetException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -191,13 +189,13 @@ public final class JavaCommander {
         if (paramsStartingIndex == 1) {
             for (int i = 1; i < args.size(); i++) {
                 final JcOption currentOption = command.getOptionByIndex(i - 1).get();
-                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+                final Object parsedArg = currentOption.translate(args.get(i));
                 finalArgs[i - 1] = parsedArg;
             }
         } else {
             for (int i = 0; i < args.size(); i++) {
                 final JcOption currentOption = command.getOptionByIndex(i).get();
-                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.translator, currentOption.type);
+                final Object parsedArg = currentOption.translate(args.get(i));
                 finalArgs[i] = parsedArg;
             }
         }
@@ -230,7 +228,7 @@ public final class JavaCommander {
                     throw new UnknownOptionException(command, args.get(i));
                 }
             } else {
-                final Object parsedArg = JcRegistry.parseString(args.get(i), currentOption.get().translator, currentOption.get().type);
+                final Object parsedArg = currentOption.get().translate(args.get(i));
                 finalArgs[command.indexOfOption(currentOption.get())] = parsedArg;
                 currentOption = null;
             }

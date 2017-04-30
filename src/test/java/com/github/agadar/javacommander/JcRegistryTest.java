@@ -159,15 +159,6 @@ public class JcRegistryTest {
     }
 
     /**
-     * Test of parseString method, of class JcRegistry.
-     */
-    @Test
-    public void testParseString() {
-        System.out.println("parseString");
-
-    }
-
-    /**
      * Test of registerObject method, of class JcRegistry.
      *
      * Due to the nature of JcRegistry, this also uses/tests other functions of
@@ -278,8 +269,7 @@ public class JcRegistryTest {
         assertEquals("StringParam", stringOption.getNameByIndex(0));
         assertEquals("stringParam", stringOption.getNameByIndex(1));
         assertEquals("stringParamDescription", stringOption.description);
-        assertEquals(NoTranslator.class, stringOption.translator);
-        assertEquals(String.class, stringOption.type);
+        assertFalse(stringOption.hasTranslator());
         assertFalse(stringOption.hasDefaultValue);
         assertNull(stringOption.defaultValue);
 
@@ -287,8 +277,7 @@ public class JcRegistryTest {
         assertEquals("IntParam", intOption.getNameByIndex(0));
         assertEquals("intParam", intOption.getNameByIndex(1));
         assertEquals("intParamDescription", intOption.description);
-        assertEquals(NoTranslator.class, intOption.translator);
-        assertEquals(int.class, intOption.type);
+        assertFalse(intOption.hasTranslator());
         assertFalse(intOption.hasDefaultValue);
         assertNull(intOption.defaultValue);
 
@@ -296,8 +285,7 @@ public class JcRegistryTest {
         assertEquals("BoolParam", boolOption.getNameByIndex(0));
         assertEquals("boolParam", boolOption.getNameByIndex(1));
         assertEquals("boolParamDescription", boolOption.description);
-        assertEquals(NoTranslator.class, boolOption.translator);
-        assertEquals(boolean.class, boolOption.type);
+        assertFalse(boolOption.hasTranslator());
         assertFalse(boolOption.hasDefaultValue);
         assertNull(boolOption.defaultValue);
 
@@ -305,8 +293,7 @@ public class JcRegistryTest {
         assertEquals("StringDefaultParam", stringDefaultOption.getNameByIndex(0));
         assertEquals("stringDefaultParam", stringDefaultOption.getNameByIndex(1));
         assertEquals("stringDefaultParamDescription", stringDefaultOption.description);
-        assertEquals(NoTranslator.class, stringDefaultOption.translator);
-        assertEquals(String.class, stringDefaultOption.type);
+        assertFalse(stringDefaultOption.hasTranslator());
         assertTrue(stringDefaultOption.hasDefaultValue);
         assertEquals("defaultString", stringDefaultOption.defaultValue);
 
@@ -314,8 +301,7 @@ public class JcRegistryTest {
         assertEquals("IntDefaultParam", intDefaultOption.getNameByIndex(0));
         assertEquals("intDefaultParam", intDefaultOption.getNameByIndex(1));
         assertEquals("intDefaultParamDescription", intDefaultOption.description);
-        assertEquals(NoTranslator.class, intDefaultOption.translator);
-        assertEquals(int.class, intDefaultOption.type);
+        assertFalse(intDefaultOption.hasTranslator());
         assertTrue(intDefaultOption.hasDefaultValue);
         assertEquals(15, (int) intDefaultOption.defaultValue);
 
@@ -323,8 +309,7 @@ public class JcRegistryTest {
         assertEquals("BoolDefaultParam", boolDefaultOption.getNameByIndex(0));
         assertEquals("boolDefaultParam", boolDefaultOption.getNameByIndex(1));
         assertEquals("boolDefaultParamDescription", boolDefaultOption.description);
-        assertEquals(NoTranslator.class, boolDefaultOption.translator);
-        assertEquals(boolean.class, boolDefaultOption.type);
+        assertFalse(boolDefaultOption.hasTranslator());
         assertTrue(boolDefaultOption.hasDefaultValue);
         assertEquals(true, boolDefaultOption.defaultValue);
 
@@ -332,8 +317,7 @@ public class JcRegistryTest {
         assertEquals("BazParam", bazOption.getNameByIndex(0));
         assertEquals("bazParam", bazOption.getNameByIndex(1));
         assertEquals("bazParamDescription", bazOption.description);
-        assertEquals(DataClassTranslator.class, bazOption.translator);
-        assertEquals(DataClass.class, bazOption.type);
+        assertTrue(bazOption.hasTranslator());
         assertTrue(bazOption.hasDefaultValue);
         assertEquals(new DataClass("defaultBaz"), bazOption.defaultValue);
     }
