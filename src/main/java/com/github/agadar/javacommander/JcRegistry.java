@@ -197,20 +197,12 @@ public final class JcRegistry {
         // Get the option names. If none is assigned, use the parameter name.
         final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names() : new String[]{parameter.getName()};
 
-        // Get other fields
+        // Get other fields.
         final boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
         final String defaultValueStr = optionAnnotation.defaultValue();
         final String description = optionAnnotation.description();
         final Class type = parameter.getType();
         final Class<? extends OptionTranslator> translatorClass = optionAnnotation.translator();
-
-        // If there is a default value, then try to parse it.
-        if (hasDefaultValue) {
-            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
-
-        } // Else, just parse and return a new JcOption.
-        else {
-            return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, null, translatorClass);
-        }
+        return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
     }
 }
