@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander.testclasses;
+package com.github.agadar.javacommander.testclass;
 
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;

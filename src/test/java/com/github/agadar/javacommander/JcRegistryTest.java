@@ -1,8 +1,8 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.testclasses.AnnotatedClass;
-import com.github.agadar.javacommander.testclasses.DataClass;
-import com.github.agadar.javacommander.testclasses.DataClassTranslator;
+import com.github.agadar.javacommander.testclass.AnnotatedClass;
+import com.github.agadar.javacommander.testclass.DataClass;
+import com.github.agadar.javacommander.testclass.DataClassTranslator;
 import com.github.agadar.javacommander.translator.NoTranslator;
 
 import static org.junit.Assert.*;

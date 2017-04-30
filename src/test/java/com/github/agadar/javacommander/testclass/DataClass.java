@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander.testclasses;
+package com.github.agadar.javacommander.testclass;
 
 /**
  * Test data class, used as a parameter type.

@@ -1,7 +1,7 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.testclasses.AnnotatedClass;
-import com.github.agadar.javacommander.testclasses.DataClass;
+import com.github.agadar.javacommander.testclass.AnnotatedClass;
+import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.translator.NoTranslator;
 
 import java.lang.reflect.Method;
