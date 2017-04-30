@@ -1,7 +1,9 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.testclasses.DataClass;
+import com.github.agadar.javacommander.testclasses.DataClassTranslator;
 import com.github.agadar.javacommander.translator.NoTranslator;
-import com.github.agadar.javacommander.translator.OptionTranslator;
+
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -60,17 +62,8 @@ public final class JcOptionTest {
         assertFalse(instance.hasTranslator());
 
         // Test true.
-        instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", StringTranslator.class);
+        instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, DataClass.class, new DataClass("defaultValue"), DataClassTranslator.class);
         assertTrue(instance.hasTranslator());
-    }
-
-    private final class StringTranslator implements OptionTranslator<String> {
-
-        @Override
-        public String translateString(String stringToParse) {
-            return stringToParse;
-        }
-
     }
 
     /**

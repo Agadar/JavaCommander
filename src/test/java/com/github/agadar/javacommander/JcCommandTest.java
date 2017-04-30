@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.testclasses.AnnotatedClass;
+import com.github.agadar.javacommander.testclasses.DataClass;
 import com.github.agadar.javacommander.translator.NoTranslator;
 
 import java.lang.reflect.Method;
@@ -18,13 +20,13 @@ import static org.junit.Assert.*;
  */
 public final class JcCommandTest {
 
-    private static Foo objectToInvokeOn;
+    private static AnnotatedClass objectToInvokeOn;
     private static Method methodToInvokeOn;
 
     @BeforeClass
     public static void SetupClass() throws NoSuchMethodException {
-        objectToInvokeOn = new Foo();
-        methodToInvokeOn = Foo.class.getMethod("Bar");
+        objectToInvokeOn = new AnnotatedClass();
+        methodToInvokeOn = AnnotatedClass.class.getMethod("Bar");
     }
 
     /**
@@ -289,9 +291,14 @@ public final class JcCommandTest {
         jcCommand1.invoke();
 
         // Invoke with parameters.
-        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
-                FooWithParams.class.getMethod("Bar", String.class, int.class, boolean.class), new FooWithParams());
+        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"), 
+                "description1", null, AnnotatedClass.class.getMethod("BarWithParams", String.class, int.class, boolean.class), objectToInvokeOn);
         jcCommand2.invoke("stringParam", 15, true);
+        
+        // Invoke with custom parameter.
+        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"), 
+                "description1", null, AnnotatedClass.class.getMethod("BarWithBazParam", DataClass.class), objectToInvokeOn);
+        jcCommand3.invoke(new DataClass("defaultValue"));
     }
 
     /**
@@ -302,18 +309,5 @@ public final class JcCommandTest {
         System.out.println("isMyObject");
         final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null, methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.isMyObject(objectToInvokeOn));
-
-    }
-
-    private static final class Foo {
-
-        public void Bar() {
-        }
-    }
-
-    private static final class FooWithParams {
-
-        public void Bar(String stringParam, int intParam, boolean boolParam) {
-        }
     }
 }
