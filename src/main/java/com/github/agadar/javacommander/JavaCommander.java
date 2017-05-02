@@ -130,7 +130,7 @@ public final class JavaCommander {
 
         // For each entry in finalArgs that is still null, check whether there
         // is a default value. If there is, use that. Else, throw an error.
-        for (int i = 0; i < finalArgs.length; i++) {
+        /*for (int i = 0; i < finalArgs.length; i++) {
             Object val = finalArgs[i];
 
             if (val == null) {
@@ -142,7 +142,7 @@ public final class JavaCommander {
                     throw new NoValueForOptionException(command, option);
                 }
             }
-        }
+        }*/
 
         // Finally, invoke the method on the object
         command.invoke(finalArgs);
