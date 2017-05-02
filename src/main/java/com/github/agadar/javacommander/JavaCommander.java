@@ -130,7 +130,7 @@ public final class JavaCommander {
 
         // For each entry in finalArgs that is still null, check whether there
         // is a default value. If there is, use that. Else, throw an error.
-        /*for (int i = 0; i < finalArgs.length; i++) {
+        for (int i = 0; i < finalArgs.length; i++) {
             Object val = finalArgs[i];
 
             if (val == null) {
@@ -142,8 +142,7 @@ public final class JavaCommander {
                     throw new NoValueForOptionException(command, option);
                 }
             }
-        }*/
-
+        }
         // Finally, invoke the method on the object
         command.invoke(finalArgs);
     }
@@ -172,17 +171,20 @@ public final class JavaCommander {
     }
 
     /**
-     * Implicitly parses the argument list, i.e. no option names are given, only
-     * option values. Example: 'commandName 5 true 120'.
+     * Implicitly parses the argument tokens, i.e. no option names are given,
+     * only option values. Example: 'commandName 5 true 120'.
      *
-     * @param args
-     * @param command
-     * @param paramsStartingIndex
-     * @return
-     * @throws OptionTranslatorException
-     * @throws IllegalArgumentException
+     * @param finalArgs The parsed list of arguments, to be filled by this
+     * function.
+     * @param args The argument tokens to parse.
+     * @param command The command to parse the tokens for.
+     * @param paramsStartingIndex The index in args to start parsing from.
+     * @throws OptionTranslatorException If an argument token could not be
+     * parsed to its corresponding parameter type.
+     * @throws IllegalArgumentException If args contains more argument tokens
+     * than should be parsed.
      */
-    private static Object[] parseArgumentsImplicit(Object[] finalArgs, List<String> args,
+    private static void parseArgumentsImplicit(Object[] finalArgs, List<String> args,
             JcCommand command, int paramsStartingIndex) {
 
         // If too many arguments were supplied, throw an error.
@@ -205,22 +207,25 @@ public final class JavaCommander {
                 finalArgs[i] = parsedArg;
             }
         }
-        return finalArgs;
     }
 
     /**
      * Explicitly parses the argument list, i.e. option names are given.
      * Example: 'commandName -amount 5 -add true -times 120'.
      *
-     * @param args
-     * @param command
-     * @param paramsStartingIndex
-     * @return
-     * @throws UnknownOptionException
-     * @throws NoValueForOptionException
-     * @throws OptionTranslatorException
+     * @param finalArgs The parsed list of arguments, to be filled by this
+     * function.
+     * @param args The argument tokens to parse.
+     * @param command The command to parse the tokens for.
+     * @param paramsStartingIndex The index in args to start parsing from.
+     * @throws UnknownOptionException If an option was supplied for the command
+     * that it does not have.
+     * @throws NoValueForOptionException If an option without a default value
+     * was not supplied a value.
+     * @throws OptionTranslatorException If an argument token could not be
+     * parsed to its corresponding parameter type.
      */
-    private static Object[] parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex) {
+    private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex) {
         Optional<JcOption> currentOption = command.getOptionByName(args.get(paramsStartingIndex));
         boolean parsingOption = false;
 
@@ -248,14 +253,13 @@ public final class JavaCommander {
         if (currentOption != null) {
             throw new NoValueForOptionException(command, currentOption.get());
         }
-        return finalArgs;
     }
 
     /**
      * Parses a string to a list of argument tokens.
      *
-     * @param string a string to parse to a list of argument tokens
-     * @return a list of argument tokens
+     * @param string A string to parse to a list of argument tokens.
+     * @return A list of argument tokens.
      */
     private static ArrayList<String> stringAsArgs(String string) {
         string = string.trim();
