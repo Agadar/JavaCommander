@@ -19,7 +19,7 @@ public class JcRegistryTest {
     private static JcRegistry jcRegistry;
 
     @BeforeClass
-    public static void SetupClass() throws NoSuchMethodException {
+    public static void SetupClass() {
         foo = new AnnotatedClass();
     }
 

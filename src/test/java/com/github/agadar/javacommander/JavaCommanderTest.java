@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.testclass.AnnotatedClass;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -15,23 +17,11 @@ import static org.junit.Assert.*;
  */
 public class JavaCommanderTest {
 
-    public JavaCommanderTest() {
-    }
+    private static AnnotatedClass foo;
 
     @BeforeClass
     public static void setUpClass() {
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
+        foo = new AnnotatedClass();
     }
 
     /**
@@ -40,7 +30,7 @@ public class JavaCommanderTest {
     @Test
     public void testExecute_String() {
         System.out.println("execute");
-
+        // TODO: code.
     }
 
     /**
@@ -48,8 +38,14 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List() {
-        System.out.println("execute");
-
+        System.out.println("execute");   
+        
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+        
+        // Test proper input.
+        jcCommander.execute(Arrays.asList("bar"));
     }
 
     /**
@@ -58,7 +54,7 @@ public class JavaCommanderTest {
     @Test
     public void testRegisterObject() {
         System.out.println("registerObject");
-
+        // Merely passes through to a JcRegistry instance.
     }
 
     /**
@@ -67,7 +63,7 @@ public class JavaCommanderTest {
     @Test
     public void testUnregisterObject() {
         System.out.println("unregisterObject");
-
+        // Merely passes through to a JcRegistry instance.
     }
 
 }

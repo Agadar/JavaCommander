@@ -6,13 +6,9 @@ import com.github.agadar.javacommander.testclass.DataClassTranslator;
 import com.github.agadar.javacommander.translator.NoTranslator;
 
 import java.util.Arrays;
-import org.junit.After;
-import org.junit.AfterClass;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 /**
  * Tests com.github.agadar.javacommander.JcOption.
@@ -20,22 +16,6 @@ import org.junit.BeforeClass;
  * @author Agadar (https://github.com/Agadar/)
  */
 public final class JcOptionTest {
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
 
     /**
      * Test of getPrimaryName method, of class JcOption.

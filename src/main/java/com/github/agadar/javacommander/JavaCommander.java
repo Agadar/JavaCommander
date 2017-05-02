@@ -100,7 +100,7 @@ public final class JavaCommander {
             if (jcRegistry.hasCommand(args.get(0))) {
                 command = jcRegistry.getCommand(args.get(0)).get();
             }
-            if (jcRegistry.hasCommand(EMPTY_STRING)) {
+            else if (jcRegistry.hasCommand(EMPTY_STRING)) {
                 command = jcRegistry.getCommand(EMPTY_STRING).get();
                 paramsStartingIndex = 0;
             } else {
