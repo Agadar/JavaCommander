@@ -4,7 +4,6 @@ import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
-import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 
 import java.lang.reflect.Method;
@@ -47,7 +46,7 @@ public final class JcRegistry {
      * @throws OptionTranslatorException If an option translator failed to parse
      * a default value, or when the translator itself failed to be instantiated.
      */
-    public final void registerObject(Object object) throws OptionAnnotationException, OptionTranslatorException {
+    public final void registerObject(Object object) {
         if (object == null) {
             throw new IllegalArgumentException("'obj' may not be null");
         }
@@ -98,7 +97,7 @@ public final class JcRegistry {
     /**
      * Returns the command mapped to the given command name.
      *
-     * @param commandName
+     * @param commandName The name of the command to find.
      * @return An Optional containing the command - or not.
      */
     public final Optional<JcCommand> getCommand(String commandName) {
@@ -142,7 +141,7 @@ public final class JcRegistry {
      * annotation, or on the method parameters, to an array of JcOptions.
      *
      * @param commandAnnotation The @Command annotation of the method with the
-     * @Option annotations to parse.
+     * \@Option annotations to parse.
      * @param method The method with the @Option annotations to parse.
      * @return The parsed values.
      * @throws OptionTranslatorException If an option translator failed to parse
@@ -150,8 +149,7 @@ public final class JcRegistry {
      * @throws OptionAnnotationException If a parameter is not properly
      * annotated with the @Option annotation.
      */
-    private static ArrayList<JcOption> parseOptions(Command commandAnnotation, Method method)
-            throws OptionAnnotationException, OptionTranslatorException {
+    private static ArrayList<JcOption> parseOptions(Command commandAnnotation, Method method) {
         final ArrayList<JcOption> jcOptions = new ArrayList<>();
         final Parameter[] parameters = method.getParameters();
 
@@ -193,7 +191,7 @@ public final class JcRegistry {
      * parse the default value if it has one, or when the translator itself
      * failed to be instantiated.
      */
-    private static JcOption parseOption(Option optionAnnotation, Parameter parameter) throws OptionTranslatorException {
+    private static JcOption parseOption(Option optionAnnotation, Parameter parameter) {
         // Get the option names. If none is assigned, use the parameter name.
         final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names() : new String[]{parameter.getName()};
 

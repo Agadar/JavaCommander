@@ -24,11 +24,9 @@ public final class JavaCommander {
     public final JcRegistry jcRegistry;
 
     /**
-     * A special command name that can be used for a single command. If no known
-     * command name can be found in a given string input, then an attempt to
-     * call the master command is made, using said input.
+     * Empty string, can be used for the nameless command.
      */
-    public static final String MASTER_COMMAND = "";
+    private static final String EMPTY_STRING = "";
 
     /**
      * Constructor. Assigns a new JcRegistry to this.
@@ -41,6 +39,7 @@ public final class JavaCommander {
      * Constructor.
      *
      * @param jcRegistry The JcRegistry instance to use.
+     * @throws IllegalArgumentException If jcRegistry is null.
      */
     public JavaCommander(JcRegistry jcRegistry) {
         if (jcRegistry == null) {
@@ -55,14 +54,17 @@ public final class JavaCommander {
      *
      * @param string The string to parse and execute the corresponding command
      * of.
-     * @throws UnknownCommandException
-     * @throws UnknownOptionException
-     * @throws NoValueForOptionException
-     * @throws CommandInvocationException
-     * @throws OptionTranslatorException
+     * @throws UnknownCommandException If the command was not found.
+     * @throws UnknownOptionException If an option was supplied for the command
+     * that it does not have.
+     * @throws NoValueForOptionException If an option without a default value
+     * was not supplied a value.
+     * @throws CommandInvocationException If an underlying exception caused a
+     * command invocation to fail.
+     * @throws OptionTranslatorException If an argument token could not be
+     * parsed to its corresponding parameter type.
      */
-    public final void execute(String string) throws UnknownCommandException, UnknownOptionException,
-            NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
+    public final void execute(String string) {
         this.execute(stringAsArgs(string != null ? string : ""));
     }
 
@@ -70,15 +72,18 @@ public final class JavaCommander {
      * Attempts to find and execute the command defined in a list of argument
      * tokens.
      *
-     * @param args the collection of argument tokens
+     * @param args the list of argument tokens
      * @throws UnknownCommandException If the command was not found.
-     * @throws UnknownOptionException
-     * @throws NoValueForOptionException
-     * @throws CommandInvocationException
-     * @throws OptionTranslatorException
+     * @throws UnknownOptionException If an option was supplied for the command
+     * that it does not have.
+     * @throws NoValueForOptionException If an option without a default value
+     * was not supplied a value.
+     * @throws CommandInvocationException If an underlying exception caused a
+     * command invocation to fail.
+     * @throws OptionTranslatorException If an argument token could not be
+     * parsed to its corresponding parameter type.
      */
-    public final void execute(List<String> args) throws UnknownCommandException, UnknownOptionException,
-            NoValueForOptionException, CommandInvocationException, OptionTranslatorException {
+    public final void execute(List<String> args) {
         if (args == null) {
             args = new ArrayList<>();
         }
@@ -95,17 +100,17 @@ public final class JavaCommander {
             if (jcRegistry.hasCommand(args.get(0))) {
                 command = jcRegistry.getCommand(args.get(0)).get();
             }
-            if (jcRegistry.hasCommand(MASTER_COMMAND)) {
-                command = jcRegistry.getCommand(MASTER_COMMAND).get();
+            if (jcRegistry.hasCommand(EMPTY_STRING)) {
+                command = jcRegistry.getCommand(EMPTY_STRING).get();
                 paramsStartingIndex = 0;
             } else {
                 throw new UnknownCommandException(args.get(0));
             }
-        } else if (jcRegistry.hasCommand(MASTER_COMMAND)) {
-            command = jcRegistry.getCommand(MASTER_COMMAND).get();
+        } else if (jcRegistry.hasCommand(EMPTY_STRING)) {
+            command = jcRegistry.getCommand(EMPTY_STRING).get();
             paramsStartingIndex = 0;
         } else {
-            throw new UnknownCommandException(MASTER_COMMAND);
+            throw new UnknownCommandException(EMPTY_STRING);
         }
 
         // Arguments to be passed to the Method.invoke function.
@@ -141,28 +146,29 @@ public final class JavaCommander {
 
         // Finally, invoke the method on the object
         command.invoke(finalArgs);
-
     }
 
     /**
-     * Registers all commands found in the supplied Object. Any commands of
+     * Registers all commands found in the supplied object. Any commands of
      * which the name is already registered will override the old values.
      *
-     * @param obj the Object where commands are located within
-     * @throws OptionAnnotationException
-     * @throws OptionTranslatorException
+     * @param object The object containing annotated methods.
+     * @throws OptionAnnotationException If a method's parameter is not properly
+     * annotated with the @Option annotation.
+     * @throws OptionTranslatorException If an option translator failed to parse
+     * a default value, or when the translator itself failed to be instantiated.
      */
-    public final void registerObject(Object obj) throws OptionAnnotationException, OptionTranslatorException {
-        jcRegistry.registerObject(obj);
+    public final void registerObject(Object object) {
+        jcRegistry.registerObject(object);
     }
 
     /**
-     * Unregisters all commands found in the supplied Object.
+     * Unregisters all commands found in the supplied object.
      *
-     * @param obj the object whose commands to unregister
+     * @param object The object whose commands to unregister.
      */
-    public final void unregisterObject(Object obj) {
-        jcRegistry.unregisterObject(obj);
+    public final void unregisterObject(Object object) {
+        jcRegistry.unregisterObject(object);
     }
 
     /**
@@ -176,8 +182,8 @@ public final class JavaCommander {
      * @throws OptionTranslatorException
      * @throws IllegalArgumentException
      */
-    private static Object[] parseArgumentsImplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex)
-            throws OptionTranslatorException {
+    private static Object[] parseArgumentsImplicit(Object[] finalArgs, List<String> args,
+            JcCommand command, int paramsStartingIndex) {
 
         // If too many arguments were supplied, throw an error.
         if (args.size() - paramsStartingIndex > finalArgs.length) {
@@ -210,6 +216,9 @@ public final class JavaCommander {
      * @param command
      * @param paramsStartingIndex
      * @return
+     * @throws UnknownOptionException
+     * @throws NoValueForOptionException
+     * @throws OptionTranslatorException
      */
     private static Object[] parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex) {
         Optional<JcOption> currentOption = command.getOptionByName(args.get(paramsStartingIndex));
@@ -291,5 +300,4 @@ public final class JavaCommander {
         tokens.add(curToken.toString());
         return tokens;
     }
-
 }
