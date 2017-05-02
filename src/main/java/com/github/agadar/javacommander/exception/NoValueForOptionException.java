@@ -8,7 +8,7 @@ import com.github.agadar.javacommander.JcOption;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class NoValueForOptionException extends RuntimeException {
+public final class NoValueForOptionException extends JavaCommanderException {
 
     /**
      * The command of which an option was not supplied a value.

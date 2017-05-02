@@ -5,7 +5,7 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class UnknownCommandException extends RuntimeException {
+public final class UnknownCommandException extends JavaCommanderException {
 
     /**
      * The name of the command that was not found.
