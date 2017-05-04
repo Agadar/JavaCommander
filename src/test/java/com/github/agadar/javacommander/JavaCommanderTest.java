@@ -1,14 +1,10 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
+
 import java.util.Arrays;
-import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * Tests com.github.agadar.javacommander.JavaCommander.
@@ -34,38 +30,126 @@ public class JavaCommanderTest {
     }
 
     /**
-     * Test of execute method, of class JavaCommander.
+     * Test of execute method, of class JavaCommander testing the 'bar' method.
      */
     @Test
     public void testExecute_List_bar() {
-        System.out.println("execute");   
-        
+        System.out.println("execute");
+
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
         jcCommander.registerObject(foo);
-        
-        // Test bar.
+
+        // Test call.
         jcCommander.execute(Arrays.asList("bar"));
-        
-        
     }
 
     /**
-     * Test of registerObject method, of class JavaCommander.
+     * Test of execute method, of class JavaCommander testing the
+     * 'barWithParams' method.
      */
     @Test
-    public void testRegisterObject() {
-        System.out.println("registerObject");
-        // Merely passes through to a JcRegistry instance.
+    public void testExecute_List_barWithParams() {
+        System.out.println("execute");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test implicit calls.
+        jcCommander.execute(Arrays.asList("BarWithParams", "someString", "15", "true"));
+        jcCommander.execute(Arrays.asList("barWithParams", "someString", "15", "true"));
+
+        // Test explicit calls, in order.
+        jcCommander.execute(Arrays.asList("BarWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
+        jcCommander.execute(Arrays.asList("barWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
+
+        // Test explicit calls, out of order.
+        jcCommander.execute(Arrays.asList("BarWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
+        jcCommander.execute(Arrays.asList("barWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
     }
 
     /**
-     * Test of unregisterObject method, of class JavaCommander.
+     * Test of execute method, of class JavaCommander testing the
+     * 'barWithDefaultParams' method.
      */
     @Test
-    public void testUnregisterObject() {
-        System.out.println("unregisterObject");
-        // Merely passes through to a JcRegistry instance.
+    public void testExecute_List_barWithDefaultParams() {
+        System.out.println("execute");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test implicit calls, leaving out parameters (expecting default values).
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString", "15", "true"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString", "15"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams"));
+
+        // Test explicit calls, in order, leaving out parameters (expecting default values).
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam", "15", "BoolDefaultParam", "true"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam", "15"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString"));
+
+        // Test explicit calls, out of order, leaving out parameters (expecting default values).
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15", "BoolDefaultParam", "true", "StringDefaultParam", "someString"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15", "BoolDefaultParam", "true"));
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15"));
     }
 
+    /**
+     * Test of execute method, of class JavaCommander testing the
+     * 'barWithBazParam' method.
+     */
+    @Test
+    public void testExecute_List_barWithBazParam() {
+        System.out.println("execute");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test calls.
+        jcCommander.execute(Arrays.asList("barWithBazParam", "someString"));
+        jcCommander.execute(Arrays.asList("barWithBazParam"));
+        jcCommander.execute(Arrays.asList("barWithBazParam", "BazParam", "someString"));
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the 'barNameless'
+     * method.
+     */
+    @Test
+    public void testExecute_List_barNameless() {
+        System.out.println("execute");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test calls.
+        jcCommander.execute(Arrays.asList("barNameless", "someString"));
+        jcCommander.execute(Arrays.asList("barNameless", "arg0", "someString"));
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the 'barEmptyName'
+     * method.
+     */
+    @Test
+    public void testExecute_List_barEmptyName() {
+        System.out.println("execute");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test calls.
+        jcCommander.execute(Arrays.asList("someString"));
+        jcCommander.execute(Arrays.asList("arg0", "someString"));
+
+        jcCommander.execute(Arrays.asList("", "someString"));
+        jcCommander.execute(Arrays.asList("", "arg0", "someString"));
+    }
 }
