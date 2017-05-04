@@ -32,4 +32,14 @@ public class AnnotatedClass {
         @Option(names = {"BazParam", "bazParam"}, description = "bazParamDescription", hasDefaultValue = true, defaultValue = "defaultBaz", translator = DataClassTranslator.class)})
     public void barWithBazParam(DataClass baz) {
     }
+    
+    @Command(description = "barNamelessDescription", options = {
+        @Option(description = "barNamelessParamDescription")})
+    public void barNameless(String stringParam) {
+    }
+    
+    @Command(names = {""}, description = "barEmptyNameDescription", options = {
+        @Option(description = "barEmptyNameParamDescription")})
+    public void barEmptyName(String stringParam) {
+    }
 }

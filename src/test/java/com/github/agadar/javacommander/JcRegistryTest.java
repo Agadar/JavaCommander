@@ -17,6 +17,7 @@ public class JcRegistryTest {
 
     private static AnnotatedClass foo;
     private static JcRegistry jcRegistry;
+    private static final int METHODS_IN_FOO = 6;
 
     @BeforeClass
     public static void SetupClass() {
@@ -41,7 +42,7 @@ public class JcRegistryTest {
         jcRegistry.registerObject(foo);
 
         // Assert the annotations of the methods within foo have been parsed.
-        assertEquals(4, jcRegistry.getParsedCommands().size());
+        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
 
         // Unregister the object.
         jcRegistry.unregisterObject(foo);
@@ -105,7 +106,7 @@ public class JcRegistryTest {
         jcRegistry.registerObject(foo);
 
         // Assert the annotations of the methods within foo have been parsed.
-        assertEquals(4, jcRegistry.getParsedCommands().size());
+        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
 
         // Unregister the object.
         jcRegistry.unregisterObject(foo);
@@ -168,7 +169,7 @@ public class JcRegistryTest {
 
         // Register.
         jcRegistry.registerObject(foo);
-        assertEquals(4, jcRegistry.getParsedCommands().size());
+        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
 
         // Confirm presence of commands by all names.
         assertTrue(jcRegistry.hasCommand("Bar"));
