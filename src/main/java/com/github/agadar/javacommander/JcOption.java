@@ -75,7 +75,7 @@ public final class JcOption<T> {
         }
 
         // Filter null values from names.
-        names = names.stream().filter(name -> name != null).collect(Collectors.toList());
+        names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
 
         // Make sure after filtering, names is now not empty.
         if (names.isEmpty()) {

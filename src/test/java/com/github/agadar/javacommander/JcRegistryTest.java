@@ -67,6 +67,8 @@ public class JcRegistryTest {
         assertFalse(jcRegistry.getCommand("barWithDefaultParams").isPresent());
         assertFalse(jcRegistry.getCommand("BarWithBazParam").isPresent());
         assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barNameless").isPresent());
+        assertFalse(jcRegistry.getCommand("").isPresent());
 
         jcRegistry.registerObject(foo); // Register foo.
 
@@ -79,6 +81,8 @@ public class JcRegistryTest {
         assertTrue(jcRegistry.getCommand("barWithDefaultParams").isPresent());
         assertTrue(jcRegistry.getCommand("BarWithBazParam").isPresent());
         assertTrue(jcRegistry.getCommand("barWithBazParam").isPresent());
+        assertTrue(jcRegistry.getCommand("barNameless").isPresent());
+        assertTrue(jcRegistry.getCommand("").isPresent());
 
         jcRegistry.unregisterObject(foo);   // Unregister foo.
 
@@ -91,6 +95,8 @@ public class JcRegistryTest {
         assertFalse(jcRegistry.getCommand("barWithDefaultParams").isPresent());
         assertFalse(jcRegistry.getCommand("BarWithBazParam").isPresent());
         assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barNameless").isPresent());
+        assertFalse(jcRegistry.getCommand("").isPresent());
     }
 
     /**
@@ -116,48 +122,6 @@ public class JcRegistryTest {
     }
 
     /**
-     * Test of hasCommand method, of class JcRegistry.
-     */
-    @Test
-    public void testHasCommand() {
-        System.out.println("hasCommand");
-
-        // Assert the commands are not present.
-        assertFalse(jcRegistry.hasCommand("Bar"));
-        assertFalse(jcRegistry.hasCommand("bar"));
-        assertFalse(jcRegistry.hasCommand("BarWithParams"));
-        assertFalse(jcRegistry.hasCommand("barWithParams"));
-        assertFalse(jcRegistry.hasCommand("BarWithDefaultParams"));
-        assertFalse(jcRegistry.hasCommand("barWithDefaultParams"));
-        assertFalse(jcRegistry.hasCommand("BarWithBazParam"));
-        assertFalse(jcRegistry.hasCommand("barWithBazParam"));
-
-        jcRegistry.registerObject(foo); // Register foo.
-
-        // Assert the commands are present.
-        assertTrue(jcRegistry.hasCommand("Bar"));
-        assertTrue(jcRegistry.hasCommand("bar"));
-        assertTrue(jcRegistry.hasCommand("BarWithParams"));
-        assertTrue(jcRegistry.hasCommand("barWithParams"));
-        assertTrue(jcRegistry.hasCommand("BarWithDefaultParams"));
-        assertTrue(jcRegistry.hasCommand("barWithDefaultParams"));
-        assertTrue(jcRegistry.hasCommand("BarWithBazParam"));
-        assertTrue(jcRegistry.hasCommand("barWithBazParam"));
-
-        jcRegistry.unregisterObject(foo);   // Unregister foo.
-
-        // Assert the commands are no longer present.
-        assertFalse(jcRegistry.hasCommand("Bar"));
-        assertFalse(jcRegistry.hasCommand("bar"));
-        assertFalse(jcRegistry.hasCommand("BarWithParams"));
-        assertFalse(jcRegistry.hasCommand("barWithParams"));
-        assertFalse(jcRegistry.hasCommand("BarWithDefaultParams"));
-        assertFalse(jcRegistry.hasCommand("barWithDefaultParams"));
-        assertFalse(jcRegistry.hasCommand("BarWithBazParam"));
-        assertFalse(jcRegistry.hasCommand("barWithBazParam"));
-    }
-
-    /**
      * Test of registerObject method, of class JcRegistry.
      *
      * Due to the nature of JcRegistry, this also uses/tests other functions of
@@ -180,6 +144,8 @@ public class JcRegistryTest {
         assertTrue(jcRegistry.hasCommand("barWithDefaultParams"));
         assertTrue(jcRegistry.hasCommand("BarWithBazParam"));
         assertTrue(jcRegistry.hasCommand("barWithBazParam"));
+        assertTrue(jcRegistry.getCommand("barNameless").isPresent());
+        assertTrue(jcRegistry.getCommand("").isPresent());
         assertFalse(jcRegistry.hasCommand("BarMitzvah"));
 
         // Get parsed commands.
@@ -187,19 +153,14 @@ public class JcRegistryTest {
         final JcCommand barWithParamsCommand = jcRegistry.getCommand("BarWithParams").get();
         final JcCommand barWithDefaultParamsCommand = jcRegistry.getCommand("BarWithDefaultParams").get();
         final JcCommand barWithBazParamCommand = jcRegistry.getCommand("barWithBazParam").get();
+        final JcCommand barNamelessCommand = jcRegistry.getCommand("barNameless").get();
+        final JcCommand barEmptyNameCommand = jcRegistry.getCommand("").get();
 
         // Make sure they're the same as the commands known by synonyms.
         assertSame(barCommand, jcRegistry.getCommand("bar").get());
         assertSame(barWithParamsCommand, jcRegistry.getCommand("barWithParams").get());
         assertSame(barWithDefaultParamsCommand, jcRegistry.getCommand("barWithDefaultParams").get());
         assertSame(barWithBazParamCommand, jcRegistry.getCommand("barWithBazParam").get());
-
-        assertNotSame(barCommand, barWithParamsCommand);
-        assertNotSame(barCommand, barWithDefaultParamsCommand);
-        assertNotSame(barCommand, barWithBazParamCommand);
-        assertNotSame(barWithParamsCommand, barWithDefaultParamsCommand);
-        assertNotSame(barWithParamsCommand, barWithBazParamCommand);
-        assertNotSame(barWithDefaultParamsCommand, barWithBazParamCommand);
 
         // Make sure the command fields are correct.
         assertEquals(2, barCommand.numberOfNames());
@@ -229,7 +190,19 @@ public class JcRegistryTest {
         assertEquals("barWithBazParamDescription", barWithBazParamCommand.description);
         assertEquals(1, barWithBazParamCommand.numberOfOptions());
         assertTrue(barWithBazParamCommand.isMyObject(foo));
+        
+        assertEquals(1, barNamelessCommand.numberOfNames());
+        assertEquals("barNameless", barNamelessCommand.getNameByIndex(0));
+        assertEquals("barNamelessDescription", barNamelessCommand.description);
+        assertEquals(1, barNamelessCommand.numberOfOptions());
+        assertTrue(barNamelessCommand.isMyObject(foo));
 
+        assertEquals(1, barEmptyNameCommand.numberOfNames());
+        assertEquals("", barEmptyNameCommand.getNameByIndex(0));
+        assertEquals("barEmptyNameDescription", barEmptyNameCommand.description);
+        assertEquals(1, barEmptyNameCommand.numberOfOptions());
+        assertTrue(barEmptyNameCommand.isMyObject(foo));
+        
         // Get parsed options.
         final JcOption<String> stringOption = barWithParamsCommand.getOptionByName("stringParam").get();
         final JcOption<Integer> intOption = barWithParamsCommand.getOptionByName("intParam").get();
@@ -240,6 +213,9 @@ public class JcRegistryTest {
         final JcOption<Boolean> boolDefaultOption = barWithDefaultParamsCommand.getOptionByName("boolDefaultParam").get();
 
         final JcOption<DataClass> bazOption = barWithBazParamCommand.getOptionByName("bazParam").get();
+        
+        final JcOption<DataClass> namelessOption = barNamelessCommand.getOptionByName("arg0").get();      
+        final JcOption<DataClass> emptyNameOption = barEmptyNameCommand.getOptionByName("arg0").get();
 
         // Make sure they're the same as the options known by synonyms.
         assertSame(stringOption, barWithParamsCommand.getOptionByName("StringParam").get());
@@ -319,5 +295,19 @@ public class JcRegistryTest {
         assertTrue(bazOption.hasTranslator());
         assertTrue(bazOption.hasDefaultValue);
         assertEquals(new DataClass("defaultBaz"), bazOption.defaultValue);
+        
+        assertEquals(1, namelessOption.numberOfNames());
+        assertEquals("arg0", namelessOption.getNameByIndex(0));
+        assertEquals("barNamelessParamDescription", namelessOption.description);
+        assertFalse(namelessOption.hasTranslator());
+        assertFalse(namelessOption.hasDefaultValue);
+        assertNull(namelessOption.defaultValue);
+        
+        assertEquals(1, emptyNameOption.numberOfNames());
+        assertEquals("arg0", emptyNameOption.getNameByIndex(0));
+        assertEquals("barEmptyNameParamDescription", emptyNameOption.description);
+        assertFalse(emptyNameOption.hasTranslator());
+        assertFalse(emptyNameOption.hasDefaultValue);
+        assertNull(emptyNameOption.defaultValue);
     }
 }
