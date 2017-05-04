@@ -26,7 +26,7 @@ public final class JcCommandTest {
     @BeforeClass
     public static void SetupClass() throws NoSuchMethodException {
         objectToInvokeOn = new AnnotatedClass();
-        methodToInvokeOn = AnnotatedClass.class.getMethod("Bar");
+        methodToInvokeOn = AnnotatedClass.class.getMethod("bar");
     }
 
     /**
@@ -292,12 +292,12 @@ public final class JcCommandTest {
 
         // Invoke with parameters.
         final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"), 
-                "description1", null, AnnotatedClass.class.getMethod("BarWithParams", String.class, int.class, boolean.class), objectToInvokeOn);
+                "description1", null, AnnotatedClass.class.getMethod("barWithParams", String.class, int.class, boolean.class), objectToInvokeOn);
         jcCommand2.invoke("stringParam", 15, true);
         
         // Invoke with custom parameter.
         final JcCommand jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"), 
-                "description1", null, AnnotatedClass.class.getMethod("BarWithBazParam", DataClass.class), objectToInvokeOn);
+                "description1", null, AnnotatedClass.class.getMethod("barWithBazParam", DataClass.class), objectToInvokeOn);
         jcCommand3.invoke(new DataClass("defaultValue"));
     }
 

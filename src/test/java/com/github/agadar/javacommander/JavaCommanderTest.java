@@ -37,15 +37,17 @@ public class JavaCommanderTest {
      * Test of execute method, of class JavaCommander.
      */
     @Test
-    public void testExecute_List() {
+    public void testExecute_List_bar() {
         System.out.println("execute");   
         
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
         jcCommander.registerObject(foo);
         
-        // Test proper input.
+        // Test bar.
         jcCommander.execute(Arrays.asList("bar"));
+        
+        
     }
 
     /**
