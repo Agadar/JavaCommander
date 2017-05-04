@@ -25,7 +25,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_String() {
-        System.out.println("execute");
+        System.out.println("execute_String");
         // TODO: code.
     }
 
@@ -34,7 +34,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_bar() {
-        System.out.println("execute");
+        System.out.println("execute_List_bar");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
@@ -50,7 +50,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_barWithParams() {
-        System.out.println("execute");
+        System.out.println("execute_List_barWithParams");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
@@ -75,7 +75,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_barWithDefaultParams() {
-        System.out.println("execute");
+        System.out.println("execute_List_barWithDefaultParams");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
@@ -104,7 +104,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_barWithBazParam() {
-        System.out.println("execute");
+        System.out.println("execute_List_barWithBazParam");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
@@ -122,7 +122,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_barNameless() {
-        System.out.println("execute");
+        System.out.println("execute_List_barNameless");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
@@ -139,7 +139,7 @@ public class JavaCommanderTest {
      */
     @Test
     public void testExecute_List_barEmptyName() {
-        System.out.println("execute");
+        System.out.println("execute_List_barEmptyName");
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
