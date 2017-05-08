@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.CommandInvocationException;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.translator.NoTranslator;
@@ -41,9 +43,12 @@ public final class JcCommandTest {
 
     /**
      * Test of hasOptions method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testHasOptions() {
+    public void testHasOptions() throws OptionTranslatorException {
         System.out.println("hasOptions");
 
         // Test false.
@@ -95,9 +100,12 @@ public final class JcCommandTest {
 
     /**
      * Test of hasOption method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testHasOption() {
+    public void testHasOption() throws OptionTranslatorException {
         System.out.println("hasOption");
 
         // Test false.
@@ -148,9 +156,12 @@ public final class JcCommandTest {
 
     /**
      * Test of getOptionByIndex method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetOptionByIndex() {
+    public void testGetOptionByIndex() throws OptionTranslatorException {
         System.out.println("getOptionByIndex");
 
         final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
@@ -176,9 +187,12 @@ public final class JcCommandTest {
 
     /**
      * Test of getOptionByName method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetOptionByName() {
+    public void testGetOptionByName() throws OptionTranslatorException {
         System.out.println("getOptionByName");
 
         final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
@@ -201,9 +215,12 @@ public final class JcCommandTest {
 
     /**
      * Test of numberOfOptions method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testNumberOfOptions() {
+    public void testNumberOfOptions() throws OptionTranslatorException {
         System.out.println("numberOfOptions");
 
         final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
@@ -221,9 +238,12 @@ public final class JcCommandTest {
 
     /**
      * Test of indexOfOption method, of class JcCommand.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testIndexOfOption() {
+    public void testIndexOfOption() throws OptionTranslatorException {
         System.out.println("indexOfOption");
 
         final JcOption jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class, "defaultValue", NoTranslator.class);
@@ -281,9 +301,11 @@ public final class JcCommandTest {
      * Test of invoke method, of class JcCommand.
      *
      * @throws java.lang.NoSuchMethodException
+     * @throws
+     * com.github.agadar.javacommander.exception.CommandInvocationException
      */
     @Test
-    public void testInvoke() throws NoSuchMethodException {
+    public void testInvoke() throws NoSuchMethodException, CommandInvocationException {
         System.out.println("invoke");
 
         // Invoke without parameters.
@@ -291,12 +313,12 @@ public final class JcCommandTest {
         jcCommand1.invoke();
 
         // Invoke with parameters.
-        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"), 
+        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"),
                 "description1", null, AnnotatedClass.class.getMethod("barWithParams", String.class, int.class, boolean.class), objectToInvokeOn);
         jcCommand2.invoke("stringParam", 15, true);
-        
+
         // Invoke with custom parameter.
-        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"), 
+        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"),
                 "description1", null, AnnotatedClass.class.getMethod("barWithBazParam", DataClass.class), objectToInvokeOn);
         jcCommand3.invoke(new DataClass("defaultValue"));
     }

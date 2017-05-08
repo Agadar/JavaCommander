@@ -67,7 +67,8 @@ public final class JcOption<T> {
      * failed to be instantiated.
      */
     public JcOption(List<String> names, String description, boolean hasDefaultValue,
-            Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType) {
+            Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType) 
+            throws OptionTranslatorException, IllegalArgumentException {
 
         // Make sure names is not null.
         if (names == null) {
@@ -174,7 +175,7 @@ public final class JcOption<T> {
      * parse the default value, or when the translator itself failed to be
      * instantiated.
      */
-    public final T translate(String stringToParse) {
+    public final T translate(String stringToParse) throws OptionTranslatorException {
         try {
             // If no translator is set, attempt a normal valueOf.
             if (translatorType == null || translatorType.equals(NoTranslator.class)) {

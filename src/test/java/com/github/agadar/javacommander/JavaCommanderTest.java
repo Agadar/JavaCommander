@@ -1,5 +1,6 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.JavaCommanderException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 
 import java.util.Arrays;
@@ -31,9 +32,11 @@ public class JavaCommanderTest {
 
     /**
      * Test of execute method, of class JavaCommander testing the 'bar' method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_bar() {
+    public void testExecute_List_bar() throws JavaCommanderException {
         System.out.println("execute_List_bar");
 
         // Setup JavaCommander instance.
@@ -47,9 +50,11 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the
      * 'barWithParams' method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_barWithParams() {
+    public void testExecute_List_barWithParams() throws JavaCommanderException {
         System.out.println("execute_List_barWithParams");
 
         // Setup JavaCommander instance.
@@ -72,9 +77,11 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the
      * 'barWithDefaultParams' method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_barWithDefaultParams() {
+    public void testExecute_List_barWithDefaultParams() throws JavaCommanderException {
         System.out.println("execute_List_barWithDefaultParams");
 
         // Setup JavaCommander instance.
@@ -101,9 +108,11 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the
      * 'barWithBazParam' method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_barWithBazParam() {
+    public void testExecute_List_barWithBazParam() throws JavaCommanderException {
         System.out.println("execute_List_barWithBazParam");
 
         // Setup JavaCommander instance.
@@ -119,9 +128,11 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barNameless'
      * method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_barNameless() {
+    public void testExecute_List_barNameless() throws JavaCommanderException {
         System.out.println("execute_List_barNameless");
 
         // Setup JavaCommander instance.
@@ -136,9 +147,11 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barEmptyName'
      * method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
-    public void testExecute_List_barEmptyName() {
+    public void testExecute_List_barEmptyName() throws JavaCommanderException {
         System.out.println("execute_List_barEmptyName");
 
         // Setup JavaCommander instance.

@@ -5,7 +5,7 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class JavaCommanderException extends RuntimeException {
+public class JavaCommanderException extends Exception {
 
     public JavaCommanderException() {
     }

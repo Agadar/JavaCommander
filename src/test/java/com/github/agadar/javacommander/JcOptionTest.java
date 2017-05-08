@@ -1,6 +1,7 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.example.IntArrayTranslator;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.testclass.DataClassTranslator;
 import com.github.agadar.javacommander.translator.NoTranslator;
@@ -19,9 +20,12 @@ public final class JcOptionTest {
 
     /**
      * Test of getPrimaryName method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetPrimaryName() {
+    public void testGetPrimaryName() throws OptionTranslatorException {
         System.out.println("getPrimaryName");
         final JcOption instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", NoTranslator.class);
         assertEquals("one", instance.getPrimaryName());
@@ -29,9 +33,12 @@ public final class JcOptionTest {
 
     /**
      * Test of hasDescription method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testHasDescription() {
+    public void testHasDescription() throws OptionTranslatorException {
         System.out.println("hasDescription");
 
         // Test true.
@@ -49,9 +56,12 @@ public final class JcOptionTest {
 
     /**
      * Test of hasTranslator method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testHasTranslator() {
+    public void testHasTranslator() throws OptionTranslatorException {
         System.out.println("hasTranslator");
 
         // Test false with null.
@@ -69,9 +79,12 @@ public final class JcOptionTest {
 
     /**
      * Test of getNameByIndex method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetNameByIndex() {
+    public void testGetNameByIndex() throws OptionTranslatorException {
         System.out.println("getNameByIndex");
         final JcOption instance = new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class, "defaultValue", null);
 
@@ -87,9 +100,12 @@ public final class JcOptionTest {
 
     /**
      * Test of numberOfNames method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testNumberOfNames() {
+    public void testNumberOfNames() throws OptionTranslatorException {
         System.out.println("numberOfNames");
 
         // Test with 3
@@ -103,9 +119,12 @@ public final class JcOptionTest {
 
     /**
      * Test of hashCode method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testHashCode() {
+    public void testHashCode() throws OptionTranslatorException {
         System.out.println("hashCode");
 
         // True result.
@@ -120,9 +139,12 @@ public final class JcOptionTest {
 
     /**
      * Test of equals method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testEquals() {
+    public void testEquals() throws OptionTranslatorException {
         System.out.println("equals");
 
         // True result.
@@ -137,9 +159,12 @@ public final class JcOptionTest {
 
     /**
      * Test of translate method, of class JcOption.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testTranslate() {
+    public void testTranslate() throws OptionTranslatorException {
         System.out.println("translate");
 
         // Test primitive option, that has no translator.

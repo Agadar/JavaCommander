@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander;
 
+import com.github.agadar.javacommander.exception.OptionAnnotationException;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
 
@@ -32,9 +34,14 @@ public class JcRegistryTest {
     /**
      * Test of unregisterObject method, of class JcRegistry. Currently identical
      * to testGetParsedCommands().
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testUnregisterObject() {
+    public void testUnregisterObject() throws OptionAnnotationException, OptionTranslatorException {
         System.out.println("unregisterObject");
 
         // Assert the registry is empty, then register the object.
@@ -53,9 +60,14 @@ public class JcRegistryTest {
 
     /**
      * Test of getCommand method, of class JcRegistry.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetCommand() {
+    public void testGetCommand() throws OptionAnnotationException, OptionTranslatorException {
         System.out.println("getCommand");
 
         // Assert the commands are not present.
@@ -102,9 +114,14 @@ public class JcRegistryTest {
     /**
      * Test of getParsedCommands method, of class JcRegistry. Currently
      * identical to testUnregisterObject().
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testGetParsedCommands() {
+    public void testGetParsedCommands() throws OptionAnnotationException, OptionTranslatorException {
         System.out.println("getParsedCommands");
 
         // Assert the registry is empty, then register the object.
@@ -126,9 +143,14 @@ public class JcRegistryTest {
      *
      * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
-    public void testRegisterObject() {
+    public void testRegisterObject() throws OptionAnnotationException, OptionTranslatorException {
         System.out.println("registerObject");
 
         // Register.
@@ -190,7 +212,7 @@ public class JcRegistryTest {
         assertEquals("barWithBazParamDescription", barWithBazParamCommand.description);
         assertEquals(1, barWithBazParamCommand.numberOfOptions());
         assertTrue(barWithBazParamCommand.isMyObject(foo));
-        
+
         assertEquals(1, barNamelessCommand.numberOfNames());
         assertEquals("barNameless", barNamelessCommand.getNameByIndex(0));
         assertEquals("barNamelessDescription", barNamelessCommand.description);
@@ -202,7 +224,7 @@ public class JcRegistryTest {
         assertEquals("barEmptyNameDescription", barEmptyNameCommand.description);
         assertEquals(1, barEmptyNameCommand.numberOfOptions());
         assertTrue(barEmptyNameCommand.isMyObject(foo));
-        
+
         // Get parsed options.
         final JcOption<String> stringOption = barWithParamsCommand.getOptionByName("stringParam").get();
         final JcOption<Integer> intOption = barWithParamsCommand.getOptionByName("intParam").get();
@@ -213,8 +235,8 @@ public class JcRegistryTest {
         final JcOption<Boolean> boolDefaultOption = barWithDefaultParamsCommand.getOptionByName("boolDefaultParam").get();
 
         final JcOption<DataClass> bazOption = barWithBazParamCommand.getOptionByName("bazParam").get();
-        
-        final JcOption<DataClass> namelessOption = barNamelessCommand.getOptionByName("arg0").get();      
+
+        final JcOption<DataClass> namelessOption = barNamelessCommand.getOptionByName("arg0").get();
         final JcOption<DataClass> emptyNameOption = barEmptyNameCommand.getOptionByName("arg0").get();
 
         // Make sure they're the same as the options known by synonyms.
@@ -295,14 +317,14 @@ public class JcRegistryTest {
         assertTrue(bazOption.hasTranslator());
         assertTrue(bazOption.hasDefaultValue);
         assertEquals(new DataClass("defaultBaz"), bazOption.defaultValue);
-        
+
         assertEquals(1, namelessOption.numberOfNames());
         assertEquals("arg0", namelessOption.getNameByIndex(0));
         assertEquals("barNamelessParamDescription", namelessOption.description);
         assertFalse(namelessOption.hasTranslator());
         assertFalse(namelessOption.hasDefaultValue);
         assertNull(namelessOption.defaultValue);
-        
+
         assertEquals(1, emptyNameOption.numberOfNames());
         assertEquals("arg0", emptyNameOption.getNameByIndex(0));
         assertEquals("barEmptyNameParamDescription", emptyNameOption.description);

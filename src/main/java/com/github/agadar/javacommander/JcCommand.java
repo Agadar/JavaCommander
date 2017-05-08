@@ -62,7 +62,8 @@ public final class JcCommand {
      * @throws IllegalArgumentException If one of the parameter values is
      * invalid.
      */
-    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn) {
+    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn)
+        throws IllegalArgumentException {
 
         // Make sure names is not null.
         if (names == null) {
@@ -241,7 +242,7 @@ public final class JcCommand {
      * @param args The arguments.
      * @throws CommandInvocationException If invoking the command failed.
      */
-    public final void invoke(Object... args) {
+    public final void invoke(Object... args) throws CommandInvocationException {
         try {
             methodToInvoke.invoke(objectToInvokeOn, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
