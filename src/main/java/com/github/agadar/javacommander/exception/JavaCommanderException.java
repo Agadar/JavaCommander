@@ -15,6 +15,7 @@ public class JavaCommanderException extends Exception {
 
     /**
      * Constructor.
+     *
      * @param message An informative message.
      */
     public JavaCommanderException(String message) {
@@ -23,6 +24,7 @@ public class JavaCommanderException extends Exception {
 
     /**
      * Constructor.
+     *
      * @param message An informative message.
      * @param cause The underlying exception.
      */
@@ -32,6 +34,7 @@ public class JavaCommanderException extends Exception {
 
     /**
      * Constructor.
+     *
      * @param cause The underlying exception.
      */
     public JavaCommanderException(Throwable cause) {

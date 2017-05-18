@@ -4,7 +4,7 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
 
 /**
  * Test translator for the DataClass test class.
- * 
+ *
  * @author Agadar (https://github.com/Agadar/)
  */
 public class DataClassTranslator implements OptionTranslator<DataClass> {

@@ -132,8 +132,8 @@ public final class JavaCommander {
     }
 
     /**
-     * Registers all commands found in the supplied object. Any commands of
-     * which the name is already registered will override the old values.
+     * Registers all annotated, public, non-static methods of the supplied
+     * object.
      *
      * @param object The object containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a
@@ -148,12 +148,36 @@ public final class JavaCommander {
     }
 
     /**
-     * Unregisters all commands found in the supplied object.
+     * Registers all annotated, public, static methods of the supplied class.
      *
-     * @param object The object whose commands to unregister.
+     * @param clazz The class containing annotated methods.
+     * @throws JavaCommanderException If something went wrong, containing a
+     * cause.
+     */
+    public final void registerClass(Class clazz) throws JavaCommanderException {
+        try {
+            jcRegistry.registerClass(clazz);
+        } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
+            throw new JavaCommanderException(ex);
+        }
+    }
+
+    /**
+     * Unregisters all annotated, non-static methods of the supplied object.
+     *
+     * @param object The object whose annotated methods to unregister.
      */
     public final void unregisterObject(Object object) {
         jcRegistry.unregisterObject(object);
+    }
+
+    /**
+     * Unregisters all annotated, static methods of the supplied class.
+     *
+     * @param clazz The class whose annotated methods to unregister.
+     */
+    public final void unregisterClass(Class clazz) {
+        jcRegistry.unregisterClass(clazz);
     }
 
     /**

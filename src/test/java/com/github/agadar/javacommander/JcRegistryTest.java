@@ -19,7 +19,7 @@ public class JcRegistryTest {
 
     private static AnnotatedClass foo;
     private static JcRegistry jcRegistry;
-    private static final int METHODS_IN_FOO = 6;
+    private static final int NONSTATIC_METHODS_IN_FOO = 6;
 
     @BeforeClass
     public static void SetupClass() {
@@ -32,8 +32,7 @@ public class JcRegistryTest {
     }
 
     /**
-     * Test of unregisterObject method, of class JcRegistry. Currently identical
-     * to testGetParsedCommands().
+     * Test of unregisterObject method, of class JcRegistry.
      *
      * @throws
      * com.github.agadar.javacommander.exception.OptionAnnotationException
@@ -49,10 +48,36 @@ public class JcRegistryTest {
         jcRegistry.registerObject(foo);
 
         // Assert the annotations of the methods within foo have been parsed.
-        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
+        assertEquals(NONSTATIC_METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
 
         // Unregister the object.
         jcRegistry.unregisterObject(foo);
+
+        // Assert the commands have been removed.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
+    }
+
+    /**
+     * Test of unregisterClass method, of class JcRegistry.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     */
+    @Test
+    public void testUnregisterClass() throws OptionAnnotationException, OptionTranslatorException {
+        System.out.println("unregisterClass");
+
+        // Assert the registry is empty, then register the class.
+        assertEquals(0, jcRegistry.getParsedCommands().size());
+        jcRegistry.registerClass(AnnotatedClass.class);
+
+        // Assert the annotations of the methods within the class have been parsed.
+        assertEquals(1, jcRegistry.getParsedCommands().size());
+
+        // Unregister the class.
+        jcRegistry.unregisterClass(AnnotatedClass.class);
 
         // Assert the commands have been removed.
         assertEquals(0, jcRegistry.getParsedCommands().size());
@@ -70,7 +95,6 @@ public class JcRegistryTest {
     public void testGetCommand() throws OptionAnnotationException, OptionTranslatorException {
         System.out.println("getCommand");
 
-        // Assert the commands are not present.
         assertFalse(jcRegistry.getCommand("Bar").isPresent());
         assertFalse(jcRegistry.getCommand("bar").isPresent());
         assertFalse(jcRegistry.getCommand("BarWithParams").isPresent());
@@ -81,10 +105,26 @@ public class JcRegistryTest {
         assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
         assertFalse(jcRegistry.getCommand("barNameless").isPresent());
         assertFalse(jcRegistry.getCommand("").isPresent());
+        assertFalse(jcRegistry.getCommand("BarStatic").isPresent());
+        assertFalse(jcRegistry.getCommand("barStatic").isPresent());
 
-        jcRegistry.registerObject(foo); // Register foo.
+        jcRegistry.registerObject(foo);
 
-        // Assert the commands are present.
+        assertTrue(jcRegistry.getCommand("Bar").isPresent());
+        assertTrue(jcRegistry.getCommand("bar").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithParams").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithParams").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithDefaultParams").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithDefaultParams").isPresent());
+        assertTrue(jcRegistry.getCommand("BarWithBazParam").isPresent());
+        assertTrue(jcRegistry.getCommand("barWithBazParam").isPresent());
+        assertTrue(jcRegistry.getCommand("barNameless").isPresent());
+        assertFalse(jcRegistry.getCommand("BarStatic").isPresent());
+        assertFalse(jcRegistry.getCommand("barStatic").isPresent());
+        assertTrue(jcRegistry.getCommand("").isPresent());
+
+        jcRegistry.registerClass(AnnotatedClass.class);
+
         assertTrue(jcRegistry.getCommand("Bar").isPresent());
         assertTrue(jcRegistry.getCommand("bar").isPresent());
         assertTrue(jcRegistry.getCommand("BarWithParams").isPresent());
@@ -95,10 +135,11 @@ public class JcRegistryTest {
         assertTrue(jcRegistry.getCommand("barWithBazParam").isPresent());
         assertTrue(jcRegistry.getCommand("barNameless").isPresent());
         assertTrue(jcRegistry.getCommand("").isPresent());
+        assertTrue(jcRegistry.getCommand("BarStatic").isPresent());
+        assertTrue(jcRegistry.getCommand("barStatic").isPresent());
 
-        jcRegistry.unregisterObject(foo);   // Unregister foo.
+        jcRegistry.unregisterObject(foo);
 
-        // Assert the commands are no longer present.
         assertFalse(jcRegistry.getCommand("Bar").isPresent());
         assertFalse(jcRegistry.getCommand("bar").isPresent());
         assertFalse(jcRegistry.getCommand("BarWithParams").isPresent());
@@ -109,33 +150,23 @@ public class JcRegistryTest {
         assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
         assertFalse(jcRegistry.getCommand("barNameless").isPresent());
         assertFalse(jcRegistry.getCommand("").isPresent());
-    }
+        assertTrue(jcRegistry.getCommand("BarStatic").isPresent());
+        assertTrue(jcRegistry.getCommand("barStatic").isPresent());
 
-    /**
-     * Test of getParsedCommands method, of class JcRegistry. Currently
-     * identical to testUnregisterObject().
-     *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
-     */
-    @Test
-    public void testGetParsedCommands() throws OptionAnnotationException, OptionTranslatorException {
-        System.out.println("getParsedCommands");
+        jcRegistry.unregisterClass(AnnotatedClass.class);
 
-        // Assert the registry is empty, then register the object.
-        assertEquals(0, jcRegistry.getParsedCommands().size());
-        jcRegistry.registerObject(foo);
-
-        // Assert the annotations of the methods within foo have been parsed.
-        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
-
-        // Unregister the object.
-        jcRegistry.unregisterObject(foo);
-
-        // Assert the commands have been removed.
-        assertEquals(0, jcRegistry.getParsedCommands().size());
+        assertFalse(jcRegistry.getCommand("Bar").isPresent());
+        assertFalse(jcRegistry.getCommand("bar").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithDefaultParams").isPresent());
+        assertFalse(jcRegistry.getCommand("BarWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barWithBazParam").isPresent());
+        assertFalse(jcRegistry.getCommand("barNameless").isPresent());
+        assertFalse(jcRegistry.getCommand("").isPresent());
+        assertFalse(jcRegistry.getCommand("BarStatic").isPresent());
+        assertFalse(jcRegistry.getCommand("barStatic").isPresent());
     }
 
     /**
@@ -155,7 +186,7 @@ public class JcRegistryTest {
 
         // Register.
         jcRegistry.registerObject(foo);
-        assertEquals(METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
+        assertEquals(NONSTATIC_METHODS_IN_FOO, jcRegistry.getParsedCommands().size());
 
         // Confirm presence of commands by all names.
         assertTrue(jcRegistry.hasCommand("Bar"));
@@ -331,5 +362,44 @@ public class JcRegistryTest {
         assertFalse(emptyNameOption.hasTranslator());
         assertFalse(emptyNameOption.hasDefaultValue);
         assertNull(emptyNameOption.defaultValue);
+    }
+
+    /**
+     * Test of registerClassmethod, of class JcRegistry.
+     *
+     * Due to the nature of JcRegistry, this also uses/tests other functions of
+     * JcRegistry.
+     *
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws
+     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     */
+    @Test
+    public void testRegisterClass() throws OptionAnnotationException, OptionTranslatorException {
+        System.out.println("registerClass");
+
+        // Register.
+        jcRegistry.registerClass(AnnotatedClass.class);
+        assertEquals(1, jcRegistry.getParsedCommands().size());
+
+        // Confirm presence of commands by all names.
+        assertTrue(jcRegistry.hasCommand("BarStatic"));
+        assertTrue(jcRegistry.hasCommand("barStatic"));
+        assertFalse(jcRegistry.hasCommand("BarMitzvah"));
+
+        // Get parsed commands.
+        final JcCommand barStaticCommand = jcRegistry.getCommand("BarStatic").get();
+
+        // Make sure they're the same as the commands known by synonyms.
+        assertSame(barStaticCommand, jcRegistry.getCommand("barStatic").get());
+
+        // Make sure the command fields are correct.
+        assertEquals(2, barStaticCommand.numberOfNames());
+        assertEquals("BarStatic", barStaticCommand.getNameByIndex(0));
+        assertEquals("barStatic", barStaticCommand.getNameByIndex(1));
+        assertEquals("barStaticDescription", barStaticCommand.description);
+        assertEquals(0, barStaticCommand.numberOfOptions());
+        assertTrue(barStaticCommand.isMyObject(AnnotatedClass.class));
     }
 }

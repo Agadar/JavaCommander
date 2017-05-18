@@ -40,7 +40,8 @@ public final class JcCommand {
     private final Method methodToInvoke;
 
     /**
-     * The object to invoke the above method on.
+     * The object to invoke the above method on. Holds a class if this command
+     * calls a static method.
      */
     private final Object objectToInvokeOn;
 
@@ -58,12 +59,13 @@ public final class JcCommand {
      * @param options This command's options, in order of the method's
      * parameters.
      * @param methodToInvoke The method to invoke when this command is executed.
-     * @param objectToInvokeOn The object to invoke the above method on.
+     * @param objectToInvokeOn The object to invoke the above method on. Holds a
+     * class if this command calls a static method.
      * @throws IllegalArgumentException If one of the parameter values is
      * invalid.
      */
     public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn)
-        throws IllegalArgumentException {
+            throws IllegalArgumentException {
 
         // Make sure names is not null.
         if (names == null) {
@@ -244,17 +246,17 @@ public final class JcCommand {
      */
     public final void invoke(Object... args) throws CommandInvocationException {
         try {
-            methodToInvoke.invoke(objectToInvokeOn, args);
+            methodToInvoke.invoke(objectToInvokeOn instanceof Class ? null : objectToInvokeOn, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             throw new CommandInvocationException(this, ex);
         }
     }
 
     /**
-     * Returns whether the supplied object is the same object this command will
-     * invoke a method on when invoked.
+     * Returns whether the supplied object (or class) is the same object (or
+     * class) this command will invoke a method on when invoked.
      *
-     * @param object The object to check.
+     * @param object The object (or class) to check.
      * @return True if the above is the case, otherwise false.
      */
     public final boolean isMyObject(Object object) {

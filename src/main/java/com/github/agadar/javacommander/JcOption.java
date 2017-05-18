@@ -67,7 +67,7 @@ public final class JcOption<T> {
      * failed to be instantiated.
      */
     public JcOption(List<String> names, String description, boolean hasDefaultValue,
-            Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType) 
+            Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType)
             throws OptionTranslatorException, IllegalArgumentException {
 
         // Make sure names is not null.

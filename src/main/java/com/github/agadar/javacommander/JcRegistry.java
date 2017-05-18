@@ -7,6 +7,7 @@ import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
 import java.util.ArrayList;
@@ -37,8 +38,8 @@ public final class JcRegistry {
     private final TreeMap<String, JcCommand> allNamesToCommands = new TreeMap<>();
 
     /**
-     * Registers all commands found in the supplied object. Any commands of
-     * which the name is already registered will override the old values.
+     * Registers all annotated, public, non-static methods of the supplied
+     * object.
      *
      * @param object The object containing annotated methods.
      * @throws OptionAnnotationException If a method's parameter is not properly
@@ -53,8 +54,8 @@ public final class JcRegistry {
 
         // Iterate through the object's methods.
         for (final Method method : object.getClass().getMethods()) {
-            // If we've found an annotated method, get to work.
-            if (method.isAnnotationPresent(Command.class)) {
+            // If we've found an annotated, non-static method, get to work.
+            if (method.isAnnotationPresent(Command.class) && !Modifier.isStatic(method.getModifiers())) {
                 // Obtain the command and derive the required values.
                 final Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
                 final String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names() : new String[]{method.getName()};
@@ -68,9 +69,39 @@ public final class JcRegistry {
     }
 
     /**
-     * Unregisters all commands found in the supplied object.
+     * Registers all annotated, public, static methods of the supplied class.
      *
-     * @param object The object whose commands to unregister.
+     * @param clazz The class containing annotated methods.
+     * @throws OptionAnnotationException If a method's parameter is not properly
+     * annotated with the @Option annotation.
+     * @throws OptionTranslatorException If an option translator failed to parse
+     * a default value, or when the translator itself failed to be instantiated.
+     */
+    public final void registerClass(Class clazz) throws OptionAnnotationException, OptionTranslatorException {
+        if (clazz == null) {
+            throw new IllegalArgumentException("'clazz' may not be null");
+        }
+
+        // Iterate through the object's methods.
+        for (final Method method : clazz.getMethods()) {
+            // If we've found an annotated, static method, then get to work.
+            if (method.isAnnotationPresent(Command.class) && Modifier.isStatic(method.getModifiers())) {
+                // Obtain the command and derive the required values.
+                final Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
+                final String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names() : new String[]{method.getName()};
+                final String description = commandAnnotation.description();
+                final ArrayList<JcOption> options = parseOptions(commandAnnotation, method);
+
+                // Create new JcCommand object and register it.
+                registerCommand(new JcCommand(Arrays.asList(names), description, options, method, clazz));
+            }
+        }
+    }
+
+    /**
+     * Unregisters all annotated, non-static methods of the supplied object.
+     *
+     * @param object The object whose annotated methods to unregister.
      */
     public final void unregisterObject(Object object) {
         if (object == null) {
@@ -92,6 +123,15 @@ public final class JcRegistry {
                 allNamesToCommands.remove(command.getNameByIndex(i));
             }
         });
+    }
+
+    /**
+     * Unregisters all annotated, static methods of the supplied class.
+     *
+     * @param clazz The class whose annotated methods to unregister.
+     */
+    public final void unregisterClass(Class clazz) {
+        this.unregisterObject(clazz);
     }
 
     /**
