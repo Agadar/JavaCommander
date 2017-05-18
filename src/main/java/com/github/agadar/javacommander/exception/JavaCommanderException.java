@@ -7,17 +7,33 @@ package com.github.agadar.javacommander.exception;
  */
 public class JavaCommanderException extends Exception {
 
+    /**
+     * Constructor.
+     */
     public JavaCommanderException() {
     }
 
+    /**
+     * Constructor.
+     * @param message An informative message.
+     */
     public JavaCommanderException(String message) {
         super(message);
     }
 
+    /**
+     * Constructor.
+     * @param message An informative message.
+     * @param cause The underlying exception.
+     */
     public JavaCommanderException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Constructor.
+     * @param cause The underlying exception.
+     */
     public JavaCommanderException(Throwable cause) {
         super(cause);
     }

@@ -8,7 +8,7 @@
     <version>2.0.0</version>
     <packaging>jar</packaging>   
     <name>JavaCommander</name>
-    <description>Java framework for annotating functions in such a way that they can be called via interpreting string inputs.</description>
+    <description>Java framework for annotating functions such that they can be called via interpreting string inputs.</description>
     <url>https://github.com/Agadar/JavaCommander</url>
     
     <!-- License -->

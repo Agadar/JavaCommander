@@ -1,18 +1,11 @@
 package com.github.agadar.javacommander.example;
 
 import com.github.agadar.javacommander.JavaCommander;
-import com.github.agadar.javacommander.exception.CommandInvocationException;
 import com.github.agadar.javacommander.exception.JavaCommanderException;
-import com.github.agadar.javacommander.exception.NoValueForOptionException;
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
-import com.github.agadar.javacommander.exception.UnknownCommandException;
-import com.github.agadar.javacommander.exception.UnknownOptionException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Example runnable that continuously reads user input and sends the input to a
