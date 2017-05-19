@@ -42,17 +42,16 @@ public final class ExampleCommands {
     }
 
     /**
-     * Returns a print-friendly list of all available commands. Called by the
-     * basic 'help' command. If the commandName is not null and not empty, then
-     * the help of the command with that name is given.
+     * Prints a list of all available commands. Called by the basic 'help'
+     * command. If the commandName is not null and not empty, then the help of
+     * the command with that name is given.
      *
      * @param commandName The name of the command to return the help of, or
      * null/empty.
-     * @return The help of a specified command, or of all commands.
      */
     @Command(names = {"help", "usage", "?"}, description = "Display the help.", options
             = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
-    public String usage(String commandName) {
+    public void usage(String commandName) {
         final StringBuilder stringBuilder = new StringBuilder("--------------------\n");
 
         // If no command name given, then list general info of all commands.
@@ -78,12 +77,14 @@ public final class ExampleCommands {
 
             if (!command.isPresent()) {
                 stringBuilder.append(String.format("'%s' is not recognized as a command", commandName));
-                return stringBuilder.toString();
+                System.out.println(stringBuilder.toString());
+                return;
             }
 
             // Build string
             stringBuilder.append("Description:\n");
-            stringBuilder.append(command.get().hasDescription() ? command.get().description : "No description available.\n\n");
+            stringBuilder.append(command.get().hasDescription() ? command.get().description : "No description available.");
+            stringBuilder.append("\n\n");
 
             // If there are synonyms, then list them.
             stringBuilder.append("Synonyms:\n");
@@ -108,7 +109,7 @@ public final class ExampleCommands {
         }
         // Print help
         stringBuilder.append("\n--------------------");
-        return stringBuilder.toString();
+        System.out.println(stringBuilder.toString());
     }
 
     /**
@@ -132,7 +133,7 @@ public final class ExampleCommands {
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = {"exit", "quit", "stop"}, description = "Exit the program.")
+    @Command(names = {"exit", "quit"}, description = "Exit the program.")
     public void exitProgram() {
         System.exit(0);
     }
