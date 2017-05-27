@@ -292,8 +292,8 @@ public final class JavaCommander {
             } // Else if the character is the escape character, then set escapeNextChar on.
             else if (c == '\\') {
                 escapeNextChar = true;
-            } // Else if the character is a space...
-            else if (c == ' ') {
+            } // Else if the character is a space, '=' or ':'...
+            else if (c == ' ' || c == '=' || c == ':') {
                 // ...and we're not in a quote...
                 if (!insideQuote) {
                     // ...and the current token is at least 1 character long,
