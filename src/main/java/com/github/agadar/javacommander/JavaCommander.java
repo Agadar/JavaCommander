@@ -44,23 +44,41 @@ public final class JavaCommander {
     }
 
     /**
-     * Parses a string to a list of argument tokens, and then attempts to find
-     * and execute the command defined in it.
+     * Parses a string to a list of argument token lists, and then attempts to
+     * find and execute the sequence of commands defined in it.
      *
-     * @param string The string to parse and execute the corresponding command
+     * @param string The string to parse and execute the corresponding commands
      * of.
      * @throws JavaCommanderException If something went wrong, containing a
      * cause.
      */
     public final void execute(String string) throws JavaCommanderException {
-        this.execute(stringAsArgs(string != null ? string : ""));
+        this.executeSequence(stringAsArgs(string));
+    }
+
+    /**
+     * Attempts to find and execute the sequence of commands defined in a list
+     * of lists of argument tokens.
+     *
+     * @param args The list of argument token lists.
+     * @throws JavaCommanderException If something went wrong, containing a
+     * cause.
+     */
+    public final void executeSequence(List<List<String>> args) throws JavaCommanderException {
+        if (args == null) {
+            this.execute("");
+        } else {
+            for (List<String> tokens : args) {
+                this.execute(tokens);
+            }
+        }
     }
 
     /**
      * Attempts to find and execute the command defined in a list of argument
      * tokens.
      *
-     * @param args the list of argument tokens
+     * @param args The list of argument tokens.
      * @throws JavaCommanderException If something went wrong, containing a
      * cause.
      */
@@ -272,10 +290,12 @@ public final class JavaCommander {
      * @param string A string to parse to a list of argument tokens.
      * @return A list of argument tokens.
      */
-    private static ArrayList<String> stringAsArgs(String string) {
+    private static ArrayList<List<String>> stringAsArgs(String string) {
         string = string.trim();
-        final ArrayList<String> tokens = new ArrayList<>();        // the token list to be returned
-        final StringBuilder curToken = new StringBuilder();   // current token
+        final ArrayList<List<String>> tokenLists = new ArrayList<>();  // list of token lists
+        ArrayList<String> curTokens = new ArrayList<>();        // current token list
+        tokenLists.add(curTokens);
+        final StringBuilder lastToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
 
@@ -284,7 +304,7 @@ public final class JavaCommander {
             // If we are to escape the next char, then append it to the token
             // and turn off the escape option.
             if (escapeNextChar) {
-                curToken.append(c);
+                lastToken.append(c);
                 escapeNextChar = false;
             } // Else if the character is a quote mark, then toggle insideQuote.
             else if (c == '"' || c == '\'') {
@@ -298,21 +318,29 @@ public final class JavaCommander {
                 if (!insideQuote) {
                     // ...and the current token is at least 1 character long,
                     // then the current token is finished.
-                    if (curToken.length() > 0) {
-                        tokens.add(curToken.toString());
-                        curToken.delete(0, curToken.length());
+                    if (lastToken.length() > 0) {
+                        curTokens.add(lastToken.toString());
+                        lastToken.delete(0, lastToken.length());
                     }
                 } // ...and we're in a quote, then append it to the token.
                 else {
-                    curToken.append(c);
+                    lastToken.append(c);
                 }
+            } // Else if the character is ';', then that means we're going for a new token list. 
+            else if (c == ';') {
+                if (lastToken.length() > 0) {
+                    curTokens.add(lastToken.toString());
+                    lastToken.delete(0, lastToken.length());
+                }
+                curTokens = new ArrayList<>();
+                tokenLists.add(curTokens);
             } // Else, append to the token.
             else {
-                curToken.append(c);
+                lastToken.append(c);
             }
         }
         // Add the last token to the list and then return the list.
-        tokens.add(curToken.toString());
-        return tokens;
+        curTokens.add(lastToken.toString());
+        return tokenLists;
     }
 }
