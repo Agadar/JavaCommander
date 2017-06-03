@@ -298,7 +298,7 @@ public class JavaCommanderTest {
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
-    //@Test
+    @Test
     public void testExecute_String_barEmptyName() throws JavaCommanderException {
         System.out.println("execute_String_barEmptyName");
 

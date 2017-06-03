@@ -294,7 +294,6 @@ public final class JavaCommander {
         string = string.trim();
         final ArrayList<List<String>> tokenLists = new ArrayList<>();  // list of token lists
         ArrayList<String> curTokens = new ArrayList<>();        // current token list
-        //tokenLists.add(curTokens);
         final StringBuilder lastToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
