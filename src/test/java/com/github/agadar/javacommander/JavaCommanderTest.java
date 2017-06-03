@@ -298,7 +298,7 @@ public class JavaCommanderTest {
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
-    @Test
+    //@Test
     public void testExecute_String_barEmptyName() throws JavaCommanderException {
         System.out.println("execute_String_barEmptyName");
 
@@ -327,5 +327,30 @@ public class JavaCommanderTest {
 
         // Test call.
         jcCommander.execute("barStatic");
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing multiple commands
+     * in one execute call.
+     *
+     * @throws JavaCommanderException
+     */
+    @Test
+    public void testExecute_String_multiple_commands() throws JavaCommanderException {
+        System.out.println("execute_String_multiple_commands");
+
+        // Setup JavaCommander instance.
+        final JavaCommander jcCommander = new JavaCommander();
+        jcCommander.registerObject(foo);
+
+        // Test calls.
+        jcCommander.execute("barWithParams someString0 15 true; barWithParams someString1 10 false");
+        jcCommander.execute("barWithParams someString0 15 true;barWithParams someString1 10 false");
+        jcCommander.execute("barWithParams someString0 15 true ;barWithParams someString1 10 false");
+        jcCommander.execute("barWithParams someString0 15 true ; barWithParams someString1 10 false");
+        jcCommander.execute("barWithParams someString0 15 true; barWithParams someString1 10 false;");
+        jcCommander.execute(";barWithParams someString0 15 true; barWithParams someString1 10 false");
+        jcCommander.execute(";barWithParams someString0 15 true; barWithParams someString1 10 false;");
+        jcCommander.execute(";;;barWithParams someString0 15 true;;;barWithParams someString1 10 false;;;");
     }
 }

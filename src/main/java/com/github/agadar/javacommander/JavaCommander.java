@@ -65,8 +65,8 @@ public final class JavaCommander {
      * cause.
      */
     public final void executeSequence(List<List<String>> args) throws JavaCommanderException {
-        if (args == null) {
-            this.execute("");
+        if (args == null || args.isEmpty()) {
+            this.execute((List<String>)null);
         } else {
             for (List<String> tokens : args) {
                 this.execute(tokens);
@@ -294,7 +294,7 @@ public final class JavaCommander {
         string = string.trim();
         final ArrayList<List<String>> tokenLists = new ArrayList<>();  // list of token lists
         ArrayList<String> curTokens = new ArrayList<>();        // current token list
-        tokenLists.add(curTokens);
+        //tokenLists.add(curTokens);
         final StringBuilder lastToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
@@ -332,15 +332,22 @@ public final class JavaCommander {
                     curTokens.add(lastToken.toString());
                     lastToken.delete(0, lastToken.length());
                 }
-                curTokens = new ArrayList<>();
-                tokenLists.add(curTokens);
+                if (curTokens.size() > 0) {
+                    tokenLists.add(curTokens);
+                    curTokens = new ArrayList<>();
+                }
             } // Else, append to the token.
             else {
                 lastToken.append(c);
             }
         }
         // Add the last token to the list and then return the list.
-        curTokens.add(lastToken.toString());
+        if (lastToken.length() > 0) {
+            curTokens.add(lastToken.toString());
+        }
+        if (curTokens.size() > 0) {
+            tokenLists.add(curTokens);
+        }
         return tokenLists;
     }
 }
