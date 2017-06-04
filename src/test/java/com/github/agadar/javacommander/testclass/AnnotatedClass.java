@@ -38,11 +38,6 @@ public class AnnotatedClass {
     public void barNameless(String stringParam) {
     }
 
-    @Command(names = {""}, description = "barEmptyNameDescription", options = {
-        @Option(description = "barEmptyNameParamDescription")})
-    public void barEmptyName(String stringParam) {
-    }
-
     @Command(names = {"BarStatic", "barStatic"}, description = "barStaticDescription")
     public static void barStatic() {
     }

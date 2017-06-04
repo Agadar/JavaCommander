@@ -49,7 +49,7 @@ public final class JcRegistry {
      */
     public final void registerObject(Object object) throws OptionAnnotationException, OptionTranslatorException {
         if (object == null) {
-            throw new IllegalArgumentException("'obj' may not be null");
+            throw new IllegalArgumentException("'object' may not be null");
         }
 
         // Iterate through the object's methods.

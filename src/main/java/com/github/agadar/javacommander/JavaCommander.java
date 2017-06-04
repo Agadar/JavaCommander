@@ -19,11 +19,6 @@ public final class JavaCommander {
     public final JcRegistry jcRegistry;
 
     /**
-     * Empty string, can be used for the nameless command.
-     */
-    private static final String EMPTY_STRING = "";
-
-    /**
      * Constructor. Assigns a new JcRegistry to this.
      */
     public JavaCommander() {
@@ -65,9 +60,12 @@ public final class JavaCommander {
      * cause.
      */
     public final void executeSequence(List<List<String>> args) throws JavaCommanderException {
+
+        // Verify argument list.
         if (args == null || args.isEmpty()) {
-            this.execute((List<String>)null);
+            throw new JavaCommanderException(new IllegalArgumentException("'args' should not be null or empty"));
         } else {
+            // Execute each token list in sequence.
             for (List<String> tokens : args) {
                 this.execute(tokens);
             }
@@ -84,46 +82,30 @@ public final class JavaCommander {
      */
     public final void execute(List<String> args) throws JavaCommanderException {
         try {
-            if (args == null) {
-                args = new ArrayList<>();
+            // Verify argument list.
+            if (args == null || args.isEmpty()) {
+                throw new IllegalArgumentException("'args' should not be null or empty");
             }
 
-            // What index in args to start reading parameters from. If this is a
-            // normal command, then the parameters start at index 1, as index 0
-            // is the command name. If this is the master command, then the
-            // parameters start at index 0, as there is no command name.
-            int paramsStartingIndex = 1;
-            JcCommand command;
-
-            // Determine and retrieve the command to use.
-            if (args.size() > 0) {
-                if (jcRegistry.hasCommand(args.get(0))) {
-                    command = jcRegistry.getCommand(args.get(0)).get();
-                } else if (jcRegistry.hasCommand(EMPTY_STRING)) {
-                    command = jcRegistry.getCommand(EMPTY_STRING).get();
-                    paramsStartingIndex = 0;
-                } else {
-                    throw new UnknownCommandException(args.get(0));
-                }
-            } else if (jcRegistry.hasCommand(EMPTY_STRING)) {
-                command = jcRegistry.getCommand(EMPTY_STRING).get();
-                paramsStartingIndex = 0;
-            } else {
-                throw new UnknownCommandException(EMPTY_STRING);
+            // Retrieve correct command.
+            final Optional<JcCommand> commandOpt = jcRegistry.getCommand(args.get(0));
+            if (!commandOpt.isPresent()) {
+                throw new UnknownCommandException(args.get(0));
             }
+            final JcCommand command = commandOpt.get();
 
             // Arguments to be passed to the Method.invoke function.
             final Object[] finalArgs = new Object[command.numberOfOptions()];
 
             // If there's arguments left to parse to options, let's parse them.
-            if (args.size() > paramsStartingIndex) {
+            if (args.size() > 1) {
 
                 // If the first argument is a valid option, use explicit parsing.
                 // Otherwise, use implicit parsing.
-                if (command.hasOption(args.get(paramsStartingIndex))) {
-                    parseArgumentsExplicit(finalArgs, args, command, paramsStartingIndex);
+                if (command.hasOption(args.get(1))) {
+                    parseArgumentsExplicit(finalArgs, args, command);
                 } else {
-                    parseArgumentsImplicit(finalArgs, args, command, paramsStartingIndex);
+                    parseArgumentsImplicit(finalArgs, args, command);
                 }
             }
 
@@ -206,34 +188,25 @@ public final class JavaCommander {
      * function.
      * @param args The argument tokens to parse.
      * @param command The command to parse the tokens for.
-     * @param paramsStartingIndex The index in args to start parsing from.
      * @throws OptionTranslatorException If an argument token could not be
      * parsed to its corresponding parameter type.
      * @throws IllegalArgumentException If args contains more argument tokens
      * than should be parsed.
      */
     private static void parseArgumentsImplicit(Object[] finalArgs, List<String> args,
-            JcCommand command, int paramsStartingIndex) throws OptionTranslatorException {
+            JcCommand command) throws OptionTranslatorException {
 
         // If too many arguments were supplied, throw an error.
-        if (args.size() - paramsStartingIndex > finalArgs.length) {
+        if (args.size() - 1 > finalArgs.length) {
             throw new IllegalArgumentException("Too many arguments supplied for this command");
         }
 
         // Now simply iterate over the arguments, parsing them and placing
         // them in finalArgs as we go.
-        if (paramsStartingIndex == 1) {
-            for (int i = 1; i < args.size(); i++) {
-                final JcOption currentOption = command.getOptionByIndex(i - 1).get();
-                final Object parsedArg = currentOption.translate(args.get(i));
-                finalArgs[i - 1] = parsedArg;
-            }
-        } else {
-            for (int i = 0; i < args.size(); i++) {
-                final JcOption currentOption = command.getOptionByIndex(i).get();
-                final Object parsedArg = currentOption.translate(args.get(i));
-                finalArgs[i] = parsedArg;
-            }
+        for (int i = 1; i < args.size(); i++) {
+            final JcOption currentOption = command.getOptionByIndex(i - 1).get();
+            final Object parsedArg = currentOption.translate(args.get(i));
+            finalArgs[i - 1] = parsedArg;
         }
     }
 
@@ -245,7 +218,6 @@ public final class JavaCommander {
      * function.
      * @param args The argument tokens to parse.
      * @param command The command to parse the tokens for.
-     * @param paramsStartingIndex The index in args to start parsing from.
      * @throws UnknownOptionException If an option was supplied for the command
      * that it does not have.
      * @throws NoValueForOptionException If an option without a default value
@@ -253,13 +225,13 @@ public final class JavaCommander {
      * @throws OptionTranslatorException If an argument token could not be
      * parsed to its corresponding parameter type.
      */
-    private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command, int paramsStartingIndex)
+    private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command)
             throws UnknownOptionException, OptionTranslatorException, NoValueForOptionException {
-        Optional<JcOption> currentOption = command.getOptionByName(args.get(paramsStartingIndex));
+        Optional<JcOption> currentOption = command.getOptionByName(args.get(1));
         boolean parsingOption = false;
 
         // Iterate over all the arguments.
-        for (int i = paramsStartingIndex + 1; i < args.size(); i++) {
+        for (int i = 2; i < args.size(); i++) {
 
             // If we're not currently finding a value for an option, then
             // try find the option. Else, try to parse the value.                
@@ -291,8 +263,17 @@ public final class JavaCommander {
      * @return A list of argument tokens.
      */
     private static ArrayList<List<String>> stringAsArgs(String string) {
-        string = string.trim();
         final ArrayList<List<String>> tokenLists = new ArrayList<>();  // list of token lists
+
+        // Validate string parameter.
+        if (string == null) {
+            return tokenLists;
+        }
+        string = string.trim();
+        if (string.length() < 1) {
+            return tokenLists;
+        }
+
         ArrayList<String> curTokens = new ArrayList<>();        // current token list
         final StringBuilder lastToken = new StringBuilder();   // current token
         boolean insideQuote = false;    // are we currently within quotes?

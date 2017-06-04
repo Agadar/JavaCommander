@@ -139,28 +139,6 @@ public class JavaCommanderTest {
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing the 'barEmptyName'
-     * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
-     */
-    @Test
-    public void testExecute_List_barEmptyName() throws JavaCommanderException {
-        System.out.println("execute_List_barEmptyName");
-
-        // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
-
-        // Test calls.
-        jcCommander.execute(Arrays.asList("someString"));
-        jcCommander.execute(Arrays.asList("arg0", "someString"));
-
-        jcCommander.execute(Arrays.asList("", "someString"));
-        jcCommander.execute(Arrays.asList("", "arg0", "someString"));
-    }
-
-    /**
      * Test of execute method, of class JavaCommander testing the 'barStatic'
      * method.
      *
@@ -290,25 +268,6 @@ public class JavaCommanderTest {
         // Test calls.
         jcCommander.execute("barNameless someString");
         jcCommander.execute("barNameless arg0 someString");
-    }
-
-    /**
-     * Test of execute method, of class JavaCommander testing the 'barEmptyName'
-     * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
-     */
-    @Test
-    public void testExecute_String_barEmptyName() throws JavaCommanderException {
-        System.out.println("execute_String_barEmptyName");
-
-        // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
-
-        // Test calls.
-        jcCommander.execute("someString");
-        jcCommander.execute("arg0 someString");
     }
 
     /**
