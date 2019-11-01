@@ -18,18 +18,19 @@ public interface OptionTranslator<T> {
     public T translateString(String stringToParse);
 
     /**
-     * Parses a string to a type. If the type is a primitive or a boxed
-     * primitive, then the valueOf(...) method of the type is used. If the type
-     * is a string, then it is simply returned. If it is anything else, then the
-     * cast(...) method of the type is used as a last desperate attempt to parse
-     * the string.
+     * Parses a string to a type. If the type is a primitive or a boxed primitive,
+     * then the valueOf(...) method of the type is used. If the type is a string,
+     * then it is simply returned. If it is anything else, then the cast(...) method
+     * of the type is used as a last desperate attempt to parse the string.
      *
-     * @param <V> The type to parse to.
+     * @param               <V> The type to parse to.
      * @param stringToParse The string to parse.
-     * @param type The type to parse to.
+     * @param type          The type to parse to.
      * @return The string parsed to a value of type V.
      */
-    public static <V> V parseString(String stringToParse, Class<V> type) throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
+    @SuppressWarnings("unchecked")
+    public static <V> V parseString(String stringToParse, Class<V> type)
+            throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
         if (type.equals(String.class)) {
             return (V) stringToParse;
         }

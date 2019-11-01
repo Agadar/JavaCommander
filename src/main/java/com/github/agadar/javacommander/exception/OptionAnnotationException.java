@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
  */
 public final class OptionAnnotationException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+    
     /**
      * The method of which a parameter was not properly annotated.
      */

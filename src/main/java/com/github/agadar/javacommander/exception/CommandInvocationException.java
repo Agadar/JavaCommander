@@ -9,6 +9,8 @@ import com.github.agadar.javacommander.JcCommand;
  */
 public final class CommandInvocationException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+    
     /**
      * The command that failed to be invoked.
      */
@@ -18,7 +20,7 @@ public final class CommandInvocationException extends JavaCommanderException {
      * Constructor.
      *
      * @param jcCommand The command that failed to be invoked.
-     * @param cause The exception that caused the failure.
+     * @param cause     The exception that caused the failure.
      */
     public CommandInvocationException(JcCommand jcCommand, Throwable cause) {
         super(String.format("Failed to invoke command '%s'", jcCommand.getPrimaryName()), cause);

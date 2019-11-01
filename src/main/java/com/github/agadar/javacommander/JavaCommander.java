@@ -39,25 +39,22 @@ public final class JavaCommander {
     }
 
     /**
-     * Parses a string to a list of argument token lists, and then attempts to
-     * find and execute the sequence of commands defined in it.
+     * Parses a string to a list of argument token lists, and then attempts to find
+     * and execute the sequence of commands defined in it.
      *
-     * @param string The string to parse and execute the corresponding commands
-     * of.
-     * @throws JavaCommanderException If something went wrong, containing a
-     * cause.
+     * @param string The string to parse and execute the corresponding commands of.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
      */
     public final void execute(String string) throws JavaCommanderException {
         this.executeSequence(stringAsArgs(string));
     }
 
     /**
-     * Attempts to find and execute the sequence of commands defined in a list
-     * of lists of argument tokens.
+     * Attempts to find and execute the sequence of commands defined in a list of
+     * lists of argument tokens.
      *
      * @param args The list of argument token lists.
-     * @throws JavaCommanderException If something went wrong, containing a
-     * cause.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
      */
     public final void executeSequence(List<List<String>> args) throws JavaCommanderException {
 
@@ -77,8 +74,7 @@ public final class JavaCommander {
      * tokens.
      *
      * @param args The list of argument tokens.
-     * @throws JavaCommanderException If something went wrong, containing a
-     * cause.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
      */
     public final void execute(List<String> args) throws JavaCommanderException {
         try {
@@ -115,7 +111,7 @@ public final class JavaCommander {
                 Object val = finalArgs[i];
 
                 if (val == null) {
-                    JcOption option = command.getOptionByIndex(i).get();
+                    var option = command.getOptionByIndex(i).get();
 
                     if (option.hasDefaultValue) {
                         finalArgs[i] = option.defaultValue;
@@ -126,18 +122,17 @@ public final class JavaCommander {
             }
             // Finally, invoke the method on the object
             command.invoke(finalArgs);
-        } catch (UnknownCommandException | UnknownOptionException | OptionTranslatorException | NoValueForOptionException | CommandInvocationException | IllegalArgumentException ex) {
+        } catch (UnknownCommandException | UnknownOptionException | OptionTranslatorException
+                | NoValueForOptionException | CommandInvocationException | IllegalArgumentException ex) {
             throw new JavaCommanderException(ex);
         }
     }
 
     /**
-     * Registers all annotated, public, non-static methods of the supplied
-     * object.
+     * Registers all annotated, public, non-static methods of the supplied object.
      *
      * @param object The object containing annotated methods.
-     * @throws JavaCommanderException If something went wrong, containing a
-     * cause.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
      */
     public final void registerObject(Object object) throws JavaCommanderException {
         try {
@@ -151,10 +146,9 @@ public final class JavaCommander {
      * Registers all annotated, public, static methods of the supplied class.
      *
      * @param clazz The class containing annotated methods.
-     * @throws JavaCommanderException If something went wrong, containing a
-     * cause.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void registerClass(Class clazz) throws JavaCommanderException {
+    public final void registerClass(Class<?> clazz) throws JavaCommanderException {
         try {
             jcRegistry.registerClass(clazz);
         } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
@@ -176,22 +170,21 @@ public final class JavaCommander {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public final void unregisterClass(Class clazz) {
+    public final void unregisterClass(Class<?> clazz) {
         jcRegistry.unregisterClass(clazz);
     }
 
     /**
-     * Implicitly parses the argument tokens, i.e. no option names are given,
-     * only option values. Example: 'commandName 5 true 120'.
+     * Implicitly parses the argument tokens, i.e. no option names are given, only
+     * option values. Example: 'commandName 5 true 120'.
      *
-     * @param finalArgs The parsed list of arguments, to be filled by this
-     * function.
-     * @param args The argument tokens to parse.
-     * @param command The command to parse the tokens for.
-     * @throws OptionTranslatorException If an argument token could not be
-     * parsed to its corresponding parameter type.
-     * @throws IllegalArgumentException If args contains more argument tokens
-     * than should be parsed.
+     * @param finalArgs The parsed list of arguments, to be filled by this function.
+     * @param args      The argument tokens to parse.
+     * @param command   The command to parse the tokens for.
+     * @throws OptionTranslatorException If an argument token could not be parsed to
+     *                                   its corresponding parameter type.
+     * @throws IllegalArgumentException  If args contains more argument tokens than
+     *                                   should be parsed.
      */
     private static void parseArgumentsImplicit(Object[] finalArgs, List<String> args,
             JcCommand command) throws OptionTranslatorException {
@@ -204,37 +197,36 @@ public final class JavaCommander {
         // Now simply iterate over the arguments, parsing them and placing
         // them in finalArgs as we go.
         for (int i = 1; i < args.size(); i++) {
-            final JcOption currentOption = command.getOptionByIndex(i - 1).get();
-            final Object parsedArg = currentOption.translate(args.get(i));
+            var currentOption = command.getOptionByIndex(i - 1).get();
+            var parsedArg = currentOption.translate(args.get(i));
             finalArgs[i - 1] = parsedArg;
         }
     }
 
     /**
-     * Explicitly parses the argument list, i.e. option names are given.
-     * Example: 'commandName -amount 5 -add true -times 120'.
+     * Explicitly parses the argument list, i.e. option names are given. Example:
+     * 'commandName -amount 5 -add true -times 120'.
      *
-     * @param finalArgs The parsed list of arguments, to be filled by this
-     * function.
-     * @param args The argument tokens to parse.
-     * @param command The command to parse the tokens for.
-     * @throws UnknownOptionException If an option was supplied for the command
-     * that it does not have.
-     * @throws NoValueForOptionException If an option without a default value
-     * was not supplied a value.
-     * @throws OptionTranslatorException If an argument token could not be
-     * parsed to its corresponding parameter type.
+     * @param finalArgs The parsed list of arguments, to be filled by this function.
+     * @param args      The argument tokens to parse.
+     * @param command   The command to parse the tokens for.
+     * @throws UnknownOptionException    If an option was supplied for the command
+     *                                   that it does not have.
+     * @throws NoValueForOptionException If an option without a default value was
+     *                                   not supplied a value.
+     * @throws OptionTranslatorException If an argument token could not be parsed to
+     *                                   its corresponding parameter type.
      */
     private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command)
             throws UnknownOptionException, OptionTranslatorException, NoValueForOptionException {
-        Optional<JcOption> currentOption = command.getOptionByName(args.get(1));
+        var currentOption = command.getOptionByName(args.get(1));
         boolean parsingOption = false;
 
         // Iterate over all the arguments.
         for (int i = 2; i < args.size(); i++) {
 
             // If we're not currently finding a value for an option, then
-            // try find the option. Else, try to parse the value.                
+            // try find the option. Else, try to parse the value.
             if (parsingOption) {
                 currentOption = command.getOptionByName(args.get(i));
 
@@ -263,7 +255,7 @@ public final class JavaCommander {
      * @return A list of argument tokens.
      */
     private static ArrayList<List<String>> stringAsArgs(String string) {
-        final ArrayList<List<String>> tokenLists = new ArrayList<>();  // list of token lists
+        final ArrayList<List<String>> tokenLists = new ArrayList<>(); // list of token lists
 
         // Validate string parameter.
         if (string == null) {
@@ -274,9 +266,9 @@ public final class JavaCommander {
             return tokenLists;
         }
 
-        ArrayList<String> curTokens = new ArrayList<>();        // current token list
-        final StringBuilder lastToken = new StringBuilder();   // current token
-        boolean insideQuote = false;    // are we currently within quotes?
+        ArrayList<String> curTokens = new ArrayList<>(); // current token list
+        final StringBuilder lastToken = new StringBuilder(); // current token
+        boolean insideQuote = false; // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
 
         // Iterate over all chars in the string
@@ -306,7 +298,8 @@ public final class JavaCommander {
                 else {
                     lastToken.append(c);
                 }
-            } // Else if the character is ';', then that means we're going for a new token list. 
+            } // Else if the character is ';', then that means we're going for a new token
+              // list.
             else if (c == ';') {
                 if (lastToken.length() > 0) {
                     curTokens.add(lastToken.toString());

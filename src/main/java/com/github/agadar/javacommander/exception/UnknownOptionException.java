@@ -10,6 +10,8 @@ import com.github.agadar.javacommander.JcCommand;
  */
 public final class UnknownOptionException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The command of which an option was supplied that it does not have.
      */
@@ -23,10 +25,9 @@ public final class UnknownOptionException extends JavaCommanderException {
     /**
      * Constructor.
      *
-     * @param jcCommand The command of which an option was supplied that it does
-     * not have.
-     * @param optionName The name of the option that is not valid for the
-     * command.
+     * @param jcCommand  The command of which an option was supplied that it does
+     *                   not have.
+     * @param optionName The name of the option that is not valid for the command.
      */
     public UnknownOptionException(JcCommand jcCommand, String optionName) {
         super(String.format("'%s' is not a valid option for command '%s'", optionName, jcCommand.getPrimaryName()));

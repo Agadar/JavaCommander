@@ -42,21 +42,22 @@ public final class ExampleCommands {
     }
 
     /**
-     * Prints a list of all available commands. Called by the basic 'help'
-     * command. If the commandName is not null and not empty, then the help of
-     * the command with that name is given.
+     * Prints a list of all available commands. Called by the basic 'help' command.
+     * If the commandName is not null and not empty, then the help of the command
+     * with that name is given.
      *
      * @param commandName The name of the command to return the help of, or
-     * null/empty.
+     *                    null/empty.
      */
-    @Command(names = {"help", "usage", "?"}, description = "Display the help.", options
-            = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
+    @Command(names = { "help", "usage",
+            "?" }, description = "Display the help.", options = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
     public void usage(String commandName) {
         final StringBuilder stringBuilder = new StringBuilder("--------------------\n");
 
         // If no command name given, then list general info of all commands.
         if (commandName == null || commandName.isEmpty()) {
-            stringBuilder.append("Displaying help. Use option '-command' to display a specific command's help.\n\nAvailable commands:");
+            stringBuilder.append(
+                    "Displaying help. Use option '-command' to display a specific command's help.\n\nAvailable commands:");
 
             // Iterate over the commands to find the info
             javaCommander.jcRegistry.getParsedCommands().forEach((command) -> {
@@ -72,7 +73,8 @@ public final class ExampleCommands {
             });
         } // Else if a command name is given, then list info specific to that command
         else {
-            // Retrieve the command. If it does not exist, then return with an error message.
+            // Retrieve the command. If it does not exist, then return with an error
+            // message.
             final Optional<JcCommand> command = javaCommander.jcRegistry.getCommand(commandName);
 
             if (!command.isPresent()) {
@@ -83,7 +85,8 @@ public final class ExampleCommands {
 
             // Build string
             stringBuilder.append("Description:\n");
-            stringBuilder.append(command.get().hasDescription() ? command.get().description : "No description available.");
+            stringBuilder
+                    .append(command.get().hasDescription() ? command.get().description : "No description available.");
             stringBuilder.append("\n\n");
 
             // If there are synonyms, then list them.
@@ -115,10 +118,10 @@ public final class ExampleCommands {
     /**
      * Appends a string representation of a JcOption to a StringBuilder.
      *
-     * @param jcOption The JcOption to append a string representation of.
+     * @param jcOption      The JcOption to append a string representation of.
      * @param stringBuilder The StringBuilder to append it to.
      */
-    protected void optionToString(JcOption jcOption, StringBuilder stringBuilder) {
+    protected void optionToString(JcOption<?> jcOption, StringBuilder stringBuilder) {
         stringBuilder.append("\n");
         stringBuilder.append(jcOption.getPrimaryName());
 
@@ -133,7 +136,7 @@ public final class ExampleCommands {
     /**
      * Calls System.Exit(0). Used for the basic exit command.
      */
-    @Command(names = {"exit", "quit"}, description = "Exit the program.")
+    @Command(names = { "exit", "quit" }, description = "Exit the program.")
     public void exitProgram() {
         System.exit(0);
     }

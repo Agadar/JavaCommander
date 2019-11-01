@@ -5,7 +5,7 @@
     <!-- General properties -->
     <groupId>com.github.agadar</groupId>
     <artifactId>javacommander</artifactId>
-    <version>3.0.0</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>   
     <name>JavaCommander</name>
     <description>Java library for annotating methods such that they can be called via interpreting string inputs.</description>
@@ -133,7 +133,7 @@
     <!-- Other properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
     </properties>   
 </project>

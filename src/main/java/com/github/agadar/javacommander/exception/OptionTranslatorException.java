@@ -8,11 +8,13 @@ package com.github.agadar.javacommander.exception;
  */
 public final class OptionTranslatorException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      *
      * @param message A message elaborating what went wrong.
-     * @param cause The underlying cause.
+     * @param cause   The underlying cause.
      */
     public OptionTranslatorException(String message, Throwable cause) {
         super(message, cause);

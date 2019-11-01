@@ -1,11 +1,11 @@
 package com.github.agadar.javacommander;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A command option parsed from an Option annotation.
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 public final class JcOption<T> {
 
     /**
-     * Names of the option. The first entry is its primary name. The other
-     * entries are synonyms.
+     * Names of the option. The first entry is its primary name. The other entries
+     * are synonyms.
      */
     private final List<String> names;
 
@@ -42,29 +42,30 @@ public final class JcOption<T> {
     public final boolean hasDefaultValue;
 
     /**
-     * This option's default value. If 'hasDefaultValue' is set to false, then
-     * this value is ignored and set to null.
+     * This option's default value. If 'hasDefaultValue' is set to false, then this
+     * value is ignored and set to null.
      */
     public final T defaultValue;
 
     /**
      * Constructor.
      *
-     * @param names Names of the option. The first entry is its primary name.
-     * The other entries are synonyms.
-     * @param description A description of the option.
+     * @param names           Names of the option. The first entry is its primary
+     *                        name. The other entries are synonyms.
+     * @param description     A description of the option.
      * @param hasDefaultValue Whether or not this option has a default value.
-     * @param parameterType The type of this option's underlying parameter.
-     * @param defaultValue This option's default value. If 'hasDefaultValue' is
-     * set to false, then this value is ignored. It is translated to the correct
-     * type using this instance's own translate method.
-     * @param translatorType The translator type used to parse a string to the
-     * option's type.
-     * @throws IllegalArgumentException If one of the parameter values is
-     * invalid.
-     * @throws OptionTranslatorException If the option translator failed to
-     * parse the default value if it has one, or when the translator itself
-     * failed to be instantiated.
+     * @param parameterType   The type of this option's underlying parameter.
+     * @param defaultValue    This option's default value. If 'hasDefaultValue' is
+     *                        set to false, then this value is ignored. It is
+     *                        translated to the correct type using this instance's
+     *                        own translate method.
+     * @param translatorType  The translator type used to parse a string to the
+     *                        option's type.
+     * @throws IllegalArgumentException  If one of the parameter values is invalid.
+     * @throws OptionTranslatorException If the option translator failed to parse
+     *                                   the default value if it has one, or when
+     *                                   the translator itself failed to be
+     *                                   instantiated.
      */
     public JcOption(List<String> names, String description, boolean hasDefaultValue,
             Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType)
@@ -98,8 +99,8 @@ public final class JcOption<T> {
     }
 
     /**
-     * Returns the name at the index, where index is bound between 0 and the
-     * number of names minus 1.
+     * Returns the name at the index, where index is bound between 0 and the number
+     * of names minus 1.
      *
      * @param index The index of the name to return.
      * @return The name at the index.
@@ -127,8 +128,7 @@ public final class JcOption<T> {
     }
 
     /**
-     * Convenience method for checking whether this option has a description
-     * set.
+     * Convenience method for checking whether this option has a description set.
      *
      * @return Whether this option has a description set.
      */
@@ -163,7 +163,7 @@ public final class JcOption<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return this.getPrimaryName().equals(((JcOption) obj).getPrimaryName());
+        return this.getPrimaryName().equals(((JcOption<?>) obj).getPrimaryName());
     }
 
     /**
@@ -171,9 +171,9 @@ public final class JcOption<T> {
      *
      * @param stringToParse The string to parse.
      * @return The parsed value.
-     * @throws OptionTranslatorException If the supplied translator failed to
-     * parse the default value, or when the translator itself failed to be
-     * instantiated.
+     * @throws OptionTranslatorException If the supplied translator failed to parse
+     *                                   the default value, or when the translator
+     *                                   itself failed to be instantiated.
      */
     public final T translate(String stringToParse) throws OptionTranslatorException {
         try {
@@ -182,13 +182,14 @@ public final class JcOption<T> {
                 return OptionTranslator.parseString(stringToParse, parameterType);
             } // If one is set, then attempt using that.
             else {
-                return translatorType.newInstance().translateString(stringToParse);
+                return translatorType.getDeclaredConstructor().newInstance().translateString(stringToParse);
             }
-        } catch (InstantiationException | IllegalAccessException ex) {
-            throw new OptionTranslatorException("Failed to instantiate translator '" + translatorType.getSimpleName() + "'", ex);
         } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
             throw new OptionTranslatorException("Failed to parse String '" + stringToParse
                     + "' to type '" + parameterType.getSimpleName() + "'", ex);
+        } catch (Exception ex) {
+            throw new OptionTranslatorException(
+                    "Failed to instantiate translator '" + translatorType.getSimpleName() + "'", ex);
         }
     }
 }

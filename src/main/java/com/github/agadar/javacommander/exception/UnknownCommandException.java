@@ -7,6 +7,8 @@ package com.github.agadar.javacommander.exception;
  */
 public final class UnknownCommandException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The name of the command that was not found.
      */

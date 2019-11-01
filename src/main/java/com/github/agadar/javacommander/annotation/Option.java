@@ -20,10 +20,10 @@ import java.lang.annotation.Target;
 public @interface Option {
 
     /**
-     * Names of the option. The first entry is its primary name. The other
-     * entries are synonyms. If no name is supplied, then the name of the option
-     * is set to 'arg[x]' where '[x]' is the parameter's index. (e.g. 'arg0',
-     * 'arg1', 'arg2', etc.)
+     * Names of the option. The first entry is its primary name. The other entries
+     * are synonyms. If no name is supplied, then the name of the option is set to
+     * 'arg[x]' where '[x]' is the parameter's index. (e.g. 'arg0', 'arg1', 'arg2',
+     * etc.)
      *
      * @return Names of the option.
      */
@@ -44,20 +44,20 @@ public @interface Option {
     boolean hasDefaultValue() default false;
 
     /**
-     * This option's default value. If 'hasDefaultValue' is set to false, then
-     * this value is ignored.
+     * This option's default value. If 'hasDefaultValue' is set to false, then this
+     * value is ignored.
      *
      * @return This option's default value.
      */
     String defaultValue() default "";
 
     /**
-     * The translator used to parse a string to the option's type. If the
-     * option's type is a primitive, a boxed primitive, or a string, then no
-     * translator needs to be supplied.
+     * The translator used to parse a string to the option's type. If the option's
+     * type is a primitive, a boxed primitive, or a string, then no translator needs
+     * to be supplied.
      *
      * @return this option's translator type
      */
-    Class<? extends OptionTranslator> translator() default NoTranslator.class;
+    Class<? extends OptionTranslator<?>> translator() default NoTranslator.class;
 
 }

@@ -10,6 +10,8 @@ import com.github.agadar.javacommander.JcOption;
  */
 public final class NoValueForOptionException extends JavaCommanderException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The command of which an option was not supplied a value.
      */
@@ -18,16 +20,17 @@ public final class NoValueForOptionException extends JavaCommanderException {
     /**
      * The option that was not supplied with a value.
      */
-    public final JcOption jcOption;
+    public final JcOption<?> jcOption;
 
     /**
      * Constructor.
      *
      * @param jcCommand The command of which an option was not supplied a value.
-     * @param jcOption The option that was not supplied with a value.
+     * @param jcOption  The option that was not supplied with a value.
      */
-    public NoValueForOptionException(JcCommand jcCommand, JcOption jcOption) {
-        super(String.format("Option '%s' of command '%s' was not supplied a value", jcOption.getPrimaryName(), jcCommand.getPrimaryName()));
+    public NoValueForOptionException(JcCommand jcCommand, JcOption<?> jcOption) {
+        super(String.format("Option '%s' of command '%s' was not supplied a value", jcOption.getPrimaryName(),
+                jcCommand.getPrimaryName()));
         this.jcCommand = jcCommand;
         this.jcOption = jcOption;
     }

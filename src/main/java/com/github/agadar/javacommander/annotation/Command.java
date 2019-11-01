@@ -15,9 +15,9 @@ import java.lang.annotation.Target;
 public @interface Command {
 
     /**
-     * Names of the command. The first entry is the primary name. The other
-     * entries are synonyms. If no name is supplied, then the name of the
-     * command is set to the name of the annotated method.
+     * Names of the command. The first entry is the primary name. The other entries
+     * are synonyms. If no name is supplied, then the name of the command is set to
+     * the name of the annotated method.
      *
      * @return The names of this command.
      */

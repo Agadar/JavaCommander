@@ -19,20 +19,20 @@ import java.util.stream.Collectors;
 public final class JcCommand {
 
     /**
-     * Names of the command. The first entry is the primary name. The other
-     * entries are synonyms.
+     * Names of the command. The first entry is the primary name. The other entries
+     * are synonyms.
      */
     private final List<String> names;
 
     /**
      * This command's options, in order of the method's parameters
      */
-    private final List<JcOption> options;
+    private final List<JcOption<?>> options;
 
     /**
      * This command's options, each option mapped to each of its names.
      */
-    private final HashMap<String, JcOption> optionNamesToOptions = new HashMap<>();
+    private final HashMap<String, JcOption<?>> optionNamesToOptions = new HashMap<>();
 
     /**
      * The method to invoke when this command is executed.
@@ -40,8 +40,8 @@ public final class JcCommand {
     private final Method methodToInvoke;
 
     /**
-     * The object to invoke the above method on. Holds a class if this command
-     * calls a static method.
+     * The object to invoke the above method on. Holds a class if this command calls
+     * a static method.
      */
     private final Object objectToInvokeOn;
 
@@ -53,18 +53,18 @@ public final class JcCommand {
     /**
      * Constructor.
      *
-     * @param names Names of the command. The first entry is the primary name.
-     * The other entries are synonyms.
-     * @param description A description of the command.
-     * @param options This command's options, in order of the method's
-     * parameters.
-     * @param methodToInvoke The method to invoke when this command is executed.
+     * @param names            Names of the command. The first entry is the primary
+     *                         name. The other entries are synonyms.
+     * @param description      A description of the command.
+     * @param options          This command's options, in order of the method's
+     *                         parameters.
+     * @param methodToInvoke   The method to invoke when this command is executed.
      * @param objectToInvokeOn The object to invoke the above method on. Holds a
-     * class if this command calls a static method.
-     * @throws IllegalArgumentException If one of the parameter values is
-     * invalid.
+     *                         class if this command calls a static method.
+     * @throws IllegalArgumentException If one of the parameter values is invalid.
      */
-    public JcCommand(List<String> names, String description, List<JcOption> options, Method methodToInvoke, Object objectToInvokeOn)
+    public JcCommand(List<String> names, String description, List<JcOption<?>> options, Method methodToInvoke,
+            Object objectToInvokeOn)
             throws IllegalArgumentException {
 
         // Make sure names is not null.
@@ -91,7 +91,8 @@ public final class JcCommand {
         // Assign values to fields.
         this.names = names;
         this.description = (description == null) ? "" : description;
-        this.options = (options == null) ? new ArrayList<>() : options.stream().filter(option -> option != null).collect(Collectors.toList());
+        this.options = (options == null) ? new ArrayList<>()
+                : options.stream().filter(option -> option != null).collect(Collectors.toList());
         this.methodToInvoke = methodToInvoke;
         this.objectToInvokeOn = objectToInvokeOn;
 
@@ -104,8 +105,8 @@ public final class JcCommand {
     }
 
     /**
-     * Returns the name at the index, where index is bound between 0 and the
-     * number of names minus 1.
+     * Returns the name at the index, where index is bound between 0 and the number
+     * of names minus 1.
      *
      * @param index The index of the name to return.
      * @return The name at the index.
@@ -176,7 +177,7 @@ public final class JcCommand {
      * @param index The index of the option to return.
      * @return The option at the bound index, or empty if this has no options.
      */
-    public final Optional<JcOption> getOptionByIndex(int index) {
+    public final Optional<JcOption<?>> getOptionByIndex(int index) {
         if (options.size() < 1) {
             return Optional.empty();
         }
@@ -187,10 +188,9 @@ public final class JcCommand {
      * Gets the option that has the supplied name.
      *
      * @param optionName The name of the option to find.
-     * @return The supplied option, or empty if this has no option with that
-     * name.
+     * @return The supplied option, or empty if this has no option with that name.
      */
-    public final Optional<JcOption> getOptionByName(String optionName) {
+    public final Optional<JcOption<?>> getOptionByName(String optionName) {
         if (optionNamesToOptions.containsKey(optionName)) {
             return Optional.of(optionNamesToOptions.get(optionName));
         }
@@ -210,10 +210,9 @@ public final class JcCommand {
      * Gets the index of the supplied JcOption.
      *
      * @param option The option of which the index to get.
-     * @return The index of the supplied JcOption, or -1 if it is not found or
-     * null.
+     * @return The index of the supplied JcOption, or -1 if it is not found or null.
      */
-    public final int indexOfOption(JcOption option) {
+    public final int indexOfOption(JcOption<?> option) {
         return options.indexOf(option);
     }
 
@@ -253,8 +252,8 @@ public final class JcCommand {
     }
 
     /**
-     * Returns whether the supplied object (or class) is the same object (or
-     * class) this command will invoke a method on when invoked.
+     * Returns whether the supplied object (or class) is the same object (or class)
+     * this command will invoke a method on when invoked.
      *
      * @param object The object (or class) to check.
      * @return True if the above is the case, otherwise false.

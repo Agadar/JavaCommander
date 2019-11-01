@@ -34,10 +34,8 @@ public class JcRegistryTest {
     /**
      * Test of unregisterObject method, of class JcRegistry.
      *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
     public void testUnregisterObject() throws OptionAnnotationException, OptionTranslatorException {
@@ -60,10 +58,8 @@ public class JcRegistryTest {
     /**
      * Test of unregisterClass method, of class JcRegistry.
      *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
     public void testUnregisterClass() throws OptionAnnotationException, OptionTranslatorException {
@@ -86,10 +82,8 @@ public class JcRegistryTest {
     /**
      * Test of getCommand method, of class JcRegistry.
      *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
     public void testGetCommand() throws OptionAnnotationException, OptionTranslatorException {
@@ -171,10 +165,8 @@ public class JcRegistryTest {
      * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
      *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
     public void testRegisterObject() throws OptionAnnotationException, OptionTranslatorException {
@@ -245,17 +237,17 @@ public class JcRegistryTest {
         assertTrue(barNamelessCommand.isMyObject(foo));
 
         // Get parsed options.
-        final JcOption<String> stringOption = barWithParamsCommand.getOptionByName("stringParam").get();
-        final JcOption<Integer> intOption = barWithParamsCommand.getOptionByName("intParam").get();
-        final JcOption<Boolean> boolOption = barWithParamsCommand.getOptionByName("boolParam").get();
+        var stringOption = barWithParamsCommand.getOptionByName("stringParam").get();
+        var intOption = barWithParamsCommand.getOptionByName("intParam").get();
+        var boolOption = barWithParamsCommand.getOptionByName("boolParam").get();
 
-        final JcOption<String> stringDefaultOption = barWithDefaultParamsCommand.getOptionByName("stringDefaultParam").get();
-        final JcOption<Integer> intDefaultOption = barWithDefaultParamsCommand.getOptionByName("intDefaultParam").get();
-        final JcOption<Boolean> boolDefaultOption = barWithDefaultParamsCommand.getOptionByName("boolDefaultParam").get();
+        var stringDefaultOption = barWithDefaultParamsCommand.getOptionByName("stringDefaultParam").get();
+        var intDefaultOption = barWithDefaultParamsCommand.getOptionByName("intDefaultParam").get();
+        var boolDefaultOption = barWithDefaultParamsCommand.getOptionByName("boolDefaultParam").get();
 
-        final JcOption<DataClass> bazOption = barWithBazParamCommand.getOptionByName("bazParam").get();
+        var bazOption = barWithBazParamCommand.getOptionByName("bazParam").get();
 
-        final JcOption<DataClass> namelessOption = barNamelessCommand.getOptionByName("arg0").get();
+        var namelessOption = barNamelessCommand.getOptionByName("arg0").get();
 
         // Make sure they're the same as the options known by synonyms.
         assertSame(stringOption, barWithParamsCommand.getOptionByName("StringParam").get());
@@ -350,10 +342,8 @@ public class JcRegistryTest {
      * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
      *
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws
-     * com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
+     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
      */
     @Test
     public void testRegisterClass() throws OptionAnnotationException, OptionTranslatorException {

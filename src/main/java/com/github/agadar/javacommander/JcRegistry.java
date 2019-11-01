@@ -1,21 +1,19 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
-import com.github.agadar.javacommander.exception.OptionAnnotationException;
-import com.github.agadar.javacommander.annotation.Command;
-import com.github.agadar.javacommander.annotation.Option;
-import com.github.agadar.javacommander.translator.OptionTranslator;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.TreeMap;
+
+import com.github.agadar.javacommander.annotation.Command;
+import com.github.agadar.javacommander.annotation.Option;
+import com.github.agadar.javacommander.exception.OptionAnnotationException;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
 
 /**
  * Allows the registering and unregistering of objects containing functions
@@ -26,8 +24,8 @@ import java.util.TreeMap;
 public final class JcRegistry {
 
     /**
-     * The parsed commands, each command mapped to its primary name, in
-     * alphabetical order.
+     * The parsed commands, each command mapped to its primary name, in alphabetical
+     * order.
      */
     private final TreeMap<String, JcCommand> primaryNamesToCommands = new TreeMap<>();
 
@@ -38,14 +36,14 @@ public final class JcRegistry {
     private final TreeMap<String, JcCommand> allNamesToCommands = new TreeMap<>();
 
     /**
-     * Registers all annotated, public, non-static methods of the supplied
-     * object.
+     * Registers all annotated, public, non-static methods of the supplied object.
      *
      * @param object The object containing annotated methods.
      * @throws OptionAnnotationException If a method's parameter is not properly
-     * annotated with the @Option annotation.
-     * @throws OptionTranslatorException If an option translator failed to parse
-     * a default value, or when the translator itself failed to be instantiated.
+     *                                   annotated with the @Option annotation.
+     * @throws OptionTranslatorException If an option translator failed to parse a
+     *                                   default value, or when the translator
+     *                                   itself failed to be instantiated.
      */
     public final void registerObject(Object object) throws OptionAnnotationException, OptionTranslatorException {
         if (object == null) {
@@ -53,14 +51,15 @@ public final class JcRegistry {
         }
 
         // Iterate through the object's methods.
-        for (final Method method : object.getClass().getMethods()) {
+        for (var method : object.getClass().getMethods()) {
             // If we've found an annotated, non-static method, get to work.
             if (method.isAnnotationPresent(Command.class) && !Modifier.isStatic(method.getModifiers())) {
                 // Obtain the command and derive the required values.
-                final Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
-                final String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names() : new String[]{method.getName()};
-                final String description = commandAnnotation.description();
-                final ArrayList<JcOption> options = parseOptions(commandAnnotation, method);
+                var commandAnnotation = ((Command) method.getAnnotation(Command.class));
+                String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names()
+                        : new String[] { method.getName() };
+                String description = commandAnnotation.description();
+                var options = parseOptions(commandAnnotation, method);
 
                 // Create new JcCommand object and register it.
                 registerCommand(new JcCommand(Arrays.asList(names), description, options, method, object));
@@ -73,24 +72,26 @@ public final class JcRegistry {
      *
      * @param clazz The class containing annotated methods.
      * @throws OptionAnnotationException If a method's parameter is not properly
-     * annotated with the @Option annotation.
-     * @throws OptionTranslatorException If an option translator failed to parse
-     * a default value, or when the translator itself failed to be instantiated.
+     *                                   annotated with the @Option annotation.
+     * @throws OptionTranslatorException If an option translator failed to parse a
+     *                                   default value, or when the translator
+     *                                   itself failed to be instantiated.
      */
-    public final void registerClass(Class clazz) throws OptionAnnotationException, OptionTranslatorException {
+    public final void registerClass(Class<?> clazz) throws OptionAnnotationException, OptionTranslatorException {
         if (clazz == null) {
             throw new IllegalArgumentException("'clazz' may not be null");
         }
 
         // Iterate through the object's methods.
-        for (final Method method : clazz.getMethods()) {
+        for (var method : clazz.getMethods()) {
             // If we've found an annotated, static method, then get to work.
             if (method.isAnnotationPresent(Command.class) && Modifier.isStatic(method.getModifiers())) {
                 // Obtain the command and derive the required values.
-                final Command commandAnnotation = ((Command) method.getAnnotation(Command.class));
-                final String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names() : new String[]{method.getName()};
-                final String description = commandAnnotation.description();
-                final ArrayList<JcOption> options = parseOptions(commandAnnotation, method);
+                var commandAnnotation = ((Command) method.getAnnotation(Command.class));
+                String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names()
+                        : new String[] { method.getName() };
+                String description = commandAnnotation.description();
+                var options = parseOptions(commandAnnotation, method);
 
                 // Create new JcCommand object and register it.
                 registerCommand(new JcCommand(Arrays.asList(names), description, options, method, clazz));
@@ -109,12 +110,13 @@ public final class JcRegistry {
         }
 
         // Keys which are to be removed from the maps
-        final ArrayList<String> keysToRemove = new ArrayList<>();
+        var keysToRemove = new ArrayList<String>();
 
         // Collect keys to remove from commandToPrimaryName
-        primaryNamesToCommands.entrySet().stream().filter((entry) -> (entry.getValue().isMyObject(object))).forEach((entry) -> {
-            keysToRemove.add(entry.getKey());
-        });
+        primaryNamesToCommands.entrySet().stream().filter((entry) -> (entry.getValue().isMyObject(object)))
+                .forEach((entry) -> {
+                    keysToRemove.add(entry.getKey());
+                });
 
         // For each iteration, remove the key from commandToPrimaryName and use
         // its synonyms to remove keys from commandToAllNames
@@ -130,7 +132,7 @@ public final class JcRegistry {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public final void unregisterClass(Class clazz) {
+    public final void unregisterClass(Class<?> clazz) {
         this.unregisterObject(clazz);
     }
 
@@ -181,18 +183,19 @@ public final class JcRegistry {
      * annotation, or on the method parameters, to an array of JcOptions.
      *
      * @param commandAnnotation The @Command annotation of the method with the
-     * \@Option annotations to parse.
-     * @param method The method with the @Option annotations to parse.
+     *                          \@Option annotations to parse.
+     * @param method            The method with the @Option annotations to parse.
      * @return The parsed values.
-     * @throws OptionTranslatorException If an option translator failed to parse
-     * a default value, or when the translator itself failed to be instantiated.
-     * @throws OptionAnnotationException If a parameter is not properly
-     * annotated with the @Option annotation.
+     * @throws OptionTranslatorException If an option translator failed to parse a
+     *                                   default value, or when the translator
+     *                                   itself failed to be instantiated.
+     * @throws OptionAnnotationException If a parameter is not properly annotated
+     *                                   with the @Option annotation.
      */
-    private static ArrayList<JcOption> parseOptions(Command commandAnnotation, Method method)
+    private static ArrayList<JcOption<?>> parseOptions(Command commandAnnotation, Method method)
             throws OptionAnnotationException, OptionTranslatorException {
-        final ArrayList<JcOption> jcOptions = new ArrayList<>();
-        final Parameter[] parameters = method.getParameters();
+        var jcOptions = new ArrayList<JcOption<?>>();
+        var parameters = method.getParameters();
 
         // If the number of options defined in the command annotation is equal to
         // the number of parameters, then we use those.
@@ -201,7 +204,7 @@ public final class JcRegistry {
                 jcOptions.add(parseOption(commandAnnotation.options()[i], parameters[i]));
             }
         } // Else, if there is not a single option defined in the command, we use
-        // the options annotated on the parameters.
+          // the options annotated on the parameters.
         else if (commandAnnotation.options().length == 0) {
             for (Parameter paramameter : parameters) {
                 // If the parameter is properly annotated, parse it.
@@ -213,7 +216,7 @@ public final class JcRegistry {
                 }
             }
         } // Else, if there are options defined in the command, but not enough to
-        // cover all parameters, then the annotations are wrong. Throw an error.
+          // cover all parameters, then the annotations are wrong. Throw an error.
         else {
             throw new OptionAnnotationException(method);
         }
@@ -226,23 +229,26 @@ public final class JcRegistry {
      * Validates and parses a single option annotation to a JcOption.
      *
      * @param optionAnnotation The @Option annotation to parse.
-     * @param parameter The annotated or corresponding parameter.
+     * @param parameter        The annotated or corresponding parameter.
      * @return The parsing result.
-     * @throws OptionTranslatorException If the option translator failed to
-     * parse the default value if it has one, or when the translator itself
-     * failed to be instantiated.
+     * @throws OptionTranslatorException If the option translator failed to parse
+     *                                   the default value if it has one, or when
+     *                                   the translator itself failed to be
+     *                                   instantiated.
      */
-    private static JcOption parseOption(Option optionAnnotation, Parameter parameter)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static JcOption<?> parseOption(Option optionAnnotation, Parameter parameter)
             throws OptionTranslatorException {
         // Get the option names. If none is assigned, use the parameter name.
-        final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names() : new String[]{parameter.getName()};
+        final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names()
+                : new String[] { parameter.getName() };
 
         // Get other fields.
-        final boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
-        final String defaultValueStr = optionAnnotation.defaultValue();
-        final String description = optionAnnotation.description();
-        final Class type = parameter.getType();
-        final Class<? extends OptionTranslator> translatorClass = optionAnnotation.translator();
+        boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
+        String defaultValueStr = optionAnnotation.defaultValue();
+        String description = optionAnnotation.description();
+        var type = parameter.getType();
+        var translatorClass = optionAnnotation.translator();
         return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
     }
 }
