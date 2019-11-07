@@ -9,12 +9,12 @@ import com.github.agadar.javacommander.translator.OptionTranslator;
  *
  * @author Agadar
  */
-public final class IntArrayTranslator implements OptionTranslator<int[]> {
+public class IntArrayTranslator implements OptionTranslator<int[]> {
 
     @Override
     public int[] translateString(String stringToParse) {
-        final String[] splitOnCommas = stringToParse.split(",");
-        final int[] value = new int[splitOnCommas.length];
+        String[] splitOnCommas = stringToParse.split(",");
+        int[] value = new int[splitOnCommas.length];
 
         for (int i = 0; i < splitOnCommas.length; i++) {
             splitOnCommas[i] = splitOnCommas[i].trim();

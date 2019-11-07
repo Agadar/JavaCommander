@@ -1,22 +1,35 @@
 package com.github.agadar.javacommander;
 
-import com.github.agadar.javacommander.exception.*;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+
+import com.github.agadar.javacommander.exception.CommandInvocationException;
+import com.github.agadar.javacommander.exception.JavaCommanderException;
+import com.github.agadar.javacommander.exception.NoValueForOptionException;
+import com.github.agadar.javacommander.exception.OptionAnnotationException;
+import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.UnknownCommandException;
+import com.github.agadar.javacommander.exception.UnknownOptionException;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * Manages an application's commands.
  *
  * @author Agadar
  */
-public final class JavaCommander {
+@AllArgsConstructor
+public class JavaCommander {
 
     /**
      * The underlying command registry.
      */
-    public final JcRegistry jcRegistry;
+    @Getter
+    @NonNull
+    private final JcRegistry jcRegistry;
 
     /**
      * Constructor. Assigns a new JcRegistry to this.
@@ -26,37 +39,24 @@ public final class JavaCommander {
     }
 
     /**
-     * Constructor.
-     *
-     * @param jcRegistry The JcRegistry instance to use.
-     * @throws IllegalArgumentException If jcRegistry is null.
-     */
-    public JavaCommander(JcRegistry jcRegistry) {
-        if (jcRegistry == null) {
-            throw new IllegalArgumentException("'jcRegistry' may not be null");
-        }
-        this.jcRegistry = jcRegistry;
-    }
-
-    /**
      * Parses a string to a list of argument token lists, and then attempts to find
      * and execute the sequence of commands defined in it.
      *
      * @param string The string to parse and execute the corresponding commands of.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void execute(String string) throws JavaCommanderException {
+    public void execute(String string) throws JavaCommanderException {
         this.executeSequence(stringAsArgs(string));
     }
 
     /**
-     * Attempts to find and execute the sequence of commands defined in a list of
-     * lists of argument tokens.
+     * Attempts to find and execute the sequence of commands defined in a collection
+     * of collections of argument tokens.
      *
-     * @param args The list of argument token lists.
+     * @param args The collection of argument token collections.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void executeSequence(List<List<String>> args) throws JavaCommanderException {
+    public void executeSequence(Collection<List<String>> args) throws JavaCommanderException {
 
         // Verify argument list.
         if (args == null || args.isEmpty()) {
@@ -76,7 +76,7 @@ public final class JavaCommander {
      * @param args The list of argument tokens.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void execute(List<String> args) throws JavaCommanderException {
+    public void execute(List<String> args) throws JavaCommanderException {
         try {
             // Verify argument list.
             if (args == null || args.isEmpty()) {
@@ -84,14 +84,14 @@ public final class JavaCommander {
             }
 
             // Retrieve correct command.
-            final Optional<JcCommand> commandOpt = jcRegistry.getCommand(args.get(0));
+            var commandOpt = jcRegistry.getCommand(args.get(0));
             if (!commandOpt.isPresent()) {
                 throw new UnknownCommandException(args.get(0));
             }
-            final JcCommand command = commandOpt.get();
+            var command = commandOpt.get();
 
             // Arguments to be passed to the Method.invoke function.
-            final Object[] finalArgs = new Object[command.numberOfOptions()];
+            Object[] finalArgs = new Object[command.numberOfOptions()];
 
             // If there's arguments left to parse to options, let's parse them.
             if (args.size() > 1) {
@@ -134,7 +134,7 @@ public final class JavaCommander {
      * @param object The object containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void registerObject(Object object) throws JavaCommanderException {
+    public void registerObject(Object object) throws JavaCommanderException {
         try {
             jcRegistry.registerObject(object);
         } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
@@ -148,7 +148,7 @@ public final class JavaCommander {
      * @param clazz The class containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public final void registerClass(Class<?> clazz) throws JavaCommanderException {
+    public void registerClass(Class<?> clazz) throws JavaCommanderException {
         try {
             jcRegistry.registerClass(clazz);
         } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
@@ -161,7 +161,7 @@ public final class JavaCommander {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public final void unregisterObject(Object object) {
+    public void unregisterObject(Object object) {
         jcRegistry.unregisterObject(object);
     }
 
@@ -170,7 +170,7 @@ public final class JavaCommander {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public final void unregisterClass(Class<?> clazz) {
+    public void unregisterClass(Class<?> clazz) {
         jcRegistry.unregisterClass(clazz);
     }
 
@@ -219,6 +219,7 @@ public final class JavaCommander {
      */
     private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command)
             throws UnknownOptionException, OptionTranslatorException, NoValueForOptionException {
+
         var currentOption = command.getOptionByName(args.get(1));
         boolean parsingOption = false;
 
@@ -235,7 +236,7 @@ public final class JavaCommander {
                     throw new UnknownOptionException(command, args.get(i));
                 }
             } else {
-                final Object parsedArg = currentOption.get().translate(args.get(i));
+                var parsedArg = currentOption.get().translate(args.get(i));
                 finalArgs[command.indexOfOption(currentOption.get())] = parsedArg;
                 currentOption = null;
             }
@@ -254,8 +255,8 @@ public final class JavaCommander {
      * @param string A string to parse to a list of argument tokens.
      * @return A list of argument tokens.
      */
-    private static ArrayList<List<String>> stringAsArgs(String string) {
-        final ArrayList<List<String>> tokenLists = new ArrayList<>(); // list of token lists
+    private static Collection<List<String>> stringAsArgs(String string) {
+        var tokenLists = new ArrayList<List<String>>(); // list of token lists
 
         // Validate string parameter.
         if (string == null) {
@@ -266,8 +267,8 @@ public final class JavaCommander {
             return tokenLists;
         }
 
-        ArrayList<String> curTokens = new ArrayList<>(); // current token list
-        final StringBuilder lastToken = new StringBuilder(); // current token
+        var curTokens = new ArrayList<String>(); // current token list
+        var lastToken = new StringBuilder(); // current token
         boolean insideQuote = false; // are we currently within quotes?
         boolean escapeNextChar = false; // must we escape the current char?
 

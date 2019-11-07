@@ -2,20 +2,23 @@ package com.github.agadar.javacommander.exception;
 
 import java.lang.reflect.Method;
 
+import lombok.Getter;
+
 /**
  * Thrown when a parameter is not properly annotated with the @Option
  * annotation.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class OptionAnnotationException extends JavaCommanderException {
+public class OptionAnnotationException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * The method of which a parameter was not properly annotated.
      */
-    public final Method method;
+    @Getter
+    private final Method method;
 
     /**
      * Constructor.

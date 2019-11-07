@@ -23,48 +23,49 @@ public interface OptionTranslator<T> {
      * then it is simply returned. If it is anything else, then the cast(...) method
      * of the type is used as a last desperate attempt to parse the string.
      *
-     * @param               <V> The type to parse to.
+     * @param               <T> The type to parse to.
      * @param stringToParse The string to parse.
      * @param type          The type to parse to.
      * @return The string parsed to a value of type V.
      */
     @SuppressWarnings("unchecked")
-    public static <V> V parseString(String stringToParse, Class<V> type)
+    public static <T> T parseString(String stringToParse, Class<T> type)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
+        
         if (type.equals(String.class)) {
-            return (V) stringToParse;
+            return (T) stringToParse;
         }
 
         if (type.equals(Integer.class) || type.equals(int.class)) {
-            return (V) Integer.valueOf(stringToParse);
+            return (T) Integer.valueOf(stringToParse);
         }
 
         if (type.equals(Short.class) || type.equals(short.class)) {
-            return (V) Short.valueOf(stringToParse);
+            return (T) Short.valueOf(stringToParse);
         }
 
         if (type.equals(Long.class) || type.equals(long.class)) {
-            return (V) Long.valueOf(stringToParse);
+            return (T) Long.valueOf(stringToParse);
         }
 
         if (type.equals(Byte.class) || type.equals(byte.class)) {
-            return (V) Byte.valueOf(stringToParse);
+            return (T) Byte.valueOf(stringToParse);
         }
 
         if (type.equals(Float.class) || type.equals(float.class)) {
-            return (V) Float.valueOf(stringToParse);
+            return (T) Float.valueOf(stringToParse);
         }
 
         if (type.equals(Double.class) || type.equals(double.class)) {
-            return (V) Double.valueOf(stringToParse);
+            return (T) Double.valueOf(stringToParse);
         }
 
         if (type.equals(Character.class) || type.equals(char.class)) {
-            return (V) Character.valueOf(stringToParse.charAt(0));
+            return (T) Character.valueOf(stringToParse.charAt(0));
         }
 
         if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-            return (V) Boolean.valueOf(stringToParse);
+            return (T) Boolean.valueOf(stringToParse);
         }
         return type.cast(stringToParse);
     }

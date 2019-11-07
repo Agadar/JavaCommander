@@ -3,24 +3,27 @@ package com.github.agadar.javacommander.exception;
 import com.github.agadar.javacommander.JcCommand;
 import com.github.agadar.javacommander.JcOption;
 
+import lombok.Getter;
+
 /**
  * Thrown when an option without a default value was not supplied a value.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class NoValueForOptionException extends JavaCommanderException {
+@Getter
+public class NoValueForOptionException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * The command of which an option was not supplied a value.
      */
-    public final JcCommand jcCommand;
+    private final JcCommand jcCommand;
 
     /**
      * The option that was not supplied with a value.
      */
-    public final JcOption<?> jcOption;
+    private final JcOption<?> jcOption;
 
     /**
      * Constructor.

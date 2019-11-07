@@ -1,5 +1,6 @@
 package com.github.agadar.javacommander;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,13 +8,15 @@ import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 
+import lombok.NonNull;
+
 /**
  * A command option parsed from an Option annotation.
  *
  * @author Agadar
  * @param <T> The type of this option's underlying parameter.
  */
-public final class JcOption<T> {
+public class JcOption<T> {
 
     /**
      * Names of the option. The first entry is its primary name. The other entries
@@ -67,30 +70,15 @@ public final class JcOption<T> {
      *                                   the translator itself failed to be
      *                                   instantiated.
      */
-    public JcOption(List<String> names, String description, boolean hasDefaultValue,
-            Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType)
+    public JcOption(@NonNull Collection<String> names, String description, boolean hasDefaultValue,
+            @NonNull Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType)
             throws OptionTranslatorException, IllegalArgumentException {
 
-        // Make sure names is not null.
-        if (names == null) {
-            throw new IllegalArgumentException("'names' should not be null");
-        }
+        this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
 
-        // Filter null values from names.
-        names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
-
-        // Make sure after filtering, names is now not empty.
-        if (names.isEmpty()) {
+        if (this.names.isEmpty()) {
             throw new IllegalArgumentException("'names' should not be empty");
         }
-
-        // Make sure type is not null.
-        if (parameterType == null) {
-            throw new IllegalArgumentException("'parameterType' should not be null");
-        }
-
-        // Assign values to fields.
-        this.names = names;
         this.description = (description == null) ? "" : description;
         this.hasDefaultValue = hasDefaultValue;
         this.parameterType = parameterType;
@@ -105,7 +93,7 @@ public final class JcOption<T> {
      * @param index The index of the name to return.
      * @return The name at the index.
      */
-    public final String getNameByIndex(int index) {
+    public String getNameByIndex(int index) {
         return names.get(Math.max(Math.min(index, names.size() - 1), 0));
     }
 
@@ -114,7 +102,7 @@ public final class JcOption<T> {
      *
      * @return The number of names this instance has.
      */
-    public final int numberOfNames() {
+    public int numberOfNames() {
         return names.size();
     }
 
@@ -123,7 +111,7 @@ public final class JcOption<T> {
      *
      * @return This option's primary name.
      */
-    public final String getPrimaryName() {
+    public String getPrimaryName() {
         return names.get(0);
     }
 
@@ -132,7 +120,7 @@ public final class JcOption<T> {
      *
      * @return Whether this option has a description set.
      */
-    public final boolean hasDescription() {
+    public boolean hasDescription() {
         return !description.isEmpty();
     }
 
@@ -141,7 +129,7 @@ public final class JcOption<T> {
      *
      * @return Whether this option has a translator set.
      */
-    public final boolean hasTranslator() {
+    public boolean hasTranslator() {
         return (translatorType != null) ? (!translatorType.equals(NoTranslator.class)) : false;
     }
 
@@ -175,7 +163,7 @@ public final class JcOption<T> {
      *                                   the default value, or when the translator
      *                                   itself failed to be instantiated.
      */
-    public final T translate(String stringToParse) throws OptionTranslatorException {
+    public T translate(String stringToParse) throws OptionTranslatorException {
         try {
             // If no translator is set, attempt a normal valueOf.
             if (translatorType == null || translatorType.equals(NoTranslator.class)) {

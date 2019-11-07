@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -15,25 +16,27 @@ import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.OptionTranslatorException;
 
+import lombok.NonNull;
+
 /**
  * Allows the registering and unregistering of objects containing functions
  * annotated with @Command and with parameters annotated with @Option.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class JcRegistry {
+public class JcRegistry {
 
     /**
      * The parsed commands, each command mapped to its primary name, in alphabetical
      * order.
      */
-    private final TreeMap<String, JcCommand> primaryNamesToCommands = new TreeMap<>();
+    private final Map<String, JcCommand> primaryNamesToCommands = new TreeMap<>();
 
     /**
      * The parsed commands, each command mapped to each of its names, in
      * alphabetical order.
      */
-    private final TreeMap<String, JcCommand> allNamesToCommands = new TreeMap<>();
+    private final Map<String, JcCommand> allNamesToCommands = new TreeMap<>();
 
     /**
      * Registers all annotated, public, non-static methods of the supplied object.
@@ -45,10 +48,7 @@ public final class JcRegistry {
      *                                   default value, or when the translator
      *                                   itself failed to be instantiated.
      */
-    public final void registerObject(Object object) throws OptionAnnotationException, OptionTranslatorException {
-        if (object == null) {
-            throw new IllegalArgumentException("'object' may not be null");
-        }
+    public void registerObject(@NonNull Object object) throws OptionAnnotationException, OptionTranslatorException {
 
         // Iterate through the object's methods.
         for (var method : object.getClass().getMethods()) {
@@ -77,10 +77,7 @@ public final class JcRegistry {
      *                                   default value, or when the translator
      *                                   itself failed to be instantiated.
      */
-    public final void registerClass(Class<?> clazz) throws OptionAnnotationException, OptionTranslatorException {
-        if (clazz == null) {
-            throw new IllegalArgumentException("'clazz' may not be null");
-        }
+    public void registerClass(@NonNull Class<?> clazz) throws OptionAnnotationException, OptionTranslatorException {
 
         // Iterate through the object's methods.
         for (var method : clazz.getMethods()) {
@@ -104,7 +101,7 @@ public final class JcRegistry {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public final void unregisterObject(Object object) {
+    public void unregisterObject(Object object) {
         if (object == null) {
             return;
         }
@@ -132,7 +129,7 @@ public final class JcRegistry {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public final void unregisterClass(Class<?> clazz) {
+    public void unregisterClass(Class<?> clazz) {
         this.unregisterObject(clazz);
     }
 
@@ -142,8 +139,8 @@ public final class JcRegistry {
      * @param commandName The name of the command to find.
      * @return An Optional containing the command - or not.
      */
-    public final Optional<JcCommand> getCommand(String commandName) {
-        final JcCommand jcCommand = allNamesToCommands.get(commandName);
+    public Optional<JcCommand> getCommand(String commandName) {
+        var jcCommand = allNamesToCommands.get(commandName);
         return jcCommand != null ? Optional.of(jcCommand) : Optional.empty();
     }
 
@@ -152,7 +149,7 @@ public final class JcRegistry {
      *
      * @return All registered JcCommands.
      */
-    public final Collection<JcCommand> getParsedCommands() {
+    public Collection<JcCommand> getParsedCommands() {
         return Collections.unmodifiableCollection(primaryNamesToCommands.values());
     }
 
@@ -162,7 +159,7 @@ public final class JcRegistry {
      * @param commandName The command name to check.
      * @return Whether the command name is known by this registry.
      */
-    public final boolean hasCommand(String commandName) {
+    public boolean hasCommand(String commandName) {
         return allNamesToCommands.containsKey(commandName);
     }
 
@@ -192,8 +189,9 @@ public final class JcRegistry {
      * @throws OptionAnnotationException If a parameter is not properly annotated
      *                                   with the @Option annotation.
      */
-    private static ArrayList<JcOption<?>> parseOptions(Command commandAnnotation, Method method)
+    private static Collection<JcOption<?>> parseOptions(Command commandAnnotation, Method method)
             throws OptionAnnotationException, OptionTranslatorException {
+
         var jcOptions = new ArrayList<JcOption<?>>();
         var parameters = method.getParameters();
 
@@ -239,8 +237,9 @@ public final class JcRegistry {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private static JcOption<?> parseOption(Option optionAnnotation, Parameter parameter)
             throws OptionTranslatorException {
+
         // Get the option names. If none is assigned, use the parameter name.
-        final String[] names = optionAnnotation.names().length > 0 ? optionAnnotation.names()
+        var names = optionAnnotation.names().length > 0 ? optionAnnotation.names()
                 : new String[] { parameter.getName() };
 
         // Get other fields.

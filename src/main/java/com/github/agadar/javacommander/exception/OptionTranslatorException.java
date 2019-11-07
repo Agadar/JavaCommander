@@ -6,7 +6,7 @@ package com.github.agadar.javacommander.exception;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class OptionTranslatorException extends JavaCommanderException {
+public class OptionTranslatorException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
 

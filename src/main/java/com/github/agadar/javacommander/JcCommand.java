@@ -2,12 +2,16 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
 
+import lombok.NonNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -16,7 +20,7 @@ import java.util.stream.Collectors;
  *
  * @author Agadar
  */
-public final class JcCommand {
+public class JcCommand {
 
     /**
      * Names of the command. The first entry is the primary name. The other entries
@@ -32,7 +36,7 @@ public final class JcCommand {
     /**
      * This command's options, each option mapped to each of its names.
      */
-    private final HashMap<String, JcOption<?>> optionNamesToOptions = new HashMap<>();
+    private final Map<String, JcOption<?>> optionNamesToOptions = new HashMap<>();
 
     /**
      * The method to invoke when this command is executed.
@@ -63,33 +67,14 @@ public final class JcCommand {
      *                         class if this command calls a static method.
      * @throws IllegalArgumentException If one of the parameter values is invalid.
      */
-    public JcCommand(List<String> names, String description, List<JcOption<?>> options, Method methodToInvoke,
-            Object objectToInvokeOn)
-            throws IllegalArgumentException {
+    public JcCommand(@NonNull Collection<String> names, String description, Collection<JcOption<?>> options,
+            @NonNull Method methodToInvoke, @NonNull Object objectToInvokeOn) throws IllegalArgumentException {
 
-        // Make sure names is not null.
-        if (names == null) {
-            throw new IllegalArgumentException("'names' should not be null");
-        }
+        this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
 
-        // Filter null values from names.
-        names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
-
-        // Make sure after filtering, names is now not empty.
-        if (names.isEmpty()) {
+        if (this.names.isEmpty()) {
             throw new IllegalArgumentException("'names' should not be empty");
         }
-
-        // Make sure methodToInvoke and objectToInvokeOn aren't null.
-        if (methodToInvoke == null) {
-            throw new IllegalArgumentException("'methodToInvoke' should not be null");
-        }
-        if (objectToInvokeOn == null) {
-            throw new IllegalArgumentException("'objectToInvokeOn' should not be null");
-        }
-
-        // Assign values to fields.
-        this.names = names;
         this.description = (description == null) ? "" : description;
         this.options = (options == null) ? new ArrayList<>()
                 : options.stream().filter(option -> option != null).collect(Collectors.toList());
@@ -111,7 +96,7 @@ public final class JcCommand {
      * @param index The index of the name to return.
      * @return The name at the index.
      */
-    public final String getNameByIndex(int index) {
+    public String getNameByIndex(int index) {
         return names.get(Math.max(Math.min(index, names.size() - 1), 0));
     }
 
@@ -120,7 +105,7 @@ public final class JcCommand {
      *
      * @return The number of names this instance has.
      */
-    public final int numberOfNames() {
+    public int numberOfNames() {
         return names.size();
     }
 
@@ -129,7 +114,7 @@ public final class JcCommand {
      *
      * @return This command's primary name.
      */
-    public final String getPrimaryName() {
+    public String getPrimaryName() {
         return names.get(0);
     }
 
@@ -138,7 +123,7 @@ public final class JcCommand {
      *
      * @return Whether this command has any options.
      */
-    public final boolean hasOptions() {
+    public boolean hasOptions() {
         return options.size() > 0;
     }
 
@@ -147,7 +132,7 @@ public final class JcCommand {
      *
      * @return whether this command has any synonyms
      */
-    public final boolean hasSynonyms() {
+    public boolean hasSynonyms() {
         return names.size() > 1;
     }
 
@@ -156,7 +141,7 @@ public final class JcCommand {
      *
      * @return Whether this command has a description.
      */
-    public final boolean hasDescription() {
+    public boolean hasDescription() {
         return !description.isEmpty();
     }
 
@@ -166,7 +151,7 @@ public final class JcCommand {
      * @param optionName The option name to check.
      * @return Whether this command has an option with the specified name.
      */
-    public final boolean hasOption(String optionName) {
+    public boolean hasOption(String optionName) {
         return optionNamesToOptions.containsKey(optionName);
     }
 
@@ -177,7 +162,7 @@ public final class JcCommand {
      * @param index The index of the option to return.
      * @return The option at the bound index, or empty if this has no options.
      */
-    public final Optional<JcOption<?>> getOptionByIndex(int index) {
+    public Optional<JcOption<?>> getOptionByIndex(int index) {
         if (options.size() < 1) {
             return Optional.empty();
         }
@@ -190,7 +175,7 @@ public final class JcCommand {
      * @param optionName The name of the option to find.
      * @return The supplied option, or empty if this has no option with that name.
      */
-    public final Optional<JcOption<?>> getOptionByName(String optionName) {
+    public Optional<JcOption<?>> getOptionByName(String optionName) {
         if (optionNamesToOptions.containsKey(optionName)) {
             return Optional.of(optionNamesToOptions.get(optionName));
         }
@@ -202,7 +187,7 @@ public final class JcCommand {
      *
      * @return The number of names this instance has.
      */
-    public final int numberOfOptions() {
+    public int numberOfOptions() {
         return options.size();
     }
 
@@ -212,7 +197,7 @@ public final class JcCommand {
      * @param option The option of which the index to get.
      * @return The index of the supplied JcOption, or -1 if it is not found or null.
      */
-    public final int indexOfOption(JcOption<?> option) {
+    public int indexOfOption(JcOption<?> option) {
         return options.indexOf(option);
     }
 
@@ -243,7 +228,7 @@ public final class JcCommand {
      * @param args The arguments.
      * @throws CommandInvocationException If invoking the command failed.
      */
-    public final void invoke(Object... args) throws CommandInvocationException {
+    public void invoke(Object... args) throws CommandInvocationException {
         try {
             methodToInvoke.invoke(objectToInvokeOn instanceof Class ? null : objectToInvokeOn, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
@@ -258,7 +243,7 @@ public final class JcCommand {
      * @param object The object (or class) to check.
      * @return True if the above is the case, otherwise false.
      */
-    public final boolean isMyObject(Object object) {
+    public boolean isMyObject(Object object) {
         return this.objectToInvokeOn == object;
     }
 }

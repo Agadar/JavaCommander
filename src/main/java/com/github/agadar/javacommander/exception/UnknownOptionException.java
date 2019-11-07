@@ -2,25 +2,28 @@ package com.github.agadar.javacommander.exception;
 
 import com.github.agadar.javacommander.JcCommand;
 
+import lombok.Getter;
+
 /**
  * Thrown when an option was supplied for a command that does not have that
  * option.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class UnknownOptionException extends JavaCommanderException {
+@Getter
+public class UnknownOptionException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
 
     /**
      * The command of which an option was supplied that it does not have.
      */
-    public final JcCommand jcCommand;
+    private final JcCommand jcCommand;
 
     /**
      * The name of the option that is not valid for the command.
      */
-    public final String optionName;
+    private final String optionName;
 
     /**
      * Constructor.

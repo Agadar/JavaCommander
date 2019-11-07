@@ -1,12 +1,13 @@
 package com.github.agadar.javacommander.example;
 
 import com.github.agadar.javacommander.JavaCommander;
-import com.github.agadar.javacommander.JcCommand;
 import com.github.agadar.javacommander.JcOption;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
 
-import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * Example class that defines a 'help' and an 'exit' command. Instantiate this
@@ -15,30 +16,21 @@ import java.util.Optional;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class ExampleCommands {
+@AllArgsConstructor
+public class ExampleCommands {
 
     /**
      * Reference to a JavaCommander instance.
      */
-    public final JavaCommander javaCommander;
+    @Getter
+    @NonNull
+    private final JavaCommander javaCommander;
 
     /**
      * Constructor. Assigns a new JavaCommander to this.
      */
     public ExampleCommands() {
         this(new JavaCommander());
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param javaCommander Reference to a JavaCommander instance.
-     */
-    public ExampleCommands(JavaCommander javaCommander) {
-        if (javaCommander == null) {
-            throw new IllegalArgumentException("'javaCommander' may not be null");
-        }
-        this.javaCommander = javaCommander;
     }
 
     /**
@@ -52,7 +44,7 @@ public final class ExampleCommands {
     @Command(names = { "help", "usage",
             "?" }, description = "Display the help.", options = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
     public void usage(String commandName) {
-        final StringBuilder stringBuilder = new StringBuilder("--------------------\n");
+        var stringBuilder = new StringBuilder("--------------------\n");
 
         // If no command name given, then list general info of all commands.
         if (commandName == null || commandName.isEmpty()) {
@@ -60,7 +52,7 @@ public final class ExampleCommands {
                     "Displaying help. Use option '-command' to display a specific command's help.\n\nAvailable commands:");
 
             // Iterate over the commands to find the info
-            javaCommander.jcRegistry.getParsedCommands().forEach((command) -> {
+            javaCommander.getJcRegistry().getParsedCommands().forEach((command) -> {
                 stringBuilder.append("\n");
                 stringBuilder.append(command.getPrimaryName());
 
@@ -75,7 +67,7 @@ public final class ExampleCommands {
         else {
             // Retrieve the command. If it does not exist, then return with an error
             // message.
-            final Optional<JcCommand> command = javaCommander.jcRegistry.getCommand(commandName);
+            var command = javaCommander.getJcRegistry().getCommand(commandName);
 
             if (!command.isPresent()) {
                 stringBuilder.append(String.format("'%s' is not recognized as a command", commandName));

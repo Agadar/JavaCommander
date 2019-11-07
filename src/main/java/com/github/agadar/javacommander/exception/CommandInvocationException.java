@@ -2,19 +2,22 @@ package com.github.agadar.javacommander.exception;
 
 import com.github.agadar.javacommander.JcCommand;
 
+import lombok.Getter;
+
 /**
  * Thrown when an underlying exception caused a command invocation to fail.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class CommandInvocationException extends JavaCommanderException {
+public class CommandInvocationException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
-    
+
     /**
      * The command that failed to be invoked.
      */
-    public final JcCommand jcCommand;
+    @Getter
+    private final JcCommand jcCommand;
 
     /**
      * Constructor.
