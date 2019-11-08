@@ -1,8 +1,6 @@
 package com.github.agadar.javacommander;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -12,9 +10,9 @@ import java.util.Optional;
 import java.util.TreeMap;
 
 import com.github.agadar.javacommander.annotation.Command;
-import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.parser.OptionParser;
 
 import lombok.NonNull;
 
@@ -38,6 +36,16 @@ public class JcRegistry {
      */
     private final Map<String, JcCommand> allNamesToCommands = new TreeMap<>();
 
+    private final OptionParser optionParser;
+
+    public JcRegistry() {
+        this(new OptionParser());
+    }
+
+    public JcRegistry(OptionParser optionParser) {
+        this.optionParser = optionParser;
+    }
+
     /**
      * Registers all annotated, public, non-static methods of the supplied object.
      *
@@ -59,7 +67,7 @@ public class JcRegistry {
                 String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names()
                         : new String[] { method.getName() };
                 String description = commandAnnotation.description();
-                var options = parseOptions(commandAnnotation, method);
+                var options = optionParser.parseOptions(commandAnnotation, method);
 
                 // Create new JcCommand object and register it.
                 registerCommand(new JcCommand(Arrays.asList(names), description, options, method, object));
@@ -88,7 +96,7 @@ public class JcRegistry {
                 String[] names = commandAnnotation.names().length > 0 ? commandAnnotation.names()
                         : new String[] { method.getName() };
                 String description = commandAnnotation.description();
-                var options = parseOptions(commandAnnotation, method);
+                var options = optionParser.parseOptions(commandAnnotation, method);
 
                 // Create new JcCommand object and register it.
                 registerCommand(new JcCommand(Arrays.asList(names), description, options, method, clazz));
@@ -173,81 +181,5 @@ public class JcRegistry {
             allNamesToCommands.put(jcCommand.getNameByIndex(i), jcCommand);
         }
         primaryNamesToCommands.put(jcCommand.getPrimaryName(), jcCommand);
-    }
-
-    /**
-     * Validates and parses all @Option annotations found in the @Command
-     * annotation, or on the method parameters, to an array of JcOptions.
-     *
-     * @param commandAnnotation The @Command annotation of the method with the
-     *                          \@Option annotations to parse.
-     * @param method            The method with the @Option annotations to parse.
-     * @return The parsed values.
-     * @throws OptionTranslatorException If an option translator failed to parse a
-     *                                   default value, or when the translator
-     *                                   itself failed to be instantiated.
-     * @throws OptionAnnotationException If a parameter is not properly annotated
-     *                                   with the @Option annotation.
-     */
-    private static Collection<JcOption<?>> parseOptions(Command commandAnnotation, Method method)
-            throws OptionAnnotationException, OptionTranslatorException {
-
-        var jcOptions = new ArrayList<JcOption<?>>();
-        var parameters = method.getParameters();
-
-        // If the number of options defined in the command annotation is equal to
-        // the number of parameters, then we use those.
-        if (commandAnnotation.options().length == parameters.length) {
-            for (int i = 0; i < parameters.length; i++) {
-                jcOptions.add(parseOption(commandAnnotation.options()[i], parameters[i]));
-            }
-        } // Else, if there is not a single option defined in the command, we use
-          // the options annotated on the parameters.
-        else if (commandAnnotation.options().length == 0) {
-            for (Parameter paramameter : parameters) {
-                // If the parameter is properly annotated, parse it.
-                if (paramameter.isAnnotationPresent(Option.class)) {
-                    jcOptions.add(parseOption(paramameter.getAnnotation(Option.class), paramameter));
-                } // If any parameter at all is not properly annotated, throw an exception.
-                else {
-                    throw new OptionAnnotationException(method);
-                }
-            }
-        } // Else, if there are options defined in the command, but not enough to
-          // cover all parameters, then the annotations are wrong. Throw an error.
-        else {
-            throw new OptionAnnotationException(method);
-        }
-
-        // Return the parsed poptions.
-        return jcOptions;
-    }
-
-    /**
-     * Validates and parses a single option annotation to a JcOption.
-     *
-     * @param optionAnnotation The @Option annotation to parse.
-     * @param parameter        The annotated or corresponding parameter.
-     * @return The parsing result.
-     * @throws OptionTranslatorException If the option translator failed to parse
-     *                                   the default value if it has one, or when
-     *                                   the translator itself failed to be
-     *                                   instantiated.
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private static JcOption<?> parseOption(Option optionAnnotation, Parameter parameter)
-            throws OptionTranslatorException {
-
-        // Get the option names. If none is assigned, use the parameter name.
-        var names = optionAnnotation.names().length > 0 ? optionAnnotation.names()
-                : new String[] { parameter.getName() };
-
-        // Get other fields.
-        boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
-        String defaultValueStr = optionAnnotation.defaultValue();
-        String description = optionAnnotation.description();
-        var type = parameter.getType();
-        var translatorClass = optionAnnotation.translator();
-        return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
     }
 }

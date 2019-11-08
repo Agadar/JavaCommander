@@ -12,7 +12,6 @@ import com.github.agadar.javacommander.exception.OptionTranslatorException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -22,22 +21,19 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Agadar
  */
-@AllArgsConstructor
 @Slf4j
 public class JavaCommander {
 
-    /**
-     * The underlying command registry.
-     */
     @Getter
     @NonNull
     private final JcRegistry jcRegistry;
 
-    /**
-     * Constructor. Assigns a new JcRegistry to this.
-     */
     public JavaCommander() {
         this(new JcRegistry());
+    }
+
+    public JavaCommander(JcRegistry jcRegistry) {
+        this.jcRegistry = jcRegistry;
     }
 
     /**
