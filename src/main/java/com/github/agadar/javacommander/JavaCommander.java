@@ -15,6 +15,7 @@ import com.github.agadar.javacommander.exception.UnknownOptionException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Manages an application's commands.
@@ -22,6 +23,7 @@ import lombok.NonNull;
  * @author Agadar
  */
 @AllArgsConstructor
+@Slf4j
 public class JavaCommander {
 
     /**
@@ -124,6 +126,7 @@ public class JavaCommander {
             command.invoke(finalArgs);
         } catch (UnknownCommandException | UnknownOptionException | OptionTranslatorException
                 | NoValueForOptionException | CommandInvocationException | IllegalArgumentException ex) {
+            log.error("An error occured while executing the command", ex);
             throw new JavaCommanderException(ex);
         }
     }
@@ -138,6 +141,7 @@ public class JavaCommander {
         try {
             jcRegistry.registerObject(object);
         } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
+            log.error("An error occured while registering an object", ex);
             throw new JavaCommanderException(ex);
         }
     }
@@ -152,6 +156,7 @@ public class JavaCommander {
         try {
             jcRegistry.registerClass(clazz);
         } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
+            log.error("An error occured while registering a class", ex);
             throw new JavaCommanderException(ex);
         }
     }

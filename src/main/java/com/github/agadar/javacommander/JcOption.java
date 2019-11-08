@@ -9,6 +9,7 @@ import com.github.agadar.javacommander.translator.NoTranslator;
 import com.github.agadar.javacommander.translator.OptionTranslator;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A command option parsed from an Option annotation.
@@ -16,6 +17,7 @@ import lombok.NonNull;
  * @author Agadar
  * @param <T> The type of this option's underlying parameter.
  */
+@Slf4j
 public class JcOption<T> {
 
     /**
@@ -165,19 +167,22 @@ public class JcOption<T> {
      */
     public T translate(String stringToParse) throws OptionTranslatorException {
         try {
-            // If no translator is set, attempt a normal valueOf.
             if (translatorType == null || translatorType.equals(NoTranslator.class)) {
                 return OptionTranslator.parseString(stringToParse, parameterType);
-            } // If one is set, then attempt using that.
-            else {
+            } else {
                 return translatorType.getDeclaredConstructor().newInstance().translateString(stringToParse);
             }
+
         } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
-            throw new OptionTranslatorException("Failed to parse String '" + stringToParse
-                    + "' to type '" + parameterType.getSimpleName() + "'", ex);
+            String errorMsg = String.format("Failed to parse String '%s' to type '%s'", stringToParse,
+                    parameterType.getSimpleName());
+            log.error(errorMsg, ex);
+            throw new OptionTranslatorException(errorMsg, ex);
+
         } catch (Exception ex) {
-            throw new OptionTranslatorException(
-                    "Failed to instantiate translator '" + translatorType.getSimpleName() + "'", ex);
+            String errorMsg = String.format("Failed to instantiate translator '%s'", translatorType.getSimpleName());
+            log.error(errorMsg, ex);
+            throw new OptionTranslatorException(errorMsg, ex);
         }
     }
 }

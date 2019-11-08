@@ -3,6 +3,7 @@ package com.github.agadar.javacommander;
 import com.github.agadar.javacommander.exception.CommandInvocationException;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
  *
  * @author Agadar
  */
+@Slf4j
 public class JcCommand {
 
     /**
@@ -232,6 +234,7 @@ public class JcCommand {
         try {
             methodToInvoke.invoke(objectToInvokeOn instanceof Class ? null : objectToInvokeOn, args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            log.error("An error occured while invoking this command", ex);
             throw new CommandInvocationException(this, ex);
         }
     }
