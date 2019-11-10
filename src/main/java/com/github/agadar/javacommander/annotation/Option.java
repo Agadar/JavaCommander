@@ -1,19 +1,19 @@
 package com.github.agadar.javacommander.annotation;
 
-import com.github.agadar.javacommander.translator.NoTranslator;
-import com.github.agadar.javacommander.translator.OptionTranslator;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
 /**
  * Annotation used for marking a method parameter as a command option.
  * Alternatively, these may be defined in the 'options' field of the Command
  * annotation instead.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
@@ -52,12 +52,12 @@ public @interface Option {
     String defaultValue() default "";
 
     /**
-     * The translator used to parse a string to the option's type. If the option's
-     * type is a primitive, a boxed primitive, or a string, then no translator needs
-     * to be supplied.
+     * The parser used to parse a string to the option's type. If the option's type
+     * is a primitive, a boxed primitive, or a string, then no parser needs to be
+     * supplied.
      *
-     * @return this option's translator type
+     * @return this option's value parser type
      */
-    Class<? extends OptionTranslator<?>> translator() default NoTranslator.class;
+    Class<? extends OptionValueParser<?>> valueParser() default NoOpOptionValueParser.class;
 
 }

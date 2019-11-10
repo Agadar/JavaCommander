@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * A command parsed from a Command annotation.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  */
 @Slf4j
 public class JcCommand {
@@ -33,12 +33,12 @@ public class JcCommand {
     /**
      * This command's options, in order of the method's parameters
      */
-    private final List<JcOption<?>> options;
+    private final List<JcCommandOption<?>> options;
 
     /**
      * This command's options, each option mapped to each of its names.
      */
-    private final Map<String, JcOption<?>> optionNamesToOptions = new HashMap<>();
+    private final Map<String, JcCommandOption<?>> optionNamesToOptions = new HashMap<>();
 
     /**
      * The method to invoke when this command is executed.
@@ -69,7 +69,7 @@ public class JcCommand {
      *                         class if this command calls a static method.
      * @throws IllegalArgumentException If one of the parameter values is invalid.
      */
-    public JcCommand(@NonNull Collection<String> names, String description, Collection<JcOption<?>> options,
+    public JcCommand(@NonNull Collection<String> names, String description, Collection<JcCommandOption<?>> options,
             @NonNull Method methodToInvoke, @NonNull Object objectToInvokeOn) throws IllegalArgumentException {
 
         this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
@@ -164,7 +164,7 @@ public class JcCommand {
      * @param index The index of the option to return.
      * @return The option at the bound index, or empty if this has no options.
      */
-    public Optional<JcOption<?>> getOptionByIndex(int index) {
+    public Optional<JcCommandOption<?>> getOptionByIndex(int index) {
         if (options.size() < 1) {
             return Optional.empty();
         }
@@ -177,7 +177,7 @@ public class JcCommand {
      * @param optionName The name of the option to find.
      * @return The supplied option, or empty if this has no option with that name.
      */
-    public Optional<JcOption<?>> getOptionByName(String optionName) {
+    public Optional<JcCommandOption<?>> getOptionByName(String optionName) {
         if (optionNamesToOptions.containsKey(optionName)) {
             return Optional.of(optionNamesToOptions.get(optionName));
         }
@@ -194,12 +194,12 @@ public class JcCommand {
     }
 
     /**
-     * Gets the index of the supplied JcOption.
+     * Gets the index of the supplied JcCommandOption.
      *
      * @param option The option of which the index to get.
-     * @return The index of the supplied JcOption, or -1 if it is not found or null.
+     * @return The index of the supplied JcCommandOption, or -1 if it is not found or null.
      */
-    public int indexOfOption(JcOption<?> option) {
+    public int indexOfOption(JcCommandOption<?> option) {
         return options.indexOf(option);
     }
 

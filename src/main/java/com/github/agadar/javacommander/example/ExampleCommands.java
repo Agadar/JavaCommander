@@ -1,7 +1,7 @@
 package com.github.agadar.javacommander.example;
 
 import com.github.agadar.javacommander.JavaCommander;
-import com.github.agadar.javacommander.JcOption;
+import com.github.agadar.javacommander.JcCommandOption;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
 
@@ -108,12 +108,12 @@ public class ExampleCommands {
     }
 
     /**
-     * Appends a string representation of a JcOption to a StringBuilder.
+     * Appends a string representation of a JcCommandOption to a StringBuilder.
      *
-     * @param jcOption      The JcOption to append a string representation of.
+     * @param jcOption      The JcCommandOption to append a string representation of.
      * @param stringBuilder The StringBuilder to append it to.
      */
-    protected void optionToString(JcOption<?> jcOption, StringBuilder stringBuilder) {
+    protected void optionToString(JcCommandOption<?> jcOption, StringBuilder stringBuilder) {
         stringBuilder.append("\n");
         stringBuilder.append(jcOption.getPrimaryName());
 

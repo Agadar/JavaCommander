@@ -1,21 +1,21 @@
-package com.github.agadar.javacommander.translator;
+package com.github.agadar.javacommander.optionvalueparser;
 
 /**
- * Interface that can be implemented to translate string inputs for a command
- * option to the type of the underlying method parameter.
+ * Interface that can be implemented to parse string inputs for a command option
+ * to the type of the underlying method parameter.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  * @param <T> The type to parse strings to.
  */
-public interface OptionTranslator<T> {
+public interface OptionValueParser<T> {
 
     /**
-     * Translates the given string to a value of type T.
+     * Parses the given string to a value of type T.
      *
      * @param stringToParse The string to parse.
      * @return The string parsed to a value of type T.
      */
-    public T translateString(String stringToParse);
+    public T parse(String stringToParse);
 
     /**
      * Parses a string to a type. If the type is a primitive or a boxed primitive,
@@ -23,15 +23,15 @@ public interface OptionTranslator<T> {
      * then it is simply returned. If it is anything else, then the cast(...) method
      * of the type is used as a last desperate attempt to parse the string.
      *
-     * @param               <T> The type to parse to.
+     * @param <T>           The type to parse to.
      * @param stringToParse The string to parse.
      * @param type          The type to parse to.
      * @return The string parsed to a value of type V.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T parseString(String stringToParse, Class<T> type)
+    public static <T> T defaultParse(String stringToParse, Class<T> type)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
-        
+
         if (type.equals(String.class)) {
             return (T) stringToParse;
         }

@@ -1,7 +1,7 @@
 package com.github.agadar.javacommander.exception;
 
 import com.github.agadar.javacommander.JcCommand;
-import com.github.agadar.javacommander.JcOption;
+import com.github.agadar.javacommander.JcCommandOption;
 
 import lombok.Getter;
 
@@ -23,18 +23,18 @@ public class NoValueForOptionException extends JavaCommanderException {
     /**
      * The option that was not supplied with a value.
      */
-    private final JcOption<?> jcOption;
+    private final JcCommandOption<?> jcCommandOption;
 
     /**
      * Constructor.
      *
      * @param jcCommand The command of which an option was not supplied a value.
-     * @param jcOption  The option that was not supplied with a value.
+     * @param jcCommandOption  The option that was not supplied with a value.
      */
-    public NoValueForOptionException(JcCommand jcCommand, JcOption<?> jcOption) {
+    public NoValueForOptionException(JcCommand jcCommand, JcCommandOption<?> jcOption) {
         super(String.format("Option '%s' of command '%s' was not supplied a value", jcOption.getPrimaryName(),
                 jcCommand.getPrimaryName()));
         this.jcCommand = jcCommand;
-        this.jcOption = jcOption;
+        this.jcCommandOption = jcOption;
     }
 }

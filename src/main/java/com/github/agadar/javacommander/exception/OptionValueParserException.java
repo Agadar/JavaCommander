@@ -1,12 +1,12 @@
 package com.github.agadar.javacommander.exception;
 
 /**
- * Thrown when an OptionTranslator failed to parse a string, or when the
- * translator itself failed to be instantiated.
+ * Thrown when an OptionValueParser failed to parse a string, or when the parser
+ * itself failed to be instantiated.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class OptionTranslatorException extends JavaCommanderException {
+public class OptionValueParserException extends JavaCommanderException {
 
     private static final long serialVersionUID = 1L;
 
@@ -16,7 +16,7 @@ public class OptionTranslatorException extends JavaCommanderException {
      * @param message A message elaborating what went wrong.
      * @param cause   The underlying cause.
      */
-    public OptionTranslatorException(String message, Throwable cause) {
+    public OptionValueParserException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
-import com.github.agadar.javacommander.translator.NoTranslator;
-import com.github.agadar.javacommander.translator.OptionTranslator;
+import com.github.agadar.javacommander.exception.OptionValueParserException;
+import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * A command option parsed from an Option annotation.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  * @param <T> The type of this option's underlying parameter.
  */
 @Slf4j
-public class JcOption<T> {
+public class JcCommandOption<T> {
 
     /**
      * Names of the option. The first entry is its primary name. The other entries
@@ -27,9 +27,9 @@ public class JcOption<T> {
     private final List<String> names;
 
     /**
-     * The translator used to parse a string to the option's type.
+     * The parser used to parse a string to the option's type.
      */
-    private final Class<? extends OptionTranslator<T>> translatorType;
+    private final Class<? extends OptionValueParser<T>> valueParserType;
 
     /**
      * The type of this option's underlying parameter.
@@ -61,20 +61,19 @@ public class JcOption<T> {
      * @param hasDefaultValue Whether or not this option has a default value.
      * @param parameterType   The type of this option's underlying parameter.
      * @param defaultValue    This option's default value. If 'hasDefaultValue' is
-     *                        set to false, then this value is ignored. It is
-     *                        translated to the correct type using this instance's
-     *                        own translate method.
-     * @param translatorType  The translator type used to parse a string to the
-     *                        option's type.
-     * @throws IllegalArgumentException  If one of the parameter values is invalid.
-     * @throws OptionTranslatorException If the option translator failed to parse
-     *                                   the default value if it has one, or when
-     *                                   the translator itself failed to be
-     *                                   instantiated.
+     *                        set to false, then this value is ignored. It is parsed
+     *                        to the correct type using this instance's own parse
+     *                        method.
+     * @param valueParserType The parser type used to parse a string to the option's
+     *                        type.
+     * @throws IllegalArgumentException   If one of the parameter values is invalid.
+     * @throws OptionValueParserException If the option parser failed to parse the
+     *                                    default value if it has one, or when the
+     *                                    parser itself failed to be instantiated.
      */
-    public JcOption(@NonNull Collection<String> names, String description, boolean hasDefaultValue,
-            @NonNull Class<T> parameterType, String defaultValue, Class<? extends OptionTranslator<T>> translatorType)
-            throws OptionTranslatorException, IllegalArgumentException {
+    public JcCommandOption(@NonNull Collection<String> names, String description, boolean hasDefaultValue,
+            @NonNull Class<T> parameterType, String defaultValue, Class<? extends OptionValueParser<T>> valueParserType)
+            throws OptionValueParserException, IllegalArgumentException {
 
         this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
 
@@ -84,8 +83,8 @@ public class JcOption<T> {
         this.description = (description == null) ? "" : description;
         this.hasDefaultValue = hasDefaultValue;
         this.parameterType = parameterType;
-        this.translatorType = translatorType;
-        this.defaultValue = this.hasDefaultValue ? translate(defaultValue) : null;
+        this.valueParserType = valueParserType;
+        this.defaultValue = this.hasDefaultValue ? parseOptionValue(defaultValue) : null;
     }
 
     /**
@@ -127,12 +126,12 @@ public class JcOption<T> {
     }
 
     /**
-     * Convenience method for checking whether this option has a translator set.
+     * Convenience method for checking whether this option has a parser set.
      *
-     * @return Whether this option has a translator set.
+     * @return Whether this option has a parser set.
      */
-    public boolean hasTranslator() {
-        return (translatorType != null) ? (!translatorType.equals(NoTranslator.class)) : false;
+    public boolean hasValueParser() {
+        return (valueParserType != null) ? (!valueParserType.equals(NoOpOptionValueParser.class)) : false;
     }
 
     @Override
@@ -153,36 +152,37 @@ public class JcOption<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        return this.getPrimaryName().equals(((JcOption<?>) obj).getPrimaryName());
+        return this.getPrimaryName().equals(((JcCommandOption<?>) obj).getPrimaryName());
     }
 
     /**
-     * Parses a string to a type using this option's translator.
+     * Parses a string to a type using this option's value parser.
      *
      * @param stringToParse The string to parse.
      * @return The parsed value.
-     * @throws OptionTranslatorException If the supplied translator failed to parse
-     *                                   the default value, or when the translator
-     *                                   itself failed to be instantiated.
+     * @throws OptionValueParserException If the supplied parser failed to parse the
+     *                                    default value, or when the parser itself
+     *                                    failed to be instantiated.
      */
-    public T translate(String stringToParse) throws OptionTranslatorException {
+    public T parseOptionValue(String stringToParse) throws OptionValueParserException {
         try {
-            if (translatorType == null || translatorType.equals(NoTranslator.class)) {
-                return OptionTranslator.parseString(stringToParse, parameterType);
+            if (valueParserType == null || valueParserType.equals(NoOpOptionValueParser.class)) {
+                return OptionValueParser.defaultParse(stringToParse, parameterType);
             } else {
-                return translatorType.getDeclaredConstructor().newInstance().translateString(stringToParse);
+                return valueParserType.getDeclaredConstructor().newInstance().parse(stringToParse);
             }
 
         } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
             String errorMsg = String.format("Failed to parse String '%s' to type '%s'", stringToParse,
                     parameterType.getSimpleName());
             log.error(errorMsg, ex);
-            throw new OptionTranslatorException(errorMsg, ex);
+            throw new OptionValueParserException(errorMsg, ex);
 
         } catch (Exception ex) {
-            String errorMsg = String.format("Failed to instantiate translator '%s'", translatorType.getSimpleName());
+            String errorMsg = String.format("Failed to instantiate option value parser '%s'",
+                    valueParserType.getSimpleName());
             log.error(errorMsg, ex);
-            throw new OptionTranslatorException(errorMsg, ex);
+            throw new OptionValueParserException(errorMsg, ex);
         }
     }
 }

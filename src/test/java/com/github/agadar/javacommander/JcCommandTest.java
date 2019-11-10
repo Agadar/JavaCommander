@@ -1,10 +1,10 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.OptionValueParserException;
+import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
-import com.github.agadar.javacommander.translator.NoTranslator;
 
 import java.lang.reflect.Method;
 
@@ -45,10 +45,10 @@ public final class JcCommandTest {
     /**
      * Test of hasOptions method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testHasOptions() throws OptionTranslatorException {
+    public void testHasOptions() throws OptionValueParserException {
         System.out.println("hasOptions");
 
         // Test false.
@@ -57,9 +57,9 @@ public final class JcCommandTest {
         assertFalse(jcCommand.hasOptions());
 
         // Test true.
-        var jcOptions = new ArrayList<JcOption<?>>();
-        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class));
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOptions());
@@ -109,30 +109,30 @@ public final class JcCommandTest {
     /**
      * Test of hasOption method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testHasOption() throws OptionTranslatorException {
+    public void testHasOption() throws OptionValueParserException {
         System.out.println("hasOption");
 
         // Test false.
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
                 methodToInvokeOn, objectToInvokeOn);
         assertFalse(jcCommand.hasOption("one"));
 
         // Test true with primary name.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class));
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("one"));
 
         // test true with synonym.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class));
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
@@ -171,20 +171,20 @@ public final class JcCommandTest {
     /**
      * Test of getOptionByIndex method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testGetOptionByIndex() throws OptionTranslatorException {
+    public void testGetOptionByIndex() throws OptionValueParserException {
         System.out.println("getOptionByIndex");
 
-        var jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
 
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
@@ -205,20 +205,20 @@ public final class JcCommandTest {
     /**
      * Test of getOptionByName method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testGetOptionByName() throws OptionTranslatorException {
+    public void testGetOptionByName() throws OptionValueParserException {
         System.out.println("getOptionByName");
 
-        var jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
 
-        final ArrayList<JcOption<?>> jcOptions = new ArrayList<>();
+        final ArrayList<JcCommandOption<?>> jcOptions = new ArrayList<>();
         jcOptions.add(jcOption1);
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
@@ -236,20 +236,20 @@ public final class JcCommandTest {
     /**
      * Test of numberOfOptions method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testNumberOfOptions() throws OptionTranslatorException {
+    public void testNumberOfOptions() throws OptionValueParserException {
         System.out.println("numberOfOptions");
 
-        var jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
 
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
@@ -262,20 +262,20 @@ public final class JcCommandTest {
     /**
      * Test of indexOfOption method, of class JcCommand.
      *
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testIndexOfOption() throws OptionTranslatorException {
+    public void testIndexOfOption() throws OptionValueParserException {
         System.out.println("indexOfOption");
 
-        var jcOption1 = new JcOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption2 = new JcOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
-        var jcOption3 = new JcOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoTranslator.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
+                "defaultValue", NoOpOptionValueParser.class);
 
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
         jcOptions.add(jcOption2);
 

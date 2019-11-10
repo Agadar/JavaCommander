@@ -18,7 +18,7 @@ public class SomeClass
             @Option(names = "-index", description = "The index of the string to print.", 
                 hasDefaultValue = true, defaultValue = "0"),
             @Option(names = "-array", description = "The string array.", 
-                translator = StringArrayTranslator.class)
+                valueParser = StringArrayOptionValueParser.class)
         }
     )
     public void printStringInArray(int index, String[] array)
@@ -45,13 +45,13 @@ String input = "printStringInArray -index 1 -array 'One,Two,Three'";
 jc.execute(input);
 ```
 
-Implementation of the custom StringArrayTranslator class, which translates a string to a string array:
+Implementation of the custom StringArrayTranslator class, which parses a string to a string array:
 
 ```java
-public class StringArrayTranslator implements OptionTranslator<String[]>
+public class StringArrayOptionValueParser implements OptionValueParser<String[]>
 {
     @Override
-    public String[] translateString(String s) throws JavaCommanderException
+    public String[] parse(String s) throws JavaCommanderException
     {
         return s.split(",");
     }

@@ -1,7 +1,7 @@
 package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
 
@@ -35,10 +35,10 @@ public class JcRegistryTest {
      * Test of unregisterObject method, of class JcRegistry.
      *
      * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testUnregisterObject() throws OptionAnnotationException, OptionTranslatorException {
+    public void testUnregisterObject() throws OptionAnnotationException, OptionValueParserException {
         System.out.println("unregisterObject");
 
         // Assert the registry is empty, then register the object.
@@ -59,10 +59,10 @@ public class JcRegistryTest {
      * Test of unregisterClass method, of class JcRegistry.
      *
      * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testUnregisterClass() throws OptionAnnotationException, OptionTranslatorException {
+    public void testUnregisterClass() throws OptionAnnotationException, OptionValueParserException {
         System.out.println("unregisterClass");
 
         // Assert the registry is empty, then register the class.
@@ -83,10 +83,10 @@ public class JcRegistryTest {
      * Test of getCommand method, of class JcRegistry.
      *
      * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testGetCommand() throws OptionAnnotationException, OptionTranslatorException {
+    public void testGetCommand() throws OptionAnnotationException, OptionValueParserException {
         System.out.println("getCommand");
 
         assertFalse(jcRegistry.getCommand("Bar").isPresent());
@@ -166,10 +166,10 @@ public class JcRegistryTest {
      * JcRegistry.
      *
      * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testRegisterObject() throws OptionAnnotationException, OptionTranslatorException {
+    public void testRegisterObject() throws OptionAnnotationException, OptionValueParserException {
         System.out.println("registerObject");
 
         // Register.
@@ -276,7 +276,7 @@ public class JcRegistryTest {
         assertEquals("StringParam", stringOption.getNameByIndex(0));
         assertEquals("stringParam", stringOption.getNameByIndex(1));
         assertEquals("stringParamDescription", stringOption.description);
-        assertFalse(stringOption.hasTranslator());
+        assertFalse(stringOption.hasValueParser());
         assertFalse(stringOption.hasDefaultValue);
         assertNull(stringOption.defaultValue);
 
@@ -284,7 +284,7 @@ public class JcRegistryTest {
         assertEquals("IntParam", intOption.getNameByIndex(0));
         assertEquals("intParam", intOption.getNameByIndex(1));
         assertEquals("intParamDescription", intOption.description);
-        assertFalse(intOption.hasTranslator());
+        assertFalse(intOption.hasValueParser());
         assertFalse(intOption.hasDefaultValue);
         assertNull(intOption.defaultValue);
 
@@ -292,7 +292,7 @@ public class JcRegistryTest {
         assertEquals("BoolParam", boolOption.getNameByIndex(0));
         assertEquals("boolParam", boolOption.getNameByIndex(1));
         assertEquals("boolParamDescription", boolOption.description);
-        assertFalse(boolOption.hasTranslator());
+        assertFalse(boolOption.hasValueParser());
         assertFalse(boolOption.hasDefaultValue);
         assertNull(boolOption.defaultValue);
 
@@ -300,7 +300,7 @@ public class JcRegistryTest {
         assertEquals("StringDefaultParam", stringDefaultOption.getNameByIndex(0));
         assertEquals("stringDefaultParam", stringDefaultOption.getNameByIndex(1));
         assertEquals("stringDefaultParamDescription", stringDefaultOption.description);
-        assertFalse(stringDefaultOption.hasTranslator());
+        assertFalse(stringDefaultOption.hasValueParser());
         assertTrue(stringDefaultOption.hasDefaultValue);
         assertEquals("defaultString", stringDefaultOption.defaultValue);
 
@@ -308,7 +308,7 @@ public class JcRegistryTest {
         assertEquals("IntDefaultParam", intDefaultOption.getNameByIndex(0));
         assertEquals("intDefaultParam", intDefaultOption.getNameByIndex(1));
         assertEquals("intDefaultParamDescription", intDefaultOption.description);
-        assertFalse(intDefaultOption.hasTranslator());
+        assertFalse(intDefaultOption.hasValueParser());
         assertTrue(intDefaultOption.hasDefaultValue);
         assertEquals(15, (int) intDefaultOption.defaultValue);
 
@@ -316,7 +316,7 @@ public class JcRegistryTest {
         assertEquals("BoolDefaultParam", boolDefaultOption.getNameByIndex(0));
         assertEquals("boolDefaultParam", boolDefaultOption.getNameByIndex(1));
         assertEquals("boolDefaultParamDescription", boolDefaultOption.description);
-        assertFalse(boolDefaultOption.hasTranslator());
+        assertFalse(boolDefaultOption.hasValueParser());
         assertTrue(boolDefaultOption.hasDefaultValue);
         assertEquals(true, boolDefaultOption.defaultValue);
 
@@ -324,14 +324,14 @@ public class JcRegistryTest {
         assertEquals("BazParam", bazOption.getNameByIndex(0));
         assertEquals("bazParam", bazOption.getNameByIndex(1));
         assertEquals("bazParamDescription", bazOption.description);
-        assertTrue(bazOption.hasTranslator());
+        assertTrue(bazOption.hasValueParser());
         assertTrue(bazOption.hasDefaultValue);
         assertEquals(new DataClass("defaultBaz"), bazOption.defaultValue);
 
         assertEquals(1, namelessOption.numberOfNames());
         assertEquals("arg0", namelessOption.getNameByIndex(0));
         assertEquals("barNamelessParamDescription", namelessOption.description);
-        assertFalse(namelessOption.hasTranslator());
+        assertFalse(namelessOption.hasValueParser());
         assertFalse(namelessOption.hasDefaultValue);
         assertNull(namelessOption.defaultValue);
     }
@@ -343,10 +343,10 @@ public class JcRegistryTest {
      * JcRegistry.
      *
      * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionTranslatorException
+     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
-    public void testRegisterClass() throws OptionAnnotationException, OptionTranslatorException {
+    public void testRegisterClass() throws OptionAnnotationException, OptionValueParserException {
         System.out.println("registerClass");
 
         // Register.

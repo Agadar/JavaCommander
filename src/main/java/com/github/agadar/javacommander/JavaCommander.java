@@ -8,7 +8,7 @@ import com.github.agadar.javacommander.exception.CommandInvocationException;
 import com.github.agadar.javacommander.exception.JavaCommanderException;
 import com.github.agadar.javacommander.exception.NoValueForOptionException;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Manages an application's commands.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  */
 @Slf4j
 public class JavaCommander {
@@ -120,7 +120,7 @@ public class JavaCommander {
             }
             // Finally, invoke the method on the object
             command.invoke(finalArgs);
-        } catch (UnknownCommandException | UnknownOptionException | OptionTranslatorException
+        } catch (UnknownCommandException | UnknownOptionException | OptionValueParserException
                 | NoValueForOptionException | CommandInvocationException | IllegalArgumentException ex) {
             log.error("An error occured while executing the command", ex);
             throw new JavaCommanderException(ex);
@@ -136,7 +136,7 @@ public class JavaCommander {
     public void registerObject(Object object) throws JavaCommanderException {
         try {
             jcRegistry.registerObject(object);
-        } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
+        } catch (OptionAnnotationException | OptionValueParserException | IllegalArgumentException ex) {
             log.error("An error occured while registering an object", ex);
             throw new JavaCommanderException(ex);
         }
@@ -151,7 +151,7 @@ public class JavaCommander {
     public void registerClass(Class<?> clazz) throws JavaCommanderException {
         try {
             jcRegistry.registerClass(clazz);
-        } catch (OptionAnnotationException | OptionTranslatorException | IllegalArgumentException ex) {
+        } catch (OptionAnnotationException | OptionValueParserException | IllegalArgumentException ex) {
             log.error("An error occured while registering a class", ex);
             throw new JavaCommanderException(ex);
         }
@@ -182,13 +182,13 @@ public class JavaCommander {
      * @param finalArgs The parsed list of arguments, to be filled by this function.
      * @param args      The argument tokens to parse.
      * @param command   The command to parse the tokens for.
-     * @throws OptionTranslatorException If an argument token could not be parsed to
+     * @throws OptionValueParserException If an argument token could not be parsed to
      *                                   its corresponding parameter type.
      * @throws IllegalArgumentException  If args contains more argument tokens than
      *                                   should be parsed.
      */
     private static void parseArgumentsImplicit(Object[] finalArgs, List<String> args,
-            JcCommand command) throws OptionTranslatorException {
+            JcCommand command) throws OptionValueParserException {
 
         // If too many arguments were supplied, throw an error.
         if (args.size() - 1 > finalArgs.length) {
@@ -199,7 +199,7 @@ public class JavaCommander {
         // them in finalArgs as we go.
         for (int i = 1; i < args.size(); i++) {
             var currentOption = command.getOptionByIndex(i - 1).get();
-            var parsedArg = currentOption.translate(args.get(i));
+            var parsedArg = currentOption.parseOptionValue(args.get(i));
             finalArgs[i - 1] = parsedArg;
         }
     }
@@ -215,11 +215,11 @@ public class JavaCommander {
      *                                   that it does not have.
      * @throws NoValueForOptionException If an option without a default value was
      *                                   not supplied a value.
-     * @throws OptionTranslatorException If an argument token could not be parsed to
+     * @throws OptionValueParserException If an argument token could not be parsed to
      *                                   its corresponding parameter type.
      */
     private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command)
-            throws UnknownOptionException, OptionTranslatorException, NoValueForOptionException {
+            throws UnknownOptionException, OptionValueParserException, NoValueForOptionException {
 
         var currentOption = command.getOptionByName(args.get(1));
         boolean parsingOption = false;
@@ -237,7 +237,7 @@ public class JavaCommander {
                     throw new UnknownOptionException(command, args.get(i));
                 }
             } else {
-                var parsedArg = currentOption.get().translate(args.get(i));
+                var parsedArg = currentOption.get().parseOptionValue(args.get(i));
                 finalArgs[command.indexOfOption(currentOption.get())] = parsedArg;
                 currentOption = null;
             }

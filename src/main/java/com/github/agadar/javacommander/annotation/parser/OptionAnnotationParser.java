@@ -1,4 +1,4 @@
-package com.github.agadar.javacommander.parser;
+package com.github.agadar.javacommander.annotation.parser;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -6,38 +6,38 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.github.agadar.javacommander.JcOption;
+import com.github.agadar.javacommander.JcCommandOption;
 import com.github.agadar.javacommander.annotation.Command;
 import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
-import com.github.agadar.javacommander.exception.OptionTranslatorException;
+import com.github.agadar.javacommander.exception.OptionValueParserException;
 
 /**
- * Parses {@link Option} annotations to {@link JcOption} instances.
+ * Parses {@link Option} annotations to {@link JcCommandOption} instances.
  * 
- * @author adm
+ * @author Agadar (https://github.com/Agadar/)
  *
  */
-public class OptionParser {
+public class OptionAnnotationParser {
 
     /**
      * Validates and parses all {@link Option} annotations found in the
      * {@link Command} annotation, or on the method parameters, to an array of
-     * {@link JcOption}'s.
+     * {@link JcCommandOption}'s.
      *
      * @param commandAnnotation The {@link Command} annotation of the method with
      *                          the {@link Option} annotations to parse.
      * @param method            The method with the {@link Option} annotations to
      *                          parse.
      * @return The parsed values.
-     * @throws OptionTranslatorException If an option translator failed to parse a
-     *                                   default value, or when the translator
-     *                                   itself failed to be instantiated.
-     * @throws OptionAnnotationException If a parameter is not properly annotated
-     *                                   with the {@link Option} annotation.
+     * @throws OptionValueParserException If an option value parser failed to parse
+     *                                    a default value, or when the parser itself
+     *                                    failed to be instantiated.
+     * @throws OptionAnnotationException  If a parameter is not properly annotated
+     *                                    with the {@link Option} annotation.
      */
-    public Collection<JcOption<?>> parseOptions(Command commandAnnotation, Method method)
-            throws OptionAnnotationException, OptionTranslatorException {
+    public Collection<JcCommandOption<?>> parseOptions(Command commandAnnotation, Method method)
+            throws OptionAnnotationException, OptionValueParserException {
 
         var parameters = method.getParameters();
 
@@ -57,10 +57,10 @@ public class OptionParser {
         return commandAnnotation.options().length == parameters.length;
     }
 
-    private Collection<JcOption<?>> parseOptionsFromCommandAnnotation(Command commandAnnotation, Parameter[] parameters)
-            throws OptionTranslatorException {
+    private Collection<JcCommandOption<?>> parseOptionsFromCommandAnnotation(Command commandAnnotation, Parameter[] parameters)
+            throws OptionValueParserException {
 
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         for (int i = 0; i < parameters.length; i++) {
             var parsedOption = parseOption(commandAnnotation.options()[i], parameters[i]);
             jcOptions.add(parsedOption);
@@ -72,10 +72,10 @@ public class OptionParser {
         return commandAnnotation.options().length == 0;
     }
 
-    private Collection<JcOption<?>> parseOptionsFromParamAnnotations(Method method, Parameter[] parameters)
-            throws OptionTranslatorException, OptionAnnotationException {
+    private Collection<JcCommandOption<?>> parseOptionsFromParamAnnotations(Method method, Parameter[] parameters)
+            throws OptionValueParserException, OptionAnnotationException {
 
-        var jcOptions = new ArrayList<JcOption<?>>();
+        var jcOptions = new ArrayList<JcCommandOption<?>>();
         for (Parameter paramameter : parameters) {
             if (paramameter.isAnnotationPresent(Option.class)) {
                 var parsedOption = parseOption(paramameter.getAnnotation(Option.class), paramameter);
@@ -88,14 +88,14 @@ public class OptionParser {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private JcOption<?> parseOption(Option optionAnnotation, Parameter parameter) throws OptionTranslatorException {
+    private JcCommandOption<?> parseOption(Option optionAnnotation, Parameter parameter) throws OptionValueParserException {
         var names = deriveOptionNames(optionAnnotation, parameter);
         boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
         String defaultValueStr = optionAnnotation.defaultValue();
         String description = optionAnnotation.description();
         var type = parameter.getType();
-        var translatorClass = optionAnnotation.translator();
-        return new JcOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, translatorClass);
+        var parserClass = optionAnnotation.valueParser();
+        return new JcCommandOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, parserClass);
     }
 
     private String[] deriveOptionNames(Option optionAnnotation, Parameter parameter) {
