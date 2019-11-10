@@ -1,21 +1,20 @@
 package com.github.agadar.javacommander;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import com.github.agadar.javacommander.exception.CommandInvocationException;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * A command parsed from a Command annotation.
@@ -29,6 +28,7 @@ public class JcCommand {
      * Names of the command. The first entry is the primary name. The other entries
      * are synonyms.
      */
+    @Getter
     private final List<String> names;
 
     /**
@@ -39,7 +39,7 @@ public class JcCommand {
     /**
      * This command's options, each option mapped to each of its names.
      */
-    private final Map<String, JcCommandOption<?>> optionNamesToOptions = new HashMap<>();
+    private final Map<String, JcCommandOption<?>> optionNamesToOptions;
     private final Method methodToInvoke;
 
     /**
@@ -77,32 +77,10 @@ public class JcCommand {
         this.methodToInvoke = methodToInvoke;
         this.objectToInvokeOn = objectToInvokeOn;
 
-        // Map all options
-        this.options.stream().forEach((option) -> {
-            for (int j = 0; j < option.numberOfNames(); j++) {
-                optionNamesToOptions.put(option.getNameByIndex(j), option);
-            }
-        });
-    }
-
-    /**
-     * Returns the name at the index, where index is bound between 0 and the number
-     * of names minus 1.
-     *
-     * @param index The index of the name to return.
-     * @return The name at the index.
-     */
-    public String getNameByIndex(int index) {
-        return names.get(Math.max(Math.min(index, names.size() - 1), 0));
-    }
-
-    /**
-     * Returns the number of names this instance has.
-     *
-     * @return The number of names this instance has.
-     */
-    public int numberOfNames() {
-        return names.size();
+        optionNamesToOptions = this.options.stream()
+                .flatMap(option -> option.getNames().stream()
+                        .map(name -> new SimpleEntry<String, JcCommandOption<?>>(name, option)))
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
     }
 
     /**
@@ -147,7 +125,7 @@ public class JcCommand {
      * @param optionName The option name to check.
      * @return Whether this command has an option with the specified name.
      */
-    public boolean hasOption(String optionName) {
+    public boolean hasOption(@NonNull String optionName) {
         return optionNamesToOptions.containsKey(optionName);
     }
 
@@ -171,7 +149,7 @@ public class JcCommand {
      * @param optionName The name of the option to find.
      * @return The supplied option, or empty if this has no option with that name.
      */
-    public Optional<JcCommandOption<?>> getOptionByName(String optionName) {
+    public Optional<JcCommandOption<?>> getOptionByName(@NonNull String optionName) {
         if (optionNamesToOptions.containsKey(optionName)) {
             return Optional.of(optionNamesToOptions.get(optionName));
         }
@@ -194,7 +172,7 @@ public class JcCommand {
      * @return The index of the supplied JcCommandOption, or -1 if it is not found
      *         or null.
      */
-    public int indexOfOption(JcCommandOption<?> option) {
+    public int indexOfOption(@NonNull JcCommandOption<?> option) {
         return options.indexOf(option);
     }
 
@@ -241,7 +219,7 @@ public class JcCommand {
      * @param object The object (or class) to check.
      * @return True if the above is the case, otherwise false.
      */
-    public boolean isMyObject(Object object) {
+    public boolean isMyObject(@NonNull Object object) {
         return this.objectToInvokeOn == object;
     }
 }

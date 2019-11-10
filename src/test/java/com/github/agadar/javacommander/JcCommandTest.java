@@ -139,36 +139,6 @@ public final class JcCommandTest {
     }
 
     /**
-     * Test of getNameByIndex method, of class JcCommand.
-     */
-    @Test
-    public void testGetNameByIndex() {
-        System.out.println("getNameByIndex");
-        final JcCommand instance = new JcCommand(Arrays.asList("one", "two", "three"), "description", null,
-                methodToInvokeOn, objectToInvokeOn);
-
-        // Check lower bounding.
-        assertEquals("one", instance.getNameByIndex(-1));
-
-        // Check upper bounding.
-        assertEquals("three", instance.getNameByIndex(3));
-
-        // Check within bounding.
-        assertEquals("two", instance.getNameByIndex(1));
-    }
-
-    /**
-     * Test of numberOfNames method, of class JcCommand.
-     */
-    @Test
-    public void testNumberOfNames() {
-        System.out.println("numberOfNames");
-        final JcCommand instance = new JcCommand(Arrays.asList("one", "two", "three"), "description", null,
-                methodToInvokeOn, objectToInvokeOn);
-        assertEquals(3, instance.numberOfNames());
-    }
-
-    /**
      * Test of getOptionByIndex method, of class JcCommand.
      *
      * @throws com.github.agadar.javacommander.exception.OptionValueParserException

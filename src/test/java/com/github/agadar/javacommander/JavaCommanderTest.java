@@ -35,7 +35,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test call.
         jcCommander.execute(Arrays.asList("bar"));
@@ -53,7 +53,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test implicit calls.
         jcCommander.execute(Arrays.asList("BarWithParams", "someString", "15", "true"));
@@ -80,7 +80,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test implicit calls, leaving out parameters (expecting default values).
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString", "15", "true"));
@@ -111,7 +111,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test calls.
         jcCommander.execute(Arrays.asList("barWithBazParam", "someString"));
@@ -131,7 +131,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test calls.
         jcCommander.execute(Arrays.asList("barNameless", "someString"));
@@ -150,7 +150,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerClass(AnnotatedClass.class);
+        jcCommander.registerFromClass(AnnotatedClass.class);
 
         // Test call.
         jcCommander.execute(Arrays.asList("barStatic"));
@@ -167,7 +167,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test call.
         jcCommander.execute("bar");
@@ -185,7 +185,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test implicit calls.
         jcCommander.execute("BarWithParams someString 15 true");
@@ -212,7 +212,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test implicit calls, leaving out parameters (expecting default values).
         jcCommander.execute("barWithDefaultParams someString 15 true");
@@ -243,7 +243,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test calls.
         jcCommander.execute("barWithBazParam someString");
@@ -263,7 +263,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test calls.
         jcCommander.execute("barNameless someString");
@@ -282,7 +282,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerClass(AnnotatedClass.class);
+        jcCommander.registerFromClass(AnnotatedClass.class);
 
         // Test call.
         jcCommander.execute("barStatic");
@@ -300,7 +300,7 @@ public class JavaCommanderTest {
 
         // Setup JavaCommander instance.
         final JavaCommander jcCommander = new JavaCommander();
-        jcCommander.registerObject(foo);
+        jcCommander.registerFromObject(foo);
 
         // Test calls.
         jcCommander.execute("barWithParams someString0 15 true; barWithParams someString1 10 false");

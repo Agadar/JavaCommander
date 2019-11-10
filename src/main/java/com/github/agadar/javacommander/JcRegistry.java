@@ -52,9 +52,10 @@ public class JcRegistry {
      *                                    a default value, or when the parser itself
      *                                    failed to be instantiated.
      */
-    public void registerObject(@NonNull Object object) throws OptionAnnotationException, OptionValueParserException {
+    public void registerFromObject(@NonNull Object object)
+            throws OptionAnnotationException, OptionValueParserException {
         var parsedCommands = commandAnnotationParser.parseFromObject(object);
-        registerCommands(parsedCommands);
+        registerDirectly(parsedCommands);
     }
 
     /**
@@ -67,9 +68,25 @@ public class JcRegistry {
      *                                    a default value, or when the parser itself
      *                                    failed to be instantiated.
      */
-    public void registerClass(@NonNull Class<?> clazz) throws OptionAnnotationException, OptionValueParserException {
+    public void registerFromClass(@NonNull Class<?> clazz)
+            throws OptionAnnotationException, OptionValueParserException {
         var parsedCommands = commandAnnotationParser.parseFromClass(clazz);
-        registerCommands(parsedCommands);
+        registerDirectly(parsedCommands);
+    }
+
+    /**
+     * Registers commands directly instead of reading them from annotated objects or
+     * classes.
+     * 
+     * @param jcCommands The commands to register directly.
+     */
+    public void registerDirectly(@NonNull Collection<JcCommand> jcCommands) {
+        for (var jcCommand : jcCommands) {
+            for (String name : jcCommand.getNames()) {
+                allNamesToCommands.put(name, jcCommand);
+            }
+            primaryNamesToCommands.put(jcCommand.getPrimaryName(), jcCommand);
+        }
     }
 
     /**
@@ -77,20 +94,11 @@ public class JcRegistry {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public void unregisterObject(@NonNull Object object) {
-
-        var keysToRemove = primaryNamesToCommands.entrySet().stream()
-                .filter((entry) -> (entry.getValue().isMyObject(object)))
-                .map(entry -> entry.getKey())
+    public void unregisterFromObject(@NonNull Object object) {
+        var commandsToRemove = primaryNamesToCommands.values().stream()
+                .filter((command) -> command.isMyObject(object))
                 .collect(Collectors.toList());
-
-        keysToRemove.stream()
-                .map((key) -> primaryNamesToCommands.remove(key))
-                .forEach((command) -> {
-                    for (int i = 0; i < command.numberOfNames(); i++) {
-                        allNamesToCommands.remove(command.getNameByIndex(i));
-                    }
-                });
+        commandsToRemove.forEach(command -> unregisterDirectly(command));
     }
 
     /**
@@ -98,8 +106,20 @@ public class JcRegistry {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public void unregisterClass(@NonNull Class<?> clazz) {
-        unregisterObject(clazz);
+    public void unregisterFromClass(@NonNull Class<?> clazz) {
+        unregisterFromObject(clazz);
+    }
+
+    /**
+     * Unregisters a command directly instead of from an object or class.
+     * 
+     * @param command The command to unregister directly.
+     */
+    public void unregisterDirectly(@NonNull JcCommand command) {
+        primaryNamesToCommands.remove(command.getPrimaryName());
+        for (String name : command.getNames()) {
+            allNamesToCommands.remove(name);
+        }
     }
 
     /**
@@ -114,11 +134,11 @@ public class JcRegistry {
     }
 
     /**
-     * Gives all registered JcCommands.
+     * Gets all registered JcCommands.
      *
      * @return All registered JcCommands.
      */
-    public Collection<JcCommand> getParsedCommands() {
+    public Collection<JcCommand> getCommands() {
         return Collections.unmodifiableCollection(primaryNamesToCommands.values());
     }
 
@@ -132,12 +152,4 @@ public class JcRegistry {
         return allNamesToCommands.containsKey(commandName);
     }
 
-    private void registerCommands(Collection<JcCommand> jcCommands) {
-        for (var jcCommand : jcCommands) {
-            for (int i = 0; i < jcCommand.numberOfNames(); i++) {
-                allNamesToCommands.put(jcCommand.getNameByIndex(i), jcCommand);
-            }
-            primaryNamesToCommands.put(jcCommand.getPrimaryName(), jcCommand);
-        }
-    }
 }

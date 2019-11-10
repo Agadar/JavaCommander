@@ -52,13 +52,14 @@ public class ExampleCommands {
                     "Displaying help. Use option '-command' to display a specific command's help.\n\nAvailable commands:");
 
             // Iterate over the commands to find the info
-            javaCommander.getJcRegistry().getParsedCommands().forEach((command) -> {
+            javaCommander.getCommands().forEach((command) -> {
                 stringBuilder.append("\n");
                 stringBuilder.append(command.getPrimaryName());
+                var names = command.getNames();
 
-                for (int i = 1; i < command.numberOfNames(); i++) {
+                for (int i = 1; i < names.size(); i++) {
                     stringBuilder.append(", ");
-                    stringBuilder.append(command.getNameByIndex(i));
+                    stringBuilder.append(names.get(i));
                 }
                 stringBuilder.append("\t\t");
                 stringBuilder.append(command.hasDescription() ? command.getDescription() : "No description available.");
@@ -67,7 +68,7 @@ public class ExampleCommands {
         else {
             // Retrieve the command. If it does not exist, then return with an error
             // message.
-            var command = javaCommander.getJcRegistry().getCommand(commandName);
+            var command = javaCommander.getCommand(commandName);
 
             if (!command.isPresent()) {
                 stringBuilder.append(String.format("'%s' is not recognized as a command", commandName));
@@ -84,10 +85,11 @@ public class ExampleCommands {
             // If there are synonyms, then list them.
             stringBuilder.append("Synonyms:\n");
             stringBuilder.append(command.get().getPrimaryName());
+            var names = command.get().getNames();
 
-            for (int i = 1; i < command.get().numberOfNames(); i++) {
+            for (int i = 1; i < names.size(); i++) {
                 stringBuilder.append(", ");
-                stringBuilder.append(command.get().getNameByIndex(i));
+                stringBuilder.append(names.get(i));
             }
             stringBuilder.append("\n\n");
 
@@ -118,9 +120,9 @@ public class ExampleCommands {
         stringBuilder.append("\n");
         stringBuilder.append(jcOption.getPrimaryName());
 
-        for (int i = 1; i < jcOption.numberOfNames(); i++) {
+        for (int i = 1; i < jcOption.getNames().size(); i++) {
             stringBuilder.append(", ");
-            stringBuilder.append(jcOption.getNameByIndex(i));
+            stringBuilder.append(jcOption.getNames().get(i));
         }
         stringBuilder.append("\t\t");
         stringBuilder.append(jcOption.getDescription());

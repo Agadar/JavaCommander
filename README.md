@@ -35,7 +35,7 @@ Registering an instance of a class with a JavaCommander instance:
 ```java
 JavaCommander jc = new JavaCommander();
 SomeClass sc = new SomeClass();
-jc.registerObject(sc);
+jc.registerFromObject(sc);
 ```
 
 Interpreting and executing a string input:

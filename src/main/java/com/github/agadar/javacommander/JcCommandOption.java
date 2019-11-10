@@ -25,6 +25,7 @@ public class JcCommandOption<T> {
      * Names of the option. The first entry is its primary name. The other entries
      * are synonyms.
      */
+    @Getter
     private final List<String> names;
 
     /**
@@ -89,26 +90,6 @@ public class JcCommandOption<T> {
         this.parameterType = parameterType;
         this.valueParserType = valueParserType;
         this.defaultValue = this.hasDefaultValue ? parseOptionValue(defaultValue) : null;
-    }
-
-    /**
-     * Returns the name at the index, where index is bound between 0 and the number
-     * of names minus 1.
-     *
-     * @param index The index of the name to return.
-     * @return The name at the index.
-     */
-    public String getNameByIndex(int index) {
-        return names.get(Math.max(Math.min(index, names.size() - 1), 0));
-    }
-
-    /**
-     * Returns the number of names this instance has.
-     *
-     * @return The number of names this instance has.
-     */
-    public int numberOfNames() {
-        return names.size();
     }
 
     /**

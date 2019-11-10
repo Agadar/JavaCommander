@@ -3,6 +3,7 @@ package com.github.agadar.javacommander;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.agadar.javacommander.exception.JavaCommanderException;
 import com.github.agadar.javacommander.exception.NoValueForOptionException;
@@ -10,7 +11,6 @@ import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 
-import lombok.Getter;
 import lombok.NonNull;
 
 /**
@@ -20,7 +20,6 @@ import lombok.NonNull;
  */
 public class JavaCommander {
 
-    @Getter
     @NonNull
     private final JcRegistry jcRegistry;
 
@@ -114,8 +113,8 @@ public class JavaCommander {
      * @param object The object containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void registerObject(@NonNull Object object) throws JavaCommanderException {
-        jcRegistry.registerObject(object);
+    public void registerFromObject(@NonNull Object object) throws JavaCommanderException {
+        jcRegistry.registerFromObject(object);
     }
 
     /**
@@ -124,8 +123,18 @@ public class JavaCommander {
      * @param clazz The class containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void registerClass(@NonNull Class<?> clazz) throws JavaCommanderException {
-        jcRegistry.registerClass(clazz);
+    public void registerFromClass(@NonNull Class<?> clazz) throws JavaCommanderException {
+        jcRegistry.registerFromClass(clazz);
+    }
+
+    /**
+     * Registers commands directly instead of reading them from annotated objects or
+     * classes.
+     * 
+     * @param jcCommands The commands to register directly.
+     */
+    public void registerDirectly(@NonNull Collection<JcCommand> jcCommands) {
+        jcRegistry.registerDirectly(jcCommands);
     }
 
     /**
@@ -133,8 +142,8 @@ public class JavaCommander {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public void unregisterObject(@NonNull Object object) {
-        jcRegistry.unregisterObject(object);
+    public void unregisterFromObject(@NonNull Object object) {
+        jcRegistry.unregisterFromObject(object);
     }
 
     /**
@@ -142,8 +151,36 @@ public class JavaCommander {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public void unregisterClass(@NonNull Class<?> clazz) {
-        jcRegistry.unregisterClass(clazz);
+    public void unregisterFromClass(@NonNull Class<?> clazz) {
+        jcRegistry.unregisterFromClass(clazz);
+    }
+
+    /**
+     * Unregisters a command directly instead of from an object or class.
+     * 
+     * @param command The command to unregister directly.
+     */
+    public void unregisterDirectly(@NonNull JcCommand command) {
+        jcRegistry.unregisterDirectly(command);
+    }
+
+    /**
+     * Returns the command mapped to the given command name.
+     *
+     * @param commandName The name of the command to find.
+     * @return An Optional containing the command - or not.
+     */
+    public Optional<JcCommand> getCommand(@NonNull String commandName) {
+        return jcRegistry.getCommand(commandName);
+    }
+
+    /**
+     * Gets all registered JcCommands.
+     *
+     * @return All registered JcCommands.
+     */
+    public Collection<JcCommand> getCommands() {
+        return jcRegistry.getCommands();
     }
 
     /**

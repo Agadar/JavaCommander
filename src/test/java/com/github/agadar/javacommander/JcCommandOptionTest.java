@@ -46,7 +46,8 @@ public final class JcCommandOptionTest {
         assertTrue(instance.hasDescription());
 
         // Test false with null.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), null, false, String.class, "defaultValue",
+        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), null, false, String.class,
+                "defaultValue",
                 NoOpOptionValueParser.class);
         assertFalse(instance.hasDescription());
 
@@ -76,50 +77,10 @@ public final class JcCommandOptionTest {
         assertFalse(instance.hasValueParser());
 
         // Test true.
-        var instance2 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, DataClass.class,
+        var instance2 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false,
+                DataClass.class,
                 "defaultValue", DataClassOptionValueParser.class);
         assertTrue(instance2.hasValueParser());
-    }
-
-    /**
-     * Test of getNameByIndex method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
-     */
-    @Test
-    public void testGetNameByIndex() throws OptionValueParserException {
-        System.out.println("getNameByIndex");
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", null);
-
-        // Check lower bounding.
-        assertEquals("one", instance.getNameByIndex(-1));
-
-        // Check upper bounding.
-        assertEquals("three", instance.getNameByIndex(3));
-
-        // Check within bounding.
-        assertEquals("two", instance.getNameByIndex(1));
-    }
-
-    /**
-     * Test of numberOfNames method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
-     */
-    @Test
-    public void testNumberOfNames() throws OptionValueParserException {
-        System.out.println("numberOfNames");
-
-        // Test with 3
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", null);
-        assertEquals(3, instance.numberOfNames());
-
-        // Test with 6
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three", "four", "five", "six"), "description", false,
-                String.class, "defaultValue", null);
-        assertEquals(6, instance.numberOfNames());
     }
 
     /**
