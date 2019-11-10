@@ -219,7 +219,7 @@ public class JcCommand {
      * @param object The object (or class) to check.
      * @return True if the above is the case, otherwise false.
      */
-    public boolean isMyObject(@NonNull Object object) {
+    public boolean isMyObject(Object object) {
         return this.objectToInvokeOn == object;
     }
 }

@@ -12,6 +12,8 @@ import com.github.agadar.javacommander.annotation.Option;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
 
+import lombok.NonNull;
+
 /**
  * Parses {@link Option} annotations to {@link JcCommandOption} instances.
  * 
@@ -36,7 +38,7 @@ public class OptionAnnotationParser {
      * @throws OptionAnnotationException  If a parameter is not properly annotated
      *                                    with the {@link Option} annotation.
      */
-    public Collection<JcCommandOption<?>> parseOptions(Command commandAnnotation, Method method)
+    public Collection<JcCommandOption<?>> parseOptions(@NonNull Command commandAnnotation, @NonNull Method method)
             throws OptionAnnotationException, OptionValueParserException {
 
         var parameters = method.getParameters();
@@ -57,7 +59,8 @@ public class OptionAnnotationParser {
         return commandAnnotation.options().length == parameters.length;
     }
 
-    private Collection<JcCommandOption<?>> parseOptionsFromCommandAnnotation(Command commandAnnotation, Parameter[] parameters)
+    private Collection<JcCommandOption<?>> parseOptionsFromCommandAnnotation(Command commandAnnotation,
+            Parameter[] parameters)
             throws OptionValueParserException {
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
@@ -88,14 +91,16 @@ public class OptionAnnotationParser {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    private JcCommandOption<?> parseOption(Option optionAnnotation, Parameter parameter) throws OptionValueParserException {
+    private JcCommandOption<?> parseOption(Option optionAnnotation, Parameter parameter)
+            throws OptionValueParserException {
         var names = deriveOptionNames(optionAnnotation, parameter);
         boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
         String defaultValueStr = optionAnnotation.defaultValue();
         String description = optionAnnotation.description();
         var type = parameter.getType();
         var parserClass = optionAnnotation.valueParser();
-        return new JcCommandOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr, parserClass);
+        return new JcCommandOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr,
+                parserClass);
     }
 
     private String[] deriveOptionNames(Option optionAnnotation, Parameter parameter) {
