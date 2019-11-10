@@ -27,7 +27,7 @@ public class CommandAnnotationParser {
         this(new OptionAnnotationParser());
     }
 
-    public CommandAnnotationParser(OptionAnnotationParser optionAnnotationParser) {
+    public CommandAnnotationParser(@NonNull OptionAnnotationParser optionAnnotationParser) {
         this.optionAnnotationParser = optionAnnotationParser;
     }
 

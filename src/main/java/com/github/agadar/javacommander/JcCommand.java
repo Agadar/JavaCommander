@@ -2,6 +2,7 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,10 +40,6 @@ public class JcCommand {
      * This command's options, each option mapped to each of its names.
      */
     private final Map<String, JcCommandOption<?>> optionNamesToOptions = new HashMap<>();
-
-    /**
-     * The method to invoke when this command is executed.
-     */
     private final Method methodToInvoke;
 
     /**
@@ -50,11 +47,8 @@ public class JcCommand {
      * a static method.
      */
     private final Object objectToInvokeOn;
-
-    /**
-     * A description of the command.
-     */
-    public final String description;
+    @Getter
+    private final String description;
 
     /**
      * Constructor.
@@ -197,7 +191,8 @@ public class JcCommand {
      * Gets the index of the supplied JcCommandOption.
      *
      * @param option The option of which the index to get.
-     * @return The index of the supplied JcCommandOption, or -1 if it is not found or null.
+     * @return The index of the supplied JcCommandOption, or -1 if it is not found
+     *         or null.
      */
     public int indexOfOption(JcCommandOption<?> option) {
         return options.indexOf(option);

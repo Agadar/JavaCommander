@@ -4,24 +4,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.github.agadar.javacommander.exception.CommandInvocationException;
 import com.github.agadar.javacommander.exception.JavaCommanderException;
 import com.github.agadar.javacommander.exception.NoValueForOptionException;
-import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.exception.UnknownCommandException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Manages an application's commands.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-@Slf4j
 public class JavaCommander {
 
     @Getter
@@ -32,7 +28,7 @@ public class JavaCommander {
         this(new JcRegistry());
     }
 
-    public JavaCommander(JcRegistry jcRegistry) {
+    public JavaCommander(@NonNull JcRegistry jcRegistry) {
         this.jcRegistry = jcRegistry;
     }
 
@@ -43,7 +39,7 @@ public class JavaCommander {
      * @param string The string to parse and execute the corresponding commands of.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void execute(String string) throws JavaCommanderException {
+    public void execute(@NonNull String string) throws JavaCommanderException {
         this.executeSequence(stringAsArgs(string));
     }
 
@@ -54,16 +50,9 @@ public class JavaCommander {
      * @param args The collection of argument token collections.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void executeSequence(Collection<List<String>> args) throws JavaCommanderException {
-
-        // Verify argument list.
-        if (args == null || args.isEmpty()) {
-            throw new JavaCommanderException(new IllegalArgumentException("'args' should not be null or empty"));
-        } else {
-            // Execute each token list in sequence.
-            for (List<String> tokens : args) {
-                this.execute(tokens);
-            }
+    public void executeSequence(@NonNull Collection<List<String>> args) throws JavaCommanderException {
+        for (var tokens : args) {
+            this.execute(tokens);
         }
     }
 
@@ -74,57 +63,49 @@ public class JavaCommander {
      * @param args The list of argument tokens.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void execute(List<String> args) throws JavaCommanderException {
-        try {
-            // Verify argument list.
-            if (args == null || args.isEmpty()) {
-                throw new IllegalArgumentException("'args' should not be null or empty");
-            }
-
-            // Retrieve correct command.
-            var commandOpt = jcRegistry.getCommand(args.get(0));
-            if (!commandOpt.isPresent()) {
-                throw new UnknownCommandException(args.get(0));
-            }
-            var command = commandOpt.get();
-
-            // Arguments to be passed to the Method.invoke function.
-            Object[] finalArgs = new Object[command.numberOfOptions()];
-
-            // If there's arguments left to parse to options, let's parse them.
-            if (args.size() > 1) {
-
-                // If the first argument is a valid option, use explicit parsing.
-                // Otherwise, use implicit parsing.
-                if (command.hasOption(args.get(1))) {
-                    parseArgumentsExplicit(finalArgs, args, command);
-                } else {
-                    parseArgumentsImplicit(finalArgs, args, command);
-                }
-            }
-
-            // For each entry in finalArgs that is still null, check whether there
-            // is a default value. If there is, use that. Else, throw an error.
-            for (int i = 0; i < finalArgs.length; i++) {
-                Object val = finalArgs[i];
-
-                if (val == null) {
-                    var option = command.getOptionByIndex(i).get();
-
-                    if (option.hasDefaultValue) {
-                        finalArgs[i] = option.defaultValue;
-                    } else {
-                        throw new NoValueForOptionException(command, option);
-                    }
-                }
-            }
-            // Finally, invoke the method on the object
-            command.invoke(finalArgs);
-        } catch (UnknownCommandException | UnknownOptionException | OptionValueParserException
-                | NoValueForOptionException | CommandInvocationException | IllegalArgumentException ex) {
-            log.error("An error occured while executing the command", ex);
-            throw new JavaCommanderException(ex);
+    public void execute(@NonNull List<String> args) throws JavaCommanderException {
+        if (args.isEmpty()) {
+            throw new IllegalArgumentException("'args' should not be null or empty");
         }
+
+        // Retrieve correct command.
+        var commandOpt = jcRegistry.getCommand(args.get(0));
+        if (!commandOpt.isPresent()) {
+            throw new UnknownCommandException(args.get(0));
+        }
+        var command = commandOpt.get();
+
+        // Arguments to be passed to the Method.invoke function.
+        Object[] finalArgs = new Object[command.numberOfOptions()];
+
+        // If there's arguments left to parse to options, let's parse them.
+        if (args.size() > 1) {
+
+            // If the first argument is a valid option, use explicit parsing.
+            // Otherwise, use implicit parsing.
+            if (command.hasOption(args.get(1))) {
+                parseArgumentsExplicit(finalArgs, args, command);
+            } else {
+                parseArgumentsImplicit(finalArgs, args, command);
+            }
+        }
+
+        // For each entry in finalArgs that is still null, check whether there
+        // is a default value. If there is, use that. Else, throw an error.
+        for (int i = 0; i < finalArgs.length; i++) {
+            Object val = finalArgs[i];
+
+            if (val == null) {
+                var option = command.getOptionByIndex(i).get();
+
+                if (option.isHasDefaultValue()) {
+                    finalArgs[i] = option.getDefaultValue();
+                } else {
+                    throw new NoValueForOptionException(command, option);
+                }
+            }
+        }
+        command.invoke(finalArgs);
     }
 
     /**
@@ -133,13 +114,8 @@ public class JavaCommander {
      * @param object The object containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void registerObject(Object object) throws JavaCommanderException {
-        try {
-            jcRegistry.registerObject(object);
-        } catch (OptionAnnotationException | OptionValueParserException | IllegalArgumentException ex) {
-            log.error("An error occured while registering an object", ex);
-            throw new JavaCommanderException(ex);
-        }
+    public void registerObject(@NonNull Object object) throws JavaCommanderException {
+        jcRegistry.registerObject(object);
     }
 
     /**
@@ -148,13 +124,8 @@ public class JavaCommander {
      * @param clazz The class containing annotated methods.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void registerClass(Class<?> clazz) throws JavaCommanderException {
-        try {
-            jcRegistry.registerClass(clazz);
-        } catch (OptionAnnotationException | OptionValueParserException | IllegalArgumentException ex) {
-            log.error("An error occured while registering a class", ex);
-            throw new JavaCommanderException(ex);
-        }
+    public void registerClass(@NonNull Class<?> clazz) throws JavaCommanderException {
+        jcRegistry.registerClass(clazz);
     }
 
     /**
@@ -162,7 +133,7 @@ public class JavaCommander {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public void unregisterObject(Object object) {
+    public void unregisterObject(@NonNull Object object) {
         jcRegistry.unregisterObject(object);
     }
 
@@ -171,7 +142,7 @@ public class JavaCommander {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public void unregisterClass(Class<?> clazz) {
+    public void unregisterClass(@NonNull Class<?> clazz) {
         jcRegistry.unregisterClass(clazz);
     }
 
@@ -182,10 +153,10 @@ public class JavaCommander {
      * @param finalArgs The parsed list of arguments, to be filled by this function.
      * @param args      The argument tokens to parse.
      * @param command   The command to parse the tokens for.
-     * @throws OptionValueParserException If an argument token could not be parsed to
-     *                                   its corresponding parameter type.
-     * @throws IllegalArgumentException  If args contains more argument tokens than
-     *                                   should be parsed.
+     * @throws OptionValueParserException If an argument token could not be parsed
+     *                                    to its corresponding parameter type.
+     * @throws IllegalArgumentException   If args contains more argument tokens than
+     *                                    should be parsed.
      */
     private static void parseArgumentsImplicit(Object[] finalArgs, List<String> args,
             JcCommand command) throws OptionValueParserException {
@@ -211,12 +182,12 @@ public class JavaCommander {
      * @param finalArgs The parsed list of arguments, to be filled by this function.
      * @param args      The argument tokens to parse.
      * @param command   The command to parse the tokens for.
-     * @throws UnknownOptionException    If an option was supplied for the command
-     *                                   that it does not have.
-     * @throws NoValueForOptionException If an option without a default value was
-     *                                   not supplied a value.
-     * @throws OptionValueParserException If an argument token could not be parsed to
-     *                                   its corresponding parameter type.
+     * @throws UnknownOptionException     If an option was supplied for the command
+     *                                    that it does not have.
+     * @throws NoValueForOptionException  If an option without a default value was
+     *                                    not supplied a value.
+     * @throws OptionValueParserException If an argument token could not be parsed
+     *                                    to its corresponding parameter type.
      */
     private static void parseArgumentsExplicit(Object[] finalArgs, List<String> args, JcCommand command)
             throws UnknownOptionException, OptionValueParserException, NoValueForOptionException {

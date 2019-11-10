@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander.optionvalueparser;
 
+import lombok.NonNull;
+
 /**
  * Interface that can be implemented to parse string inputs for a command option
  * to the type of the underlying method parameter.
@@ -15,7 +17,7 @@ public interface OptionValueParser<T> {
      * @param stringToParse The string to parse.
      * @return The string parsed to a value of type T.
      */
-    public T parse(String stringToParse);
+    public T parse(@NonNull String stringToParse);
 
     /**
      * Parses a string to a type. If the type is a primitive or a boxed primitive,
@@ -29,7 +31,7 @@ public interface OptionValueParser<T> {
      * @return The string parsed to a value of type V.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T defaultParse(String stringToParse, Class<T> type)
+    public static <T> T defaultParse(@NonNull String stringToParse, @NonNull Class<T> type)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
 
         if (type.equals(String.class)) {

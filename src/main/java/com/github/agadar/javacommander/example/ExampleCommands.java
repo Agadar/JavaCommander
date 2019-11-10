@@ -61,7 +61,7 @@ public class ExampleCommands {
                     stringBuilder.append(command.getNameByIndex(i));
                 }
                 stringBuilder.append("\t\t");
-                stringBuilder.append(command.hasDescription() ? command.description : "No description available.");
+                stringBuilder.append(command.hasDescription() ? command.getDescription() : "No description available.");
             });
         } // Else if a command name is given, then list info specific to that command
         else {
@@ -77,8 +77,8 @@ public class ExampleCommands {
 
             // Build string
             stringBuilder.append("Description:\n");
-            stringBuilder
-                    .append(command.get().hasDescription() ? command.get().description : "No description available.");
+            stringBuilder.append(command.get().hasDescription() ? command.get().getDescription()
+                    : "No description available.");
             stringBuilder.append("\n\n");
 
             // If there are synonyms, then list them.
@@ -110,7 +110,8 @@ public class ExampleCommands {
     /**
      * Appends a string representation of a JcCommandOption to a StringBuilder.
      *
-     * @param jcOption      The JcCommandOption to append a string representation of.
+     * @param jcOption      The JcCommandOption to append a string representation
+     *                      of.
      * @param stringBuilder The StringBuilder to append it to.
      */
     protected void optionToString(JcCommandOption<?> jcOption, StringBuilder stringBuilder) {
@@ -122,7 +123,7 @@ public class ExampleCommands {
             stringBuilder.append(jcOption.getNameByIndex(i));
         }
         stringBuilder.append("\t\t");
-        stringBuilder.append(jcOption.description);
+        stringBuilder.append(jcOption.getDescription());
     }
 
     /**

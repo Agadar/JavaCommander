@@ -8,6 +8,7 @@ import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
 import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,18 +40,21 @@ public class JcCommandOption<T> {
     /**
      * A description of the option.
      */
-    public final String description;
+    @Getter
+    private final String description;
 
     /**
      * Whether or not this option has a default value.
      */
-    public final boolean hasDefaultValue;
+    @Getter
+    private final boolean hasDefaultValue;
 
     /**
      * This option's default value. If 'hasDefaultValue' is set to false, then this
      * value is ignored and set to null.
      */
-    public final T defaultValue;
+    @Getter
+    private final T defaultValue;
 
     /**
      * Constructor.

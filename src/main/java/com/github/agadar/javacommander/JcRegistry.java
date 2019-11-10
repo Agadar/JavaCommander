@@ -1,11 +1,11 @@
 package com.github.agadar.javacommander;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import com.github.agadar.javacommander.annotation.parser.CommandAnnotationParser;
 import com.github.agadar.javacommander.exception.OptionAnnotationException;
@@ -38,7 +38,7 @@ public class JcRegistry {
         this(new CommandAnnotationParser());
     }
 
-    public JcRegistry(CommandAnnotationParser commandAnnotationParser) {
+    public JcRegistry(@NonNull CommandAnnotationParser commandAnnotationParser) {
         this.commandAnnotationParser = commandAnnotationParser;
     }
 
@@ -77,25 +77,15 @@ public class JcRegistry {
      *
      * @param object The object whose annotated methods to unregister.
      */
-    public void unregisterObject(Object object) {
-        if (object == null) {
-            return;
-        }
+    public void unregisterObject(@NonNull Object object) {
 
-        // Keys which are to be removed from the maps
-        var keysToRemove = new ArrayList<String>();
-
-        // Collect keys to remove from commandToPrimaryName
-        primaryNamesToCommands.entrySet().stream()
+        var keysToRemove = primaryNamesToCommands.entrySet().stream()
                 .filter((entry) -> (entry.getValue().isMyObject(object)))
-                .forEach((entry) -> {
-                    keysToRemove.add(entry.getKey());
-                });
+                .map(entry -> entry.getKey())
+                .collect(Collectors.toList());
 
-        // For each iteration, remove the key from commandToPrimaryName and use
-        // its synonyms to remove keys from commandToAllNames
         keysToRemove.stream()
-                .map((s) -> primaryNamesToCommands.remove(s))
+                .map((key) -> primaryNamesToCommands.remove(key))
                 .forEach((command) -> {
                     for (int i = 0; i < command.numberOfNames(); i++) {
                         allNamesToCommands.remove(command.getNameByIndex(i));
@@ -108,7 +98,7 @@ public class JcRegistry {
      *
      * @param clazz The class whose annotated methods to unregister.
      */
-    public void unregisterClass(Class<?> clazz) {
+    public void unregisterClass(@NonNull Class<?> clazz) {
         unregisterObject(clazz);
     }
 
@@ -118,7 +108,7 @@ public class JcRegistry {
      * @param commandName The name of the command to find.
      * @return An Optional containing the command - or not.
      */
-    public Optional<JcCommand> getCommand(String commandName) {
+    public Optional<JcCommand> getCommand(@NonNull String commandName) {
         var jcCommand = allNamesToCommands.get(commandName);
         return jcCommand != null ? Optional.of(jcCommand) : Optional.empty();
     }
@@ -138,15 +128,10 @@ public class JcRegistry {
      * @param commandName The command name to check.
      * @return Whether the command name is known by this registry.
      */
-    public boolean hasCommand(String commandName) {
+    public boolean hasCommand(@NonNull String commandName) {
         return allNamesToCommands.containsKey(commandName);
     }
 
-    /**
-     * Registers the given commands.
-     *
-     * @param jcCommands The commands to register.
-     */
     private void registerCommands(Collection<JcCommand> jcCommands) {
         for (var jcCommand : jcCommands) {
             for (int i = 0; i < jcCommand.numberOfNames(); i++) {

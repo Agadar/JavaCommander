@@ -205,34 +205,34 @@ public class JcRegistryTest {
         assertEquals(2, barCommand.numberOfNames());
         assertEquals("Bar", barCommand.getNameByIndex(0));
         assertEquals("bar", barCommand.getNameByIndex(1));
-        assertEquals("barDescription", barCommand.description);
+        assertEquals("barDescription", barCommand.getDescription());
         assertEquals(0, barCommand.numberOfOptions());
         assertTrue(barCommand.isMyObject(foo));
 
         assertEquals(2, barWithParamsCommand.numberOfNames());
         assertEquals("BarWithParams", barWithParamsCommand.getNameByIndex(0));
         assertEquals("barWithParams", barWithParamsCommand.getNameByIndex(1));
-        assertEquals("barWithParamsDescription", barWithParamsCommand.description);
+        assertEquals("barWithParamsDescription", barWithParamsCommand.getDescription());
         assertEquals(3, barWithParamsCommand.numberOfOptions());
         assertTrue(barWithParamsCommand.isMyObject(foo));
 
         assertEquals(2, barWithDefaultParamsCommand.numberOfNames());
         assertEquals("BarWithDefaultParams", barWithDefaultParamsCommand.getNameByIndex(0));
         assertEquals("barWithDefaultParams", barWithDefaultParamsCommand.getNameByIndex(1));
-        assertEquals("barWithDefaultParamsDescription", barWithDefaultParamsCommand.description);
+        assertEquals("barWithDefaultParamsDescription", barWithDefaultParamsCommand.getDescription());
         assertEquals(3, barWithDefaultParamsCommand.numberOfOptions());
         assertTrue(barWithDefaultParamsCommand.isMyObject(foo));
 
         assertEquals(2, barWithBazParamCommand.numberOfNames());
         assertEquals("BarWithBazParam", barWithBazParamCommand.getNameByIndex(0));
         assertEquals("barWithBazParam", barWithBazParamCommand.getNameByIndex(1));
-        assertEquals("barWithBazParamDescription", barWithBazParamCommand.description);
+        assertEquals("barWithBazParamDescription", barWithBazParamCommand.getDescription());
         assertEquals(1, barWithBazParamCommand.numberOfOptions());
         assertTrue(barWithBazParamCommand.isMyObject(foo));
 
         assertEquals(1, barNamelessCommand.numberOfNames());
         assertEquals("barNameless", barNamelessCommand.getNameByIndex(0));
-        assertEquals("barNamelessDescription", barNamelessCommand.description);
+        assertEquals("barNamelessDescription", barNamelessCommand.getDescription());
         assertEquals(1, barNamelessCommand.numberOfOptions());
         assertTrue(barNamelessCommand.isMyObject(foo));
 
@@ -275,65 +275,65 @@ public class JcRegistryTest {
         assertEquals(2, stringOption.numberOfNames());
         assertEquals("StringParam", stringOption.getNameByIndex(0));
         assertEquals("stringParam", stringOption.getNameByIndex(1));
-        assertEquals("stringParamDescription", stringOption.description);
+        assertEquals("stringParamDescription", stringOption.getDescription());
         assertFalse(stringOption.hasValueParser());
-        assertFalse(stringOption.hasDefaultValue);
-        assertNull(stringOption.defaultValue);
+        assertFalse(stringOption.isHasDefaultValue());
+        assertNull(stringOption.getDefaultValue());
 
         assertEquals(2, intOption.numberOfNames());
         assertEquals("IntParam", intOption.getNameByIndex(0));
         assertEquals("intParam", intOption.getNameByIndex(1));
-        assertEquals("intParamDescription", intOption.description);
+        assertEquals("intParamDescription", intOption.getDescription());
         assertFalse(intOption.hasValueParser());
-        assertFalse(intOption.hasDefaultValue);
-        assertNull(intOption.defaultValue);
+        assertFalse(intOption.isHasDefaultValue());
+        assertNull(intOption.getDefaultValue());
 
         assertEquals(2, boolOption.numberOfNames());
         assertEquals("BoolParam", boolOption.getNameByIndex(0));
         assertEquals("boolParam", boolOption.getNameByIndex(1));
-        assertEquals("boolParamDescription", boolOption.description);
+        assertEquals("boolParamDescription", boolOption.getDescription());
         assertFalse(boolOption.hasValueParser());
-        assertFalse(boolOption.hasDefaultValue);
-        assertNull(boolOption.defaultValue);
+        assertFalse(boolOption.isHasDefaultValue());
+        assertNull(boolOption.getDefaultValue());
 
         assertEquals(2, stringDefaultOption.numberOfNames());
         assertEquals("StringDefaultParam", stringDefaultOption.getNameByIndex(0));
         assertEquals("stringDefaultParam", stringDefaultOption.getNameByIndex(1));
-        assertEquals("stringDefaultParamDescription", stringDefaultOption.description);
+        assertEquals("stringDefaultParamDescription", stringDefaultOption.getDescription());
         assertFalse(stringDefaultOption.hasValueParser());
-        assertTrue(stringDefaultOption.hasDefaultValue);
-        assertEquals("defaultString", stringDefaultOption.defaultValue);
+        assertTrue(stringDefaultOption.isHasDefaultValue());
+        assertEquals("defaultString", stringDefaultOption.getDefaultValue());
 
         assertEquals(2, intDefaultOption.numberOfNames());
         assertEquals("IntDefaultParam", intDefaultOption.getNameByIndex(0));
         assertEquals("intDefaultParam", intDefaultOption.getNameByIndex(1));
-        assertEquals("intDefaultParamDescription", intDefaultOption.description);
+        assertEquals("intDefaultParamDescription", intDefaultOption.getDescription());
         assertFalse(intDefaultOption.hasValueParser());
-        assertTrue(intDefaultOption.hasDefaultValue);
-        assertEquals(15, (int) intDefaultOption.defaultValue);
+        assertTrue(intDefaultOption.isHasDefaultValue());
+        assertEquals(15, (int) intDefaultOption.getDefaultValue());
 
         assertEquals(2, boolDefaultOption.numberOfNames());
         assertEquals("BoolDefaultParam", boolDefaultOption.getNameByIndex(0));
         assertEquals("boolDefaultParam", boolDefaultOption.getNameByIndex(1));
-        assertEquals("boolDefaultParamDescription", boolDefaultOption.description);
+        assertEquals("boolDefaultParamDescription", boolDefaultOption.getDescription());
         assertFalse(boolDefaultOption.hasValueParser());
-        assertTrue(boolDefaultOption.hasDefaultValue);
-        assertEquals(true, boolDefaultOption.defaultValue);
+        assertTrue(boolDefaultOption.isHasDefaultValue());
+        assertEquals(true, boolDefaultOption.getDefaultValue());
 
         assertEquals(2, bazOption.numberOfNames());
         assertEquals("BazParam", bazOption.getNameByIndex(0));
         assertEquals("bazParam", bazOption.getNameByIndex(1));
-        assertEquals("bazParamDescription", bazOption.description);
+        assertEquals("bazParamDescription", bazOption.getDescription());
         assertTrue(bazOption.hasValueParser());
-        assertTrue(bazOption.hasDefaultValue);
-        assertEquals(new DataClass("defaultBaz"), bazOption.defaultValue);
+        assertTrue(bazOption.isHasDefaultValue());
+        assertEquals(new DataClass("defaultBaz"), bazOption.getDefaultValue());
 
         assertEquals(1, namelessOption.numberOfNames());
         assertEquals("arg0", namelessOption.getNameByIndex(0));
-        assertEquals("barNamelessParamDescription", namelessOption.description);
+        assertEquals("barNamelessParamDescription", namelessOption.getDescription());
         assertFalse(namelessOption.hasValueParser());
-        assertFalse(namelessOption.hasDefaultValue);
-        assertNull(namelessOption.defaultValue);
+        assertFalse(namelessOption.isHasDefaultValue());
+        assertNull(namelessOption.getDefaultValue());
     }
 
     /**
@@ -368,7 +368,7 @@ public class JcRegistryTest {
         assertEquals(2, barStaticCommand.numberOfNames());
         assertEquals("BarStatic", barStaticCommand.getNameByIndex(0));
         assertEquals("barStatic", barStaticCommand.getNameByIndex(1));
-        assertEquals("barStaticDescription", barStaticCommand.description);
+        assertEquals("barStaticDescription", barStaticCommand.getDescription());
         assertEquals(0, barStaticCommand.numberOfOptions());
         assertTrue(barStaticCommand.isMyObject(AnnotatedClass.class));
     }
