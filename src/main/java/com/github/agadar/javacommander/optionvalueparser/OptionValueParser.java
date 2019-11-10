@@ -31,7 +31,7 @@ public interface OptionValueParser<T> {
      * @return The string parsed to a value of type V.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T defaultParse(@NonNull String stringToParse, @NonNull Class<T> type)
+    static <T> T defaultParse(@NonNull String stringToParse, @NonNull Class<T> type)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
 
         if (type.equals(String.class)) {

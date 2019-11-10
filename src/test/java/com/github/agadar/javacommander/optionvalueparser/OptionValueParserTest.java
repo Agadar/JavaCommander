@@ -17,7 +17,7 @@ public class OptionValueParserTest {
      * Test of static parseString function, of interface OptionValueParser.
      */
     @Test
-    public void testParseString() {
+    public void testDefaultParse() {
 
         // String
         assertEquals("string", OptionValueParser.defaultParse("string", String.class));
