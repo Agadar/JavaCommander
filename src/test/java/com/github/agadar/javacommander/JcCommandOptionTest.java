@@ -2,7 +2,7 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.example.IntArrayOptionValueParser;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
-import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.testclass.DataClassOptionValueParser;
 
@@ -26,8 +26,8 @@ public final class JcCommandOptionTest {
     @Test
     public void testGetPrimaryName() throws OptionValueParserException {
         System.out.println("getPrimaryName");
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
         assertEquals("one", instance.getPrimaryName());
     }
 
@@ -41,19 +41,19 @@ public final class JcCommandOptionTest {
         System.out.println("hasDescription");
 
         // Test true.
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
         assertTrue(instance.hasDescription());
 
         // Test false with null.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), null, false, String.class,
+        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), null, Void.class,
                 "defaultValue",
-                NoOpOptionValueParser.class);
+                NullOptionValueParser.class);
         assertFalse(instance.hasDescription());
 
         // Test false with empty.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "", false, String.class, "defaultValue",
-                NoOpOptionValueParser.class);
+        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "", Void.class, "defaultValue",
+                NullOptionValueParser.class);
         assertFalse(instance.hasDescription());
     }
 
@@ -67,20 +67,19 @@ public final class JcCommandOptionTest {
         System.out.println("hasValueParser");
 
         // Test false with null.
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
+        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", String.class,
                 "defaultValue", null);
         assertFalse(instance.hasValueParser());
 
         // Test false with NoOpOptionValueParser.class.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        assertFalse(instance.hasValueParser());
+        var instance2 = new JcCommandOption<Void>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        assertFalse(instance2.hasValueParser());
 
         // Test true.
-        var instance2 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false,
-                DataClass.class,
+        var instance3 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", DataClass.class,
                 "defaultValue", DataClassOptionValueParser.class);
-        assertTrue(instance2.hasValueParser());
+        assertTrue(instance3.hasValueParser());
     }
 
     /**
@@ -93,15 +92,13 @@ public final class JcCommandOptionTest {
         System.out.println("hashCode");
 
         // True result.
-        var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", false,
-                String.class, "defaultValue", null);
-        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", true, Integer.class, "10",
-                null);
+        var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", String.class,
+                "defaultValue", null);
+        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", Integer.class, "10", null);
         assertEquals(instance1.hashCode(), instance2.hashCode());
 
         // False result.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", true, Integer.class, "10",
-                null);
+        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", Integer.class, "10", null);
         assertNotEquals(instance1.hashCode(), instance3.hashCode());
     }
 
@@ -115,15 +112,13 @@ public final class JcCommandOptionTest {
         System.out.println("equals");
 
         // True result.
-        var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", false,
-                String.class, "defaultValue", null);
-        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", true, Integer.class, "10",
-                null);
+        var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", String.class,
+                "defaultValue", null);
+        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", Integer.class, "10", null);
         assertEquals(instance1, instance2);
 
         // False result.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", true, Integer.class, "10",
-                null);
+        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", Integer.class, "10", null);
         assertNotEquals(instance1, instance3);
     }
 
@@ -137,18 +132,18 @@ public final class JcCommandOptionTest {
         System.out.println("parseOptionValue");
 
         // Test primitive option, that has no parser.
-        var instance1 = new JcCommandOption<Integer>(Arrays.asList("one", "two", "three"), "description1", false,
-                int.class, null, null);
+        var instance1 = new JcCommandOption<Integer>(Arrays.asList("one", "two", "three"), "description1", int.class,
+                null, null);
         assertEquals(Integer.valueOf(15), instance1.parseOptionValue("15"));
 
         // Test primitive option, that has a parse.
-        var instance2 = new JcCommandOption<int[]>(Arrays.asList("one", "two", "three"), "description2", false,
-                int[].class, null, IntArrayOptionValueParser.class);
+        var instance2 = new JcCommandOption<int[]>(Arrays.asList("one", "two", "three"), "description2", int[].class,
+                null, IntArrayOptionValueParser.class);
         assertArrayEquals(new int[] { 15, 10, 5 }, instance2.parseOptionValue("15,10,5"));
 
         // Test object option, that has a parser.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description3", false,
-                DataClass.class, null, DataClassOptionValueParser.class);
+        var instance3 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description3", DataClass.class,
+                null, DataClassOptionValueParser.class);
         assertEquals(new DataClass("dataClassString"), instance3.parseOptionValue("dataClassString"));
     }
 }

@@ -277,7 +277,6 @@ public class JcRegistryTest {
         assertEquals("stringParam", stringOption.getNames().get(1));
         assertEquals("stringParamDescription", stringOption.getDescription());
         assertFalse(stringOption.hasValueParser());
-        assertFalse(stringOption.isHasDefaultValue());
         assertNull(stringOption.getDefaultValue());
 
         assertEquals(2, intOption.getNames().size());
@@ -285,7 +284,6 @@ public class JcRegistryTest {
         assertEquals("intParam", intOption.getNames().get(1));
         assertEquals("intParamDescription", intOption.getDescription());
         assertFalse(intOption.hasValueParser());
-        assertFalse(intOption.isHasDefaultValue());
         assertNull(intOption.getDefaultValue());
 
         assertEquals(2, boolOption.getNames().size());
@@ -293,7 +291,6 @@ public class JcRegistryTest {
         assertEquals("boolParam", boolOption.getNames().get(1));
         assertEquals("boolParamDescription", boolOption.getDescription());
         assertFalse(boolOption.hasValueParser());
-        assertFalse(boolOption.isHasDefaultValue());
         assertNull(boolOption.getDefaultValue());
 
         assertEquals(2, stringDefaultOption.getNames().size());
@@ -301,7 +298,6 @@ public class JcRegistryTest {
         assertEquals("stringDefaultParam", stringDefaultOption.getNames().get(1));
         assertEquals("stringDefaultParamDescription", stringDefaultOption.getDescription());
         assertFalse(stringDefaultOption.hasValueParser());
-        assertTrue(stringDefaultOption.isHasDefaultValue());
         assertEquals("defaultString", stringDefaultOption.getDefaultValue());
 
         assertEquals(2, intDefaultOption.getNames().size());
@@ -309,7 +305,6 @@ public class JcRegistryTest {
         assertEquals("intDefaultParam", intDefaultOption.getNames().get(1));
         assertEquals("intDefaultParamDescription", intDefaultOption.getDescription());
         assertFalse(intDefaultOption.hasValueParser());
-        assertTrue(intDefaultOption.isHasDefaultValue());
         assertEquals(15, (int) intDefaultOption.getDefaultValue());
 
         assertEquals(2, boolDefaultOption.getNames().size());
@@ -317,7 +312,6 @@ public class JcRegistryTest {
         assertEquals("boolDefaultParam", boolDefaultOption.getNames().get(1));
         assertEquals("boolDefaultParamDescription", boolDefaultOption.getDescription());
         assertFalse(boolDefaultOption.hasValueParser());
-        assertTrue(boolDefaultOption.isHasDefaultValue());
         assertEquals(true, boolDefaultOption.getDefaultValue());
 
         assertEquals(2, bazOption.getNames().size());
@@ -325,14 +319,12 @@ public class JcRegistryTest {
         assertEquals("bazParam", bazOption.getNames().get(1));
         assertEquals("bazParamDescription", bazOption.getDescription());
         assertTrue(bazOption.hasValueParser());
-        assertTrue(bazOption.isHasDefaultValue());
         assertEquals(new DataClass("defaultBaz"), bazOption.getDefaultValue());
 
         assertEquals(1, namelessOption.getNames().size());
         assertEquals("arg0", namelessOption.getNames().get(0));
         assertEquals("barNamelessParamDescription", namelessOption.getDescription());
         assertFalse(namelessOption.hasValueParser());
-        assertFalse(namelessOption.isHasDefaultValue());
         assertNull(namelessOption.getDefaultValue());
     }
 

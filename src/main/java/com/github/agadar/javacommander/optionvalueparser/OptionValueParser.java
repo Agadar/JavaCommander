@@ -34,6 +34,10 @@ public interface OptionValueParser<T> {
     static <T> T defaultParse(@NonNull String stringToParse, @NonNull Class<T> type)
             throws NumberFormatException, IndexOutOfBoundsException, ClassCastException {
 
+        if (type.equals(Void.class)) {
+            return null;
+        }
+
         if (type.equals(String.class)) {
             return (T) stringToParse;
         }

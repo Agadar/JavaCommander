@@ -54,9 +54,10 @@ public class ArgumentsParser {
 
             if (val == null) {
                 var option = command.getOptionByIndex(i).get();
+                var defaultValue = option.getDefaultValue();
 
-                if (option.isHasDefaultValue()) {
-                    finalArgs[i] = option.getDefaultValue();
+                if (defaultValue != null) {
+                    finalArgs[i] = defaultValue;
                 } else {
                     throw new NoValueForOptionException(command, option);
                 }

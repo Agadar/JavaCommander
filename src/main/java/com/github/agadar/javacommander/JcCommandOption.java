@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.agadar.javacommander.exception.OptionValueParserException;
-import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
 import lombok.Getter;
@@ -45,14 +45,7 @@ public class JcCommandOption<T> {
     private final String description;
 
     /**
-     * Whether or not this option has a default value.
-     */
-    @Getter
-    private final boolean hasDefaultValue;
-
-    /**
-     * This option's default value. If 'hasDefaultValue' is set to false, then this
-     * value is ignored and set to null.
+     * This option's default value. If none was defined, then this is null.
      */
     @Getter
     private final T defaultValue;
@@ -63,12 +56,10 @@ public class JcCommandOption<T> {
      * @param names           Names of the option. The first entry is its primary
      *                        name. The other entries are synonyms.
      * @param description     A description of the option.
-     * @param hasDefaultValue Whether or not this option has a default value.
      * @param parameterType   The type of this option's underlying parameter.
-     * @param defaultValue    This option's default value. If 'hasDefaultValue' is
-     *                        set to false, then this value is ignored. It is parsed
-     *                        to the correct type using this instance's own parse
-     *                        method.
+     * @param defaultValue    This option's default value. It is parsed to the
+     *                        correct type using this instance's own parse method,
+     *                        unless it equals the empty string.
      * @param valueParserType The parser type used to parse a string to the option's
      *                        type.
      * @throws IllegalArgumentException   If one of the parameter values is invalid.
@@ -76,8 +67,8 @@ public class JcCommandOption<T> {
      *                                    default value if it has one, or when the
      *                                    parser itself failed to be instantiated.
      */
-    public JcCommandOption(@NonNull Collection<String> names, String description, boolean hasDefaultValue,
-            @NonNull Class<T> parameterType, String defaultValue, Class<? extends OptionValueParser<T>> valueParserType)
+    public JcCommandOption(@NonNull Collection<String> names, String description, @NonNull Class<T> parameterType,
+            String defaultValue, Class<? extends OptionValueParser<T>> valueParserType)
             throws OptionValueParserException, IllegalArgumentException {
 
         this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
@@ -86,10 +77,9 @@ public class JcCommandOption<T> {
             throw new IllegalArgumentException("'names' should not be empty");
         }
         this.description = (description == null) ? "" : description;
-        this.hasDefaultValue = hasDefaultValue;
         this.parameterType = parameterType;
         this.valueParserType = valueParserType;
-        this.defaultValue = this.hasDefaultValue ? parseOptionValue(defaultValue) : null;
+        this.defaultValue = determineDefaultValue(defaultValue);
     }
 
     /**
@@ -116,7 +106,7 @@ public class JcCommandOption<T> {
      * @return Whether this option has a parser set.
      */
     public boolean hasValueParser() {
-        return (valueParserType != null) ? (!valueParserType.equals(NoOpOptionValueParser.class)) : false;
+        return (valueParserType != null) ? (!valueParserType.equals(NullOptionValueParser.class)) : false;
     }
 
     @Override
@@ -151,7 +141,7 @@ public class JcCommandOption<T> {
      */
     public T parseOptionValue(String stringToParse) throws OptionValueParserException {
         try {
-            if (valueParserType == null || valueParserType.equals(NoOpOptionValueParser.class)) {
+            if (valueParserType == null || valueParserType.equals(NullOptionValueParser.class)) {
                 return OptionValueParser.defaultParse(stringToParse, parameterType);
             } else {
                 return valueParserType.getDeclaredConstructor().newInstance().parse(stringToParse);
@@ -169,5 +159,12 @@ public class JcCommandOption<T> {
             log.error(errorMsg, ex);
             throw new OptionValueParserException(errorMsg, ex);
         }
+    }
+
+    private T determineDefaultValue(String defaultValue) throws OptionValueParserException {
+        if (defaultValue == null || defaultValue.isEmpty()) {
+            return null;
+        }
+        return parseOptionValue(defaultValue);
     }
 }

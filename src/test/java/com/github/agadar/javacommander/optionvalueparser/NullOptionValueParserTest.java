@@ -2,17 +2,16 @@ package com.github.agadar.javacommander.optionvalueparser;
 
 import org.junit.Test;
 
-import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 
 import static org.junit.Assert.*;
 
 /**
- * Tests
- * com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser.
+ * Tests {@link NullOptionValueParser}.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class NoOpOptionValueParserTest {
+public class NullOptionValueParserTest {
 
     /**
      * Test of parse method, of class NoOpOptionValueParser.
@@ -20,6 +19,6 @@ public final class NoOpOptionValueParserTest {
     @Test
     public void testParse() {
         System.out.println("parse");
-        assertEquals("testString", new NoOpOptionValueParser().parse("testString"));
+        assertEquals(null, new NullOptionValueParser().parse("testString"));
     }
 }

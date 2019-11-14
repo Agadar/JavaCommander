@@ -94,13 +94,11 @@ public class OptionAnnotationParser {
     private JcCommandOption<?> parseOption(Option optionAnnotation, Parameter parameter)
             throws OptionValueParserException {
         var names = deriveOptionNames(optionAnnotation, parameter);
-        boolean hasDefaultValue = optionAnnotation.hasDefaultValue();
         String defaultValueStr = optionAnnotation.defaultValue();
         String description = optionAnnotation.description();
         var type = parameter.getType();
         var parserClass = optionAnnotation.valueParser();
-        return new JcCommandOption(Arrays.asList(names), description, hasDefaultValue, type, defaultValueStr,
-                parserClass);
+        return new JcCommandOption(Arrays.asList(names), description, type, defaultValueStr, parserClass);
     }
 
     private String[] deriveOptionNames(Option optionAnnotation, Parameter parameter) {

@@ -24,17 +24,17 @@ public class AnnotatedClass {
     @Command(names = { "BarWithDefaultParams",
             "barWithDefaultParams" }, description = "barWithDefaultParamsDescription", options = {
                     @Option(names = { "StringDefaultParam",
-                            "stringDefaultParam" }, description = "stringDefaultParamDescription", hasDefaultValue = true, defaultValue = "defaultString"),
+                            "stringDefaultParam" }, description = "stringDefaultParamDescription", defaultValue = "defaultString"),
                     @Option(names = { "IntDefaultParam",
-                            "intDefaultParam" }, description = "intDefaultParamDescription", hasDefaultValue = true, defaultValue = "15"),
+                            "intDefaultParam" }, description = "intDefaultParamDescription", defaultValue = "15"),
                     @Option(names = { "BoolDefaultParam",
-                            "boolDefaultParam" }, description = "boolDefaultParamDescription", hasDefaultValue = true, defaultValue = "true") })
+                            "boolDefaultParam" }, description = "boolDefaultParamDescription", defaultValue = "true") })
     public void barWithDefaultParams(String stringParam, int intParam, boolean boolParam) {
     }
 
     @Command(names = { "BarWithBazParam", "barWithBazParam" }, description = "barWithBazParamDescription", options = {
             @Option(names = { "BazParam",
-                    "bazParam" }, description = "bazParamDescription", hasDefaultValue = true, defaultValue = "defaultBaz", valueParser = DataClassOptionValueParser.class) })
+                    "bazParam" }, description = "bazParamDescription", defaultValue = "defaultBaz", valueParser = DataClassOptionValueParser.class) })
     public void barWithBazParam(DataClass baz) {
     }
 

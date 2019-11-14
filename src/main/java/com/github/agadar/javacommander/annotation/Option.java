@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
 /**
@@ -37,15 +37,8 @@ public @interface Option {
     String description() default "";
 
     /**
-     * Whether or not this option has a default value.
-     *
-     * @return Whether or not this option has a default value.
-     */
-    boolean hasDefaultValue() default false;
-
-    /**
-     * This option's default value. If 'hasDefaultValue' is set to false, then this
-     * value is ignored.
+     * This option's default value. If no default value is specified, then this
+     * option is required. Otherwise, it's optional.
      *
      * @return This option's default value.
      */
@@ -58,6 +51,6 @@ public @interface Option {
      *
      * @return this option's value parser type
      */
-    Class<? extends OptionValueParser<?>> valueParser() default NoOpOptionValueParser.class;
+    Class<? extends OptionValueParser<?>> valueParser() default NullOptionValueParser.class;
 
 }

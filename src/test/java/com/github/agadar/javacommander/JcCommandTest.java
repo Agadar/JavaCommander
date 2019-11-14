@@ -2,7 +2,7 @@ package com.github.agadar.javacommander;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
-import com.github.agadar.javacommander.optionvalueparser.NoOpOptionValueParser;
+import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
 
@@ -58,8 +58,8 @@ public final class JcCommandTest {
 
         // Test true.
         var jcOptions = new ArrayList<JcCommandOption<?>>();
-        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class));
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOptions());
@@ -123,16 +123,16 @@ public final class JcCommandTest {
 
         // Test true with primary name.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class));
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("one"));
 
         // test true with synonym.
         jcOptions = new ArrayList<>();
-        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class));
+        jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
@@ -147,12 +147,12 @@ public final class JcCommandTest {
     public void testGetOptionByIndex() throws OptionValueParserException {
         System.out.println("getOptionByIndex");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
@@ -181,12 +181,12 @@ public final class JcCommandTest {
     public void testGetOptionByName() throws OptionValueParserException {
         System.out.println("getOptionByName");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
 
         final ArrayList<JcCommandOption<?>> jcOptions = new ArrayList<>();
         jcOptions.add(jcOption1);
@@ -212,12 +212,12 @@ public final class JcCommandTest {
     public void testNumberOfOptions() throws OptionValueParserException {
         System.out.println("numberOfOptions");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
@@ -238,12 +238,12 @@ public final class JcCommandTest {
     public void testIndexOfOption() throws OptionValueParserException {
         System.out.println("indexOfOption");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", false, String.class,
-                "defaultValue", NoOpOptionValueParser.class);
+        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
+        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+                "defaultValue", NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);

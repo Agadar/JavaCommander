@@ -42,7 +42,7 @@ public class ExampleCommands {
      *                    null/empty.
      */
     @Command(names = { "help", "usage",
-            "?" }, description = "Display the help.", options = @Option(names = "-command", description = "Display a specific command's help.", hasDefaultValue = true))
+            "?" }, description = "Display the help.", options = @Option(names = "-command", description = "Display a specific command's help."))
     public void usage(String commandName) {
         var stringBuilder = new StringBuilder("--------------------\n");
 
