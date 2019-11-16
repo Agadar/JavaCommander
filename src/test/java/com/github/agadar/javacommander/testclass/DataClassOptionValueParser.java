@@ -7,7 +7,7 @@ import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class DataClassOptionValueParser implements OptionValueParser<DataClass> {
+public class DataClassOptionValueParser extends OptionValueParser<DataClass> {
 
     @Override
     public DataClass parse(String stringToParse) {

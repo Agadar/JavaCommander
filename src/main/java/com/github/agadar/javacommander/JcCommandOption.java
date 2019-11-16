@@ -139,20 +139,17 @@ public class JcCommandOption<T> {
      *                                    default value, or when the parser itself
      *                                    failed to be instantiated.
      */
-    public T parseOptionValue(String stringToParse) throws OptionValueParserException {
+    public T parseOptionValue(@NonNull String stringToParse) throws OptionValueParserException {
+        if (valueParserType == null || valueParserType.equals(NullOptionValueParser.class)) {
+            return OptionValueParser.parseToType(stringToParse, parameterType);
+        }
+        var parser = instantiateOptionValueParser();
+        return parser.parse(stringToParse);
+    }
+
+    private OptionValueParser<T> instantiateOptionValueParser() throws OptionValueParserException {
         try {
-            if (valueParserType == null || valueParserType.equals(NullOptionValueParser.class)) {
-                return OptionValueParser.defaultParse(stringToParse, parameterType);
-            } else {
-                return valueParserType.getDeclaredConstructor().newInstance().parse(stringToParse);
-            }
-
-        } catch (NumberFormatException | IndexOutOfBoundsException | ClassCastException ex) {
-            String errorMsg = String.format("Failed to parse String '%s' to type '%s'", stringToParse,
-                    parameterType.getSimpleName());
-            log.error(errorMsg, ex);
-            throw new OptionValueParserException(errorMsg, ex);
-
+            return valueParserType.getDeclaredConstructor().newInstance();
         } catch (Exception ex) {
             String errorMsg = String.format("Failed to instantiate option value parser '%s'",
                     valueParserType.getSimpleName());

@@ -6,7 +6,7 @@ package com.github.agadar.javacommander.optionvalueparser;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NullOptionValueParser implements OptionValueParser<Void> {
+public class NullOptionValueParser extends OptionValueParser<Void> {
 
     @Override
     public Void parse(String stringToParse) {

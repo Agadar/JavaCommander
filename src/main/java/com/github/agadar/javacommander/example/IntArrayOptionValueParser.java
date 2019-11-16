@@ -1,5 +1,6 @@
 package com.github.agadar.javacommander.example;
 
+import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
 
 /**
@@ -9,16 +10,16 @@ import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class IntArrayOptionValueParser implements OptionValueParser<int[]> {
+public class IntArrayOptionValueParser extends OptionValueParser<int[]> {
 
     @Override
-    public int[] parse(String stringToParse) {
+    public int[] parse(String stringToParse) throws OptionValueParserException {
         String[] splitOnCommas = stringToParse.split(",");
         int[] value = new int[splitOnCommas.length];
 
         for (int i = 0; i < splitOnCommas.length; i++) {
             splitOnCommas[i] = splitOnCommas[i].trim();
-            value[i] = OptionValueParser.defaultParse(splitOnCommas[i], int.class);
+            value[i] = OptionValueParser.parseToType(splitOnCommas[i], int.class);
         }
         return value;
     }
