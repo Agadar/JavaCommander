@@ -93,33 +93,6 @@ public class JcCommand {
     }
 
     /**
-     * Convenience method for checking whether this command has any options.
-     *
-     * @return Whether this command has any options.
-     */
-    public boolean hasOptions() {
-        return options.size() > 0;
-    }
-
-    /**
-     * Convenience method for checking whether this command has any synonyms.
-     *
-     * @return whether this command has any synonyms
-     */
-    public boolean hasSynonyms() {
-        return names.size() > 1;
-    }
-
-    /**
-     * Convenience method for checking whether this command has a description.
-     *
-     * @return Whether this command has a description.
-     */
-    public boolean hasDescription() {
-        return !description.isEmpty();
-    }
-
-    /**
      * Returns whether this command has an option with the specified name.
      *
      * @param optionName The option name to check.

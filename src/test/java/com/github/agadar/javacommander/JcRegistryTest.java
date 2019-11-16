@@ -276,55 +276,47 @@ public class JcRegistryTest {
         assertEquals("StringParam", stringOption.getNames().get(0));
         assertEquals("stringParam", stringOption.getNames().get(1));
         assertEquals("stringParamDescription", stringOption.getDescription());
-        assertFalse(stringOption.hasValueParser());
         assertNull(stringOption.getDefaultValue());
 
         assertEquals(2, intOption.getNames().size());
         assertEquals("IntParam", intOption.getNames().get(0));
         assertEquals("intParam", intOption.getNames().get(1));
         assertEquals("intParamDescription", intOption.getDescription());
-        assertFalse(intOption.hasValueParser());
         assertNull(intOption.getDefaultValue());
 
         assertEquals(2, boolOption.getNames().size());
         assertEquals("BoolParam", boolOption.getNames().get(0));
         assertEquals("boolParam", boolOption.getNames().get(1));
         assertEquals("boolParamDescription", boolOption.getDescription());
-        assertFalse(boolOption.hasValueParser());
         assertNull(boolOption.getDefaultValue());
 
         assertEquals(2, stringDefaultOption.getNames().size());
         assertEquals("StringDefaultParam", stringDefaultOption.getNames().get(0));
         assertEquals("stringDefaultParam", stringDefaultOption.getNames().get(1));
         assertEquals("stringDefaultParamDescription", stringDefaultOption.getDescription());
-        assertFalse(stringDefaultOption.hasValueParser());
         assertEquals("defaultString", stringDefaultOption.getDefaultValue());
 
         assertEquals(2, intDefaultOption.getNames().size());
         assertEquals("IntDefaultParam", intDefaultOption.getNames().get(0));
         assertEquals("intDefaultParam", intDefaultOption.getNames().get(1));
         assertEquals("intDefaultParamDescription", intDefaultOption.getDescription());
-        assertFalse(intDefaultOption.hasValueParser());
         assertEquals(15, (int) intDefaultOption.getDefaultValue());
 
         assertEquals(2, boolDefaultOption.getNames().size());
         assertEquals("BoolDefaultParam", boolDefaultOption.getNames().get(0));
         assertEquals("boolDefaultParam", boolDefaultOption.getNames().get(1));
         assertEquals("boolDefaultParamDescription", boolDefaultOption.getDescription());
-        assertFalse(boolDefaultOption.hasValueParser());
         assertEquals(true, boolDefaultOption.getDefaultValue());
 
         assertEquals(2, bazOption.getNames().size());
         assertEquals("BazParam", bazOption.getNames().get(0));
         assertEquals("bazParam", bazOption.getNames().get(1));
         assertEquals("bazParamDescription", bazOption.getDescription());
-        assertTrue(bazOption.hasValueParser());
         assertEquals(new DataClass("defaultBaz"), bazOption.getDefaultValue());
 
         assertEquals(1, namelessOption.getNames().size());
         assertEquals("arg0", namelessOption.getNames().get(0));
         assertEquals("barNamelessParamDescription", namelessOption.getDescription());
-        assertFalse(namelessOption.hasValueParser());
         assertNull(namelessOption.getDefaultValue());
     }
 

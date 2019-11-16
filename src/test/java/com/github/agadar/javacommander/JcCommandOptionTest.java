@@ -32,57 +32,6 @@ public final class JcCommandOptionTest {
     }
 
     /**
-     * Test of hasDescription method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
-     */
-    @Test
-    public void testHasDescription() throws OptionValueParserException {
-        System.out.println("hasDescription");
-
-        // Test true.
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
-        assertTrue(instance.hasDescription());
-
-        // Test false with null.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), null, Void.class,
-                "defaultValue",
-                NullOptionValueParser.class);
-        assertFalse(instance.hasDescription());
-
-        // Test false with empty.
-        instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "", Void.class, "defaultValue",
-                NullOptionValueParser.class);
-        assertFalse(instance.hasDescription());
-    }
-
-    /**
-     * Test of hasValueParser method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
-     */
-    @Test
-    public void testHasValueParser() throws OptionValueParserException {
-        System.out.println("hasValueParser");
-
-        // Test false with null.
-        var instance = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", String.class,
-                "defaultValue", null);
-        assertFalse(instance.hasValueParser());
-
-        // Test false with NoOpOptionValueParser.class.
-        var instance2 = new JcCommandOption<Void>(Arrays.asList("one", "two", "three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
-        assertFalse(instance2.hasValueParser());
-
-        // Test true.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", DataClass.class,
-                "defaultValue", DataClassOptionValueParser.class);
-        assertTrue(instance3.hasValueParser());
-    }
-
-    /**
      * Test of hashCode method, of class JcCommandOption.
      *
      * @throws com.github.agadar.javacommander.exception.OptionValueParserException

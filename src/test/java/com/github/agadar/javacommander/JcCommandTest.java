@@ -54,7 +54,7 @@ public final class JcCommandTest {
         // Test false.
         JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(),
                 methodToInvokeOn, objectToInvokeOn);
-        assertFalse(jcCommand.hasOptions());
+        assertEquals(0, jcCommand.numberOfOptions());
 
         // Test true.
         var jcOptions = new ArrayList<JcCommandOption<?>>();
@@ -62,25 +62,7 @@ public final class JcCommandTest {
                 "defaultValue", NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
-        assertTrue(jcCommand.hasOptions());
-    }
-
-    /**
-     * Test of hasSynonyms method, of class JcCommand.
-     */
-    @Test
-    public void testHasSynonyms() {
-        System.out.println("hasSynonyms");
-
-        // Test false.
-        JcCommand jcCommand = new JcCommand(Arrays.asList("one"), "description", new ArrayList<>(), methodToInvokeOn,
-                objectToInvokeOn);
-        assertFalse(jcCommand.hasSynonyms());
-
-        // Test true.
-        jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(),
-                methodToInvokeOn, objectToInvokeOn);
-        assertTrue(jcCommand.hasSynonyms());
+        assertEquals(1, jcCommand.numberOfOptions());
     }
 
     /**
@@ -93,17 +75,17 @@ public final class JcCommandTest {
         // Test false with null.
         JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), null, new ArrayList<>(),
                 methodToInvokeOn, objectToInvokeOn);
-        assertFalse(jcCommand.hasDescription());
+        assertTrue(jcCommand.getDescription().isEmpty());
 
         // Test false with empty.
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "", new ArrayList<>(), methodToInvokeOn,
                 objectToInvokeOn);
-        assertFalse(jcCommand.hasDescription());
+        assertTrue(jcCommand.getDescription().isEmpty());
 
         // Test true.
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", new ArrayList<>(),
                 methodToInvokeOn, objectToInvokeOn);
-        assertTrue(jcCommand.hasDescription());
+        assertFalse(jcCommand.getDescription().isEmpty());
     }
 
     /**

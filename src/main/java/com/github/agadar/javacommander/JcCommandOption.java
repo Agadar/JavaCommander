@@ -91,24 +91,6 @@ public class JcCommandOption<T> {
         return names.get(0);
     }
 
-    /**
-     * Convenience method for checking whether this option has a description set.
-     *
-     * @return Whether this option has a description set.
-     */
-    public boolean hasDescription() {
-        return !description.isEmpty();
-    }
-
-    /**
-     * Convenience method for checking whether this option has a parser set.
-     *
-     * @return Whether this option has a parser set.
-     */
-    public boolean hasValueParser() {
-        return (valueParserType != null) ? (!valueParserType.equals(NullOptionValueParser.class)) : false;
-    }
-
     @Override
     public int hashCode() {
         int hash = 7;

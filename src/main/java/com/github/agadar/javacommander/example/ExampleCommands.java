@@ -62,7 +62,8 @@ public class ExampleCommands {
                     stringBuilder.append(names.get(i));
                 }
                 stringBuilder.append("\t\t");
-                stringBuilder.append(command.hasDescription() ? command.getDescription() : "No description available.");
+                stringBuilder.append(
+                        !command.getDescription().isEmpty() ? command.getDescription() : "No description available.");
             });
         } // Else if a command name is given, then list info specific to that command
         else {
@@ -78,7 +79,7 @@ public class ExampleCommands {
 
             // Build string
             stringBuilder.append("Description:\n");
-            stringBuilder.append(command.get().hasDescription() ? command.get().getDescription()
+            stringBuilder.append(!command.get().getDescription().isEmpty() ? command.get().getDescription()
                     : "No description available.");
             stringBuilder.append("\n\n");
 
@@ -95,7 +96,7 @@ public class ExampleCommands {
 
             // If there are options, then list them.
             stringBuilder.append("Available options:");
-            if (command.get().hasOptions()) {
+            if (command.get().numberOfOptions() > 0) {
                 for (int i = 0; i < command.get().numberOfOptions(); i++) {
                     optionToString(command.get().getOptionByIndex(i).get(), stringBuilder);
                 }
