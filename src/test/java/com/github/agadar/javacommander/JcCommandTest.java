@@ -59,7 +59,7 @@ public final class JcCommandTest {
         // Test true.
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class));
+                "defaultValue", null, NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertEquals(1, jcCommand.numberOfOptions());
@@ -106,7 +106,7 @@ public final class JcCommandTest {
         // Test true with primary name.
         jcOptions = new ArrayList<>();
         jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class));
+                "defaultValue", null, NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("one"));
@@ -114,7 +114,7 @@ public final class JcCommandTest {
         // test true with synonym.
         jcOptions = new ArrayList<>();
         jcOptions.add(new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class));
+                "defaultValue", null, NullOptionValueParser.class));
         jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions, methodToInvokeOn,
                 objectToInvokeOn);
         assertTrue(jcCommand.hasOption("three"));
@@ -130,11 +130,11 @@ public final class JcCommandTest {
         System.out.println("getOptionByIndex");
 
         var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
@@ -164,11 +164,11 @@ public final class JcCommandTest {
         System.out.println("getOptionByName");
 
         var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
 
         final ArrayList<JcCommandOption<?>> jcOptions = new ArrayList<>();
         jcOptions.add(jcOption1);
@@ -195,11 +195,11 @@ public final class JcCommandTest {
         System.out.println("numberOfOptions");
 
         var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);
@@ -221,11 +221,11 @@ public final class JcCommandTest {
         System.out.println("indexOfOption");
 
         var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
         var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
-                "defaultValue", NullOptionValueParser.class);
+                "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
         jcOptions.add(jcOption1);

@@ -37,12 +37,20 @@ public @interface Option {
     String description() default "";
 
     /**
-     * This option's default value. If no default value is specified, then this
-     * option is required. Otherwise, it's optional.
+     * This option's default value. If this option is not given a value, then this
+     * value is used.
      *
      * @return This option's default value.
      */
     String defaultValue() default "";
+
+    /**
+     * This option's flag value. If this option is mentioned but not given a value,
+     * then this value is used. Handy for flags (boolean options).
+     * 
+     * @return This option's flag value.
+     */
+    String flagValue() default "";
 
     /**
      * The parser used to parse a string to the option's type. If the option's type

@@ -3,6 +3,7 @@ package com.github.agadar.javacommander.misc;
 import java.util.List;
 
 import com.github.agadar.javacommander.JcCommand;
+import com.github.agadar.javacommander.JcCommandOption;
 import com.github.agadar.javacommander.exception.NoValueForOptionException;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.exception.UnknownOptionException;
@@ -69,33 +70,37 @@ public class ArgumentsParser {
     private void parseArgumentsExplicit(List<String> args, JcCommand command, Object[] finalArgs)
             throws UnknownOptionException, OptionValueParserException, NoValueForOptionException {
 
-        var currentOption = command.getOptionByName(args.get(1));
-        boolean parsingOption = false;
+        String currentArg = args.get(1);
+        var currentOption = tryGetOption(command, currentArg);
+        boolean findingValueForOption = true;
 
-        // Iterate over all the arguments.
-        for (int i = 2; i < args.size(); i++) {
+        for (int argsIndex = 2; argsIndex < args.size(); argsIndex++) {
+            currentArg = args.get(argsIndex);
 
-            // If we're not currently finding a value for an option, then
-            // try find the option. Else, try to parse the value.
-            if (parsingOption) {
-                currentOption = command.getOptionByName(args.get(i));
+            if (findingValueForOption) {
+                int indexOfOption = command.indexOfOption(currentOption);
 
-                // If the option was not found, throw an exception.
-                if (!currentOption.isPresent()) {
-                    throw new UnknownOptionException(command, args.get(i));
+                if (currentOption.getFlagValue() != null && command.hasOption(currentArg)) {
+                    finalArgs[indexOfOption] = currentOption.getFlagValue();
+                    argsIndex--;
+                } else {
+                    var parsedArg = currentOption.parseOptionValue(currentArg);
+                    finalArgs[indexOfOption] = parsedArg;
                 }
             } else {
-                var parsedArg = currentOption.get().parseOptionValue(args.get(i));
-                finalArgs[command.indexOfOption(currentOption.get())] = parsedArg;
-                currentOption = null;
+                currentOption = tryGetOption(command, currentArg);
             }
-            parsingOption = !parsingOption;
+            findingValueForOption = !findingValueForOption;
         }
 
         // If the last parameter was not given a value, throw an error.
-        if (currentOption != null) {
-            throw new NoValueForOptionException(command, currentOption.get());
+        if (findingValueForOption) {
+            throw new NoValueForOptionException(command, currentOption);
         }
+    }
+
+    private JcCommandOption<?> tryGetOption(JcCommand command, String currentArg) throws UnknownOptionException {
+        return command.getOptionByName(currentArg).orElseThrow(() -> new UnknownOptionException(command, currentArg));
     }
 
     private void parseArgumentsImplicit(List<String> args, JcCommand command, Object[] finalArgs)
@@ -110,8 +115,15 @@ public class ArgumentsParser {
         // them in finalArgs as we go.
         for (int i = 1; i < args.size(); i++) {
             var currentOption = command.getOptionByIndex(i - 1).get();
-            var parsedArg = currentOption.parseOptionValue(args.get(i));
-            finalArgs[i - 1] = parsedArg;
+            var currentArg = args.get(i);
+
+            if (currentOption.getFlagValue() != null && currentOption.getNames().contains(currentArg)) {
+                finalArgs[i - 1] = currentOption.getFlagValue();
+
+            } else {
+                var parsedArg = currentOption.parseOptionValue(currentArg);
+                finalArgs[i - 1] = parsedArg;
+            }
         }
     }
 }

@@ -45,10 +45,19 @@ public class JcCommandOption<T> {
     private final String description;
 
     /**
-     * This option's default value. If none was defined, then this is null.
+     * This option's default value. If this option is not given a value, then this
+     * value is used. If none was defined, then this is null.
      */
     @Getter
     private final T defaultValue;
+
+    /**
+     * This option's flag value. If this option is mentioned but not given a value,
+     * then this value is used. Handy for flags (boolean options). If none was
+     * defined, then this is null.
+     */
+    @Getter
+    private final T flagValue;
 
     /**
      * Constructor.
@@ -60,6 +69,9 @@ public class JcCommandOption<T> {
      * @param defaultValue    This option's default value. It is parsed to the
      *                        correct type using this instance's own parse method,
      *                        unless it equals the empty string.
+     * @param flagValue       This option's flag value. It is parsed to the correct
+     *                        type using this instance's own parse method, unless it
+     *                        equals the empty string.
      * @param valueParserType The parser type used to parse a string to the option's
      *                        type.
      * @throws IllegalArgumentException   If one of the parameter values is invalid.
@@ -68,7 +80,7 @@ public class JcCommandOption<T> {
      *                                    parser itself failed to be instantiated.
      */
     public JcCommandOption(@NonNull Collection<String> names, String description, @NonNull Class<T> parameterType,
-            String defaultValue, Class<? extends OptionValueParser<T>> valueParserType)
+            String defaultValue, String flagValue, Class<? extends OptionValueParser<T>> valueParserType)
             throws OptionValueParserException, IllegalArgumentException {
 
         this.names = names.stream().filter(name -> name != null && !name.isEmpty()).collect(Collectors.toList());
@@ -79,7 +91,8 @@ public class JcCommandOption<T> {
         this.description = (description == null) ? "" : description;
         this.parameterType = parameterType;
         this.valueParserType = valueParserType;
-        this.defaultValue = determineDefaultValue(defaultValue);
+        this.defaultValue = determineValue(defaultValue);
+        this.flagValue = determineValue(flagValue);
     }
 
     /**
@@ -140,10 +153,10 @@ public class JcCommandOption<T> {
         }
     }
 
-    private T determineDefaultValue(String defaultValue) throws OptionValueParserException {
-        if (defaultValue == null || defaultValue.isEmpty()) {
+    private T determineValue(String value) throws OptionValueParserException {
+        if (value == null || value.isEmpty()) {
             return null;
         }
-        return parseOptionValue(defaultValue);
+        return parseOptionValue(value);
     }
 }
