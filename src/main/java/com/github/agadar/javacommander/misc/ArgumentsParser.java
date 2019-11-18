@@ -72,25 +72,29 @@ public class ArgumentsParser {
 
         String currentArg = args.get(1);
         var currentOption = tryGetOption(command, currentArg);
+        int indexOfOption = command.indexOfOption(currentOption);
         boolean findingValueForOption = true;
 
         for (int argsIndex = 2; argsIndex < args.size(); argsIndex++) {
             currentArg = args.get(argsIndex);
 
             if (findingValueForOption) {
-                int indexOfOption = command.indexOfOption(currentOption);
+                var parsedArg = currentOption.parseOptionValue(currentArg);
+                finalArgs[indexOfOption] = parsedArg;
+                findingValueForOption = false;
 
-                if (currentOption.getFlagValue() != null && command.hasOption(currentArg)) {
-                    finalArgs[indexOfOption] = currentOption.getFlagValue();
-                    argsIndex--;
-                } else {
-                    var parsedArg = currentOption.parseOptionValue(currentArg);
-                    finalArgs[indexOfOption] = parsedArg;
-                }
             } else {
                 currentOption = tryGetOption(command, currentArg);
+                indexOfOption = command.indexOfOption(currentOption);
+
+                if (useFlagValueForOption(args, command, currentOption, argsIndex)) {
+                    finalArgs[indexOfOption] = currentOption.getFlagValue();
+                    findingValueForOption = false;
+
+                } else {
+                    findingValueForOption = true;
+                }
             }
-            findingValueForOption = !findingValueForOption;
         }
 
         // If the last parameter was not given a value, throw an error.
@@ -101,6 +105,14 @@ public class ArgumentsParser {
 
     private JcCommandOption<?> tryGetOption(JcCommand command, String currentArg) throws UnknownOptionException {
         return command.getOptionByName(currentArg).orElseThrow(() -> new UnknownOptionException(command, currentArg));
+    }
+
+    private boolean useFlagValueForOption(List<String> args, JcCommand command, JcCommandOption<?> currentOption,
+            int argsIndex) {
+        int nextArgsIndex = argsIndex + 1;
+        boolean hasFlagValue = currentOption.getFlagValue() != null;
+        boolean nextArgIsOptionName = nextArgsIndex < args.size() && command.hasOption(args.get(nextArgsIndex));
+        return hasFlagValue && (nextArgIsOptionName || nextArgsIndex >= args.size());
     }
 
     private void parseArgumentsImplicit(List<String> args, JcCommand command, Object[] finalArgs)

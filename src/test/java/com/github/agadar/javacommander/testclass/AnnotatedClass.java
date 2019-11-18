@@ -43,6 +43,13 @@ public class AnnotatedClass {
     public void barNameless(String stringParam) {
     }
 
+    @Command(names = { "barWithFlags", "BarWithFlags" }, description = "barWithFlags", options = {
+            @Option(names = { "stringParam", "StringParam" }),
+            @Option(names = { "flag1", "Flag1" }, defaultValue = "false", flagValue = "true"),
+            @Option(names = { "flag2", "Flag2" }, defaultValue = "true", flagValue = "false") })
+    public void barWithFlags(String stringParam, boolean flag1, boolean flag2) {
+    }
+
     @Command(names = { "BarStatic", "barStatic" }, description = "barStaticDescription")
     public static void barStatic() {
     }

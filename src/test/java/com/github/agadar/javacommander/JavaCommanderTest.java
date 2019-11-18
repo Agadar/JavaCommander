@@ -34,7 +34,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_bar");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test call.
@@ -42,8 +42,8 @@ public class JavaCommanderTest {
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing the
-     * 'barWithParams' method.
+     * Test of execute method, of class JavaCommander testing the 'barWithParams'
+     * method.
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
@@ -52,7 +52,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_barWithParams");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test implicit calls.
@@ -60,12 +60,16 @@ public class JavaCommanderTest {
         jcCommander.execute(Arrays.asList("barWithParams", "someString", "15", "true"));
 
         // Test explicit calls, in order.
-        jcCommander.execute(Arrays.asList("BarWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
-        jcCommander.execute(Arrays.asList("barWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
+        jcCommander.execute(
+                Arrays.asList("BarWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
+        jcCommander.execute(
+                Arrays.asList("barWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true"));
 
         // Test explicit calls, out of order.
-        jcCommander.execute(Arrays.asList("BarWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
-        jcCommander.execute(Arrays.asList("barWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
+        jcCommander.execute(
+                Arrays.asList("BarWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
+        jcCommander.execute(
+                Arrays.asList("barWithParams", "IntParam", "15", "BoolParam", "true", "StringParam", "someString"));
     }
 
     /**
@@ -79,7 +83,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_barWithDefaultParams");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test implicit calls, leaving out parameters (expecting default values).
@@ -88,20 +92,25 @@ public class JavaCommanderTest {
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString"));
         jcCommander.execute(Arrays.asList("barWithDefaultParams"));
 
-        // Test explicit calls, in order, leaving out parameters (expecting default values).
-        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam", "15", "BoolDefaultParam", "true"));
-        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam", "15"));
+        // Test explicit calls, in order, leaving out parameters (expecting default
+        // values).
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam",
+                "15", "BoolDefaultParam", "true"));
+        jcCommander.execute(
+                Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString", "IntDefaultParam", "15"));
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "StringDefaultParam", "someString"));
 
-        // Test explicit calls, out of order, leaving out parameters (expecting default values).
-        jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15", "BoolDefaultParam", "true", "StringDefaultParam", "someString"));
+        // Test explicit calls, out of order, leaving out parameters (expecting default
+        // values).
+        jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15", "BoolDefaultParam", "true",
+                "StringDefaultParam", "someString"));
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15", "BoolDefaultParam", "true"));
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "IntDefaultParam", "15"));
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing the
-     * 'barWithBazParam' method.
+     * Test of execute method, of class JavaCommander testing the 'barWithBazParam'
+     * method.
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
@@ -110,7 +119,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_barWithBazParam");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test calls.
@@ -130,7 +139,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_barNameless");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test calls.
@@ -149,7 +158,7 @@ public class JavaCommanderTest {
         System.out.println("execute_List_barStatic");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromClass(AnnotatedClass.class);
 
         // Test call.
@@ -166,7 +175,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_bar");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test call.
@@ -174,8 +183,8 @@ public class JavaCommanderTest {
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing the
-     * 'barWithParams' method.
+     * Test of execute method, of class JavaCommander testing the 'barWithParams'
+     * method.
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
@@ -184,7 +193,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_barWithParams");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test implicit calls.
@@ -211,7 +220,7 @@ public class JavaCommanderTest {
         System.out.println("execute_StringbarWithDefaultParams");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test implicit calls, leaving out parameters (expecting default values).
@@ -220,20 +229,24 @@ public class JavaCommanderTest {
         jcCommander.execute("barWithDefaultParams someString");
         jcCommander.execute("barWithDefaultParams");
 
-        // Test explicit calls, in order, leaving out parameters (expecting default values).
-        jcCommander.execute("barWithDefaultParams StringDefaultParam someString IntDefaultParam 15 BoolDefaultParam true");
+        // Test explicit calls, in order, leaving out parameters (expecting default
+        // values).
+        jcCommander
+                .execute("barWithDefaultParams StringDefaultParam someString IntDefaultParam 15 BoolDefaultParam true");
         jcCommander.execute("barWithDefaultParams StringDefaultParam someString IntDefaultParam 15");
         jcCommander.execute("barWithDefaultParams StringDefaultParam someString");
 
-        // Test explicit calls, out of order, leaving out parameters (expecting default values).
-        jcCommander.execute("barWithDefaultParams IntDefaultParam 15 BoolDefaultParam true StringDefaultParam someString");
+        // Test explicit calls, out of order, leaving out parameters (expecting default
+        // values).
+        jcCommander
+                .execute("barWithDefaultParams IntDefaultParam 15 BoolDefaultParam true StringDefaultParam someString");
         jcCommander.execute("barWithDefaultParams IntDefaultParam 15 BoolDefaultParam true");
         jcCommander.execute("barWithDefaultParams ntDefaultParam 15");
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing the
-     * 'barWithBazParam' method.
+     * Test of execute method, of class JavaCommander testing the 'barWithBazParam'
+     * method.
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
@@ -242,7 +255,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_barWithBazParam");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test calls.
@@ -262,7 +275,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_barNameless");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test calls.
@@ -281,7 +294,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_barStatic");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromClass(AnnotatedClass.class);
 
         // Test call.
@@ -289,8 +302,8 @@ public class JavaCommanderTest {
     }
 
     /**
-     * Test of execute method, of class JavaCommander testing multiple commands
-     * in one execute call.
+     * Test of execute method, of class JavaCommander testing multiple commands in
+     * one execute call.
      *
      * @throws JavaCommanderException
      */
@@ -299,7 +312,7 @@ public class JavaCommanderTest {
         System.out.println("execute_String_multiple_commands");
 
         // Setup JavaCommander instance.
-        final JavaCommander jcCommander = new JavaCommander();
+        var jcCommander = new JavaCommander();
         jcCommander.registerFromObject(foo);
 
         // Test calls.
@@ -311,5 +324,77 @@ public class JavaCommanderTest {
         jcCommander.execute(";barWithParams someString0 15 true; barWithParams someString1 10 false");
         jcCommander.execute(";barWithParams someString0 15 true; barWithParams someString1 10 false;");
         jcCommander.execute(";;;barWithParams someString0 15 true;;;barWithParams someString1 10 false;;;");
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the usage of flag
+     * options where the flag functionality is used during explicit parsing.
+     * 
+     * @throws JavaCommanderException
+     */
+    @Test
+    public void testExecute_String_flags_explicit_flagged() throws JavaCommanderException {
+        System.out.println("execute_String_flags_explicit_flagged");
+
+        // Setup JavaCommander instance.
+        var jcCommander = new JavaCommander();
+        jcCommander.registerFromObject(foo);
+
+        // Test calls.
+        jcCommander.execute("barWithFlags stringParam:'someString' flag1 flag2");
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the usage of flag
+     * options where the flag functionality is NOT used during explicit parsing.
+     * 
+     * @throws JavaCommanderException
+     */
+    @Test
+    public void testExecute_String_flags_explicit_not_flagged() throws JavaCommanderException {
+        System.out.println("execute_String_flags_explicit_not_flagged");
+
+        // Setup JavaCommander instance.
+        var jcCommander = new JavaCommander();
+        jcCommander.registerFromObject(foo);
+
+        // Test calls.
+        jcCommander.execute("barWithFlags stringParam:'someString' flag1:true flag2:false");
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the usage of flag
+     * options where the flag functionality is used during implicit parsing.
+     * 
+     * @throws JavaCommanderException
+     */
+    @Test
+    public void testExecute_String_flags_implicit_flagged() throws JavaCommanderException {
+        System.out.println("execute_String_flags_implicit_flagged");
+
+        // Setup JavaCommander instance.
+        var jcCommander = new JavaCommander();
+        jcCommander.registerFromObject(foo);
+
+        // Test calls.
+        jcCommander.execute("barWithFlags 'someString' flag1 flag2");
+    }
+
+    /**
+     * Test of execute method, of class JavaCommander testing the usage of flag
+     * options where the flag functionality is NOT used during implicit parsing.
+     * 
+     * @throws JavaCommanderException
+     */
+    @Test
+    public void testExecute_String_flags_implicit_not_flagged() throws JavaCommanderException {
+        System.out.println("execute_String_flags_implicit_not_flagged");
+
+        // Setup JavaCommander instance.
+        var jcCommander = new JavaCommander();
+        jcCommander.registerFromObject(foo);
+
+        // Test calls.
+        jcCommander.execute("barWithFlags 'someString' true false");
     }
 }
