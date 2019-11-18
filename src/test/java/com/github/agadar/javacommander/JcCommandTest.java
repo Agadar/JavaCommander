@@ -37,7 +37,7 @@ public final class JcCommandTest {
     @Test
     public void testGetPrimaryName() {
         System.out.println("getPrimaryName");
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description",
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description",
                 new ArrayList<>(), methodToInvokeOn, objectToInvokeOn);
         assertEquals("one", jcCommand.getPrimaryName());
     }
@@ -141,7 +141,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
                 methodToInvokeOn, objectToInvokeOn);
 
         // Check lower bounding.
@@ -175,7 +175,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
                 methodToInvokeOn, objectToInvokeOn);
 
         // Test one that exists.
@@ -206,7 +206,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption2);
         jcOptions.add(jcOption3);
 
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
                 methodToInvokeOn, objectToInvokeOn);
         assertEquals(3, jcCommand.numberOfOptions());
     }
@@ -231,7 +231,7 @@ public final class JcCommandTest {
         jcOptions.add(jcOption1);
         jcOptions.add(jcOption2);
 
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description", jcOptions,
                 methodToInvokeOn, objectToInvokeOn);
 
         // Test existing.
@@ -249,14 +249,14 @@ public final class JcCommandTest {
         System.out.println("hashCode");
 
         // True result.
-        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
+        var jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
-        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
+        var jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertEquals(jcCommand1.hashCode(), jcCommand2.hashCode());
 
         // False result.
-        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
+        var jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertNotEquals(jcCommand1.hashCode(), jcCommand3.hashCode());
     }
@@ -269,14 +269,14 @@ public final class JcCommandTest {
         System.out.println("equals");
 
         // True result.
-        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
+        var jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
-        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
+        var jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertEquals(jcCommand1, jcCommand2);
 
         // False result.
-        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
+        var jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertNotEquals(jcCommand1, jcCommand3);
     }
@@ -292,19 +292,19 @@ public final class JcCommandTest {
         System.out.println("invoke");
 
         // Invoke without parameters.
-        final JcCommand jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
+        var jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
         jcCommand1.invoke();
 
         // Invoke with parameters.
-        final JcCommand jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"),
+        var jcCommand2 = new JcCommand(Arrays.asList("one", "two", "three"),
                 "description1", null,
                 AnnotatedClass.class.getMethod("barWithParams", String.class, int.class, boolean.class),
                 objectToInvokeOn);
         jcCommand2.invoke("stringParam", 15, true);
 
         // Invoke with custom parameter.
-        final JcCommand jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"),
+        var jcCommand3 = new JcCommand(Arrays.asList("one", "two", "three"),
                 "description1", null, AnnotatedClass.class.getMethod("barWithBazParam", DataClass.class),
                 objectToInvokeOn);
         jcCommand3.invoke(new DataClass("defaultValue"));
@@ -316,7 +316,7 @@ public final class JcCommandTest {
     @Test
     public void testIsMyObject() {
         System.out.println("isMyObject");
-        final JcCommand jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
+        var jcCommand = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
         assertTrue(jcCommand.isMyObject(objectToInvokeOn));
     }
