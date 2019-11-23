@@ -34,26 +34,40 @@ public class JavaCommander {
     }
 
     /**
-     * Parses a string to a list of argument token lists, and then attempts to find
-     * and execute the sequence of commands defined in it.
+     * Parses a string array to a collection of argument token lists, and then
+     * attempts to find and execute the sequence of commands defined in it.
      *
-     * @param string The string to parse and execute the corresponding commands of.
+     * @param input The string array to parse and execute the corresponding commands
+     *              of.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void execute(@NonNull String string) throws JavaCommanderException {
-        this.executeSequence(tokenizer.tokenize(string));
+    public void execute(@NonNull String[] input) throws JavaCommanderException {
+        String joinedInput = String.join(" ", input);
+        execute(joinedInput);
+    }
+
+    /**
+     * Parses a string to a collection of argument token lists, and then attempts to
+     * find and execute the sequence of commands defined in it.
+     *
+     * @param input The string to parse and execute the corresponding commands of.
+     * @throws JavaCommanderException If something went wrong, containing a cause.
+     */
+    public void execute(@NonNull String input) throws JavaCommanderException {
+        var argumentTokensLists = tokenizer.tokenize(input);
+        execute(argumentTokensLists);
     }
 
     /**
      * Attempts to find and execute the sequence of commands defined in a collection
-     * of collections of argument tokens.
+     * of lists of argument tokens.
      *
-     * @param args The collection of argument token collections.
+     * @param argumentTokensLists The collection of argument token lists.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void executeSequence(@NonNull Collection<List<String>> args) throws JavaCommanderException {
-        for (var tokens : args) {
-            this.execute(tokens);
+    public void execute(@NonNull Collection<List<String>> argumentTokensLists) throws JavaCommanderException {
+        for (var argumentTokens : argumentTokensLists) {
+            execute(argumentTokens);
         }
     }
 
@@ -61,19 +75,19 @@ public class JavaCommander {
      * Attempts to find and execute the command defined in a list of argument
      * tokens.
      *
-     * @param args The list of argument tokens.
+     * @param argumentTokens The list of argument tokens.
      * @throws JavaCommanderException If something went wrong, containing a cause.
      */
-    public void execute(@NonNull List<String> args) throws JavaCommanderException {
-        if (args.isEmpty()) {
+    public void execute(@NonNull List<String> argumentTokens) throws JavaCommanderException {
+        if (argumentTokens.isEmpty()) {
             throw new IllegalArgumentException("'args' should not be null or empty");
         }
-        var commandOpt = jcRegistry.getCommand(args.get(0));
+        var commandOpt = jcRegistry.getCommand(argumentTokens.get(0));
         if (!commandOpt.isPresent()) {
-            throw new UnknownCommandException(args.get(0));
+            throw new UnknownCommandException(argumentTokens.get(0));
         }
         var command = commandOpt.get();
-        var finalArgs = argumentsParser.parseArguments(args, command);
+        var finalArgs = argumentsParser.parseArguments(argumentTokens, command);
         command.invoke(finalArgs);
     }
 

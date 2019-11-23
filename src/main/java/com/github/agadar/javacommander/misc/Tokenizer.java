@@ -15,18 +15,18 @@ public class Tokenizer {
     /**
      * Parses a string to a list of argument tokens.
      *
-     * @param string A string to parse to a list of argument tokens.
+     * @param input A string to parse to a list of argument tokens.
      * @return A list of argument tokens.
      */
-    public Collection<List<String>> tokenize(String string) {
+    public Collection<List<String>> tokenize(String input) {
 
         var tokenLists = new ArrayList<List<String>>();
 
-        if (string == null) {
+        if (input == null) {
             return tokenLists;
         }
-        string = string.trim();
-        if (string.length() < 1) {
+        input = input.trim();
+        if (input.length() < 1) {
             return tokenLists;
         }
 
@@ -36,7 +36,7 @@ public class Tokenizer {
         boolean escapeNextChar = false; // must we escape the current char?
 
         // Iterate over all chars in the string
-        for (char c : string.toCharArray()) {
+        for (char c : input.toCharArray()) {
             // If we are to escape the next char, then append it to the token
             // and turn off the escape option.
             if (escapeNextChar) {

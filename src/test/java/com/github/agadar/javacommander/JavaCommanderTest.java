@@ -28,6 +28,43 @@ public class JavaCommanderTest {
     }
 
     /**
+     * Test of execute method, of class JavaCommander testing the 'barWithParams'
+     * method.
+     *
+     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
+     */
+    @Test
+    public void testExecute_StringArray_barWithParams() throws JavaCommanderException {
+        System.out.println("execute_List_barWithParams");
+
+        // Setup JavaCommander instance.
+        var jcCommander = new JavaCommander();
+        jcCommander.registerFromObject(foo);
+
+        // Test implicit calls.
+        jcCommander.execute(new String[] { "BarWithParams", "someString", "15", "true" });
+        assertArguments("someString", 15, true);
+        jcCommander.execute(new String[] { "barWithParams", "someString", "15", "true" });
+        assertArguments("someString", 15, true);
+
+        // Test explicit calls, in order.
+        jcCommander.execute(
+                new String[] { "BarWithParams", "StringParam", "someString", "IntParam", "15", "BoolParam", "true" });
+        assertArguments("someString", 15, true);
+        jcCommander.execute(
+                new String[] { "barWithParams", "StringParam=someString", "IntParam=15", "BoolParam=true" });
+        assertArguments("someString", 15, true);
+
+        // Test explicit calls, out of order.
+        jcCommander.execute(
+                new String[] { "BarWithParams", "IntParam:15", "BoolParam", "true", "StringParam:someString" });
+        assertArguments("someString", 15, true);
+        jcCommander.execute(
+                new String[] { "barWithParams", "IntParam", "15", "BoolParam=true", "StringParam", "someString", ";" });
+        assertArguments("someString", 15, true);
+    }
+
+    /**
      * Test of execute method, of class JavaCommander testing the 'bar' method.
      *
      * @throws com.github.agadar.javacommander.exception.JavaCommanderException
