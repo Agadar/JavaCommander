@@ -70,13 +70,12 @@ public class ArgumentsParser {
     private void parseArgumentsExplicit(List<String> args, JcCommand command, Object[] finalArgs)
             throws UnknownOptionException, OptionValueParserException, NoValueForOptionException {
 
-        String currentArg = args.get(1);
-        var currentOption = tryGetOption(command, currentArg);
-        int indexOfOption = command.indexOfOption(currentOption);
-        boolean findingValueForOption = true;
+        JcCommandOption<?> currentOption = null;
+        int indexOfOption = -1;
+        boolean findingValueForOption = false;
 
-        for (int argsIndex = 2; argsIndex < args.size(); argsIndex++) {
-            currentArg = args.get(argsIndex);
+        for (int argsIndex = 1; argsIndex < args.size(); argsIndex++) {
+            String currentArg = args.get(argsIndex);
 
             if (findingValueForOption) {
                 var parsedArg = currentOption.parseOptionValue(currentArg);
