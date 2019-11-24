@@ -8,16 +8,16 @@ import java.lang.annotation.Target;
 /**
  * Annotation used for marking a method as a command.
  *
- * @author Agadar
+ * @author Agadar (https://github.com/Agadar/)
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Command {
 
     /**
-     * Names of the command. The first entry is the primary name. The other
-     * entries are synonyms. If no name is supplied, then the name of the
-     * command is set to the name of the annotated method.
+     * Names of the command. The first entry is the primary name. The other entries
+     * are synonyms. If no name is supplied, then the name of the command is set to
+     * the name of the annotated method.
      *
      * @return The names of this command.
      */

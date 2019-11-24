@@ -1,2 +1,6 @@
 /target/
 /nbproject/
+.classpath
+.project
+.settings/
+.factorypath

@@ -7,6 +7,8 @@ package com.github.agadar.javacommander.exception;
  */
 public class JavaCommanderException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Constructor.
      */
@@ -26,7 +28,7 @@ public class JavaCommanderException extends Exception {
      * Constructor.
      *
      * @param message An informative message.
-     * @param cause The underlying exception.
+     * @param cause   The underlying exception.
      */
     public JavaCommanderException(String message, Throwable cause) {
         super(message, cause);

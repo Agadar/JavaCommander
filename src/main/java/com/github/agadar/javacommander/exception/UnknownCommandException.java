@@ -1,16 +1,21 @@
 package com.github.agadar.javacommander.exception;
 
+import lombok.Getter;
+
 /**
  * Thrown when a command was not found.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public final class UnknownCommandException extends JavaCommanderException {
+public class UnknownCommandException extends JavaCommanderException {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * The name of the command that was not found.
      */
-    public final String commandName;
+    @Getter
+    private final String commandName;
 
     /**
      * Constructor.
