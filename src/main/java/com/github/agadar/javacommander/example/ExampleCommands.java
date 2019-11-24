@@ -41,13 +41,13 @@ public class ExampleCommands {
      * @param commandName The name of the command to return the help of, or
      *                    null/empty.
      */
-    @Command(names = { "help", "usage",
-            "?" }, description = "Display the help.", options = @Option(names = "-command", description = "Display a specific command's help."))
-    public void usage(String commandName) {
+    @Command(names = { "help", "usage", "?" }, description = "Display the help.")
+    public void usage(
+            @Option(names = "-command", description = "Display a specific command's help.", defaultValue = "null") String commandName) {
         var stringBuilder = new StringBuilder("--------------------\n");
 
         // If no command name given, then list general info of all commands.
-        if (commandName == null || commandName.isEmpty()) {
+        if (commandName == null || commandName.isEmpty() || commandName.equals("null")) {
             stringBuilder.append(
                     "Displaying help. Use option '-command' to display a specific command's help.\n\nAvailable commands:");
 
