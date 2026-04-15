@@ -1,11 +1,10 @@
 package com.github.agadar.javacommander.optionvalueparser;
 
-import org.junit.Test;
-
 import com.github.agadar.javacommander.exception.OptionValueParserException;
-import com.github.agadar.javacommander.optionvalueparser.OptionValueParser;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Tests com.github.agadar.javacommander.optionvalueparser.OptionValueParser.
@@ -16,8 +15,6 @@ public class OptionValueParserTest {
 
     /**
      * Test of static parseString function, of interface OptionValueParser.
-     * 
-     * @throws OptionValueParserException
      */
     @Test
     public void testDefaultParse() throws OptionValueParserException {

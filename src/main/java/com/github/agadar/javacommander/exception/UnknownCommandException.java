@@ -2,6 +2,8 @@ package com.github.agadar.javacommander.exception;
 
 import lombok.Getter;
 
+import java.io.Serial;
+
 /**
  * Thrown when a command was not found.
  *
@@ -9,6 +11,7 @@ import lombok.Getter;
  */
 public class UnknownCommandException extends JavaCommanderException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

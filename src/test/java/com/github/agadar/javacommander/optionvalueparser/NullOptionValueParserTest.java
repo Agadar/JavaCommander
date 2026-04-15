@@ -1,10 +1,9 @@
 package com.github.agadar.javacommander.optionvalueparser;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import static org.junit.Assert.*;
 
 /**
  * Tests {@link NullOptionValueParser}.
@@ -19,6 +18,6 @@ public class NullOptionValueParserTest {
     @Test
     public void testParse() {
         System.out.println("parse");
-        assertEquals(null, new NullOptionValueParser().parse("testString"));
+        assertNull(new NullOptionValueParser().parse("testString"));
     }
 }

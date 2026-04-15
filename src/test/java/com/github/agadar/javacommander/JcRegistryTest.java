@@ -4,11 +4,11 @@ import com.github.agadar.javacommander.exception.OptionAnnotationException;
 import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests com.github.agadar.javacommander.JcRegistry.
@@ -21,21 +21,18 @@ public class JcRegistryTest {
     private static JcRegistry jcRegistry;
     private static final int NONSTATIC_METHODS_IN_FOO = 6;
 
-    @BeforeClass
+    @BeforeAll
     public static void SetupClass() {
         foo = new AnnotatedClass();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         jcRegistry = new JcRegistry();
     }
 
     /**
      * Test of unregisterObject method, of class JcRegistry.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testUnregisterObject() throws OptionAnnotationException, OptionValueParserException {
@@ -57,9 +54,6 @@ public class JcRegistryTest {
 
     /**
      * Test of unregisterClass method, of class JcRegistry.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testUnregisterClass() throws OptionAnnotationException, OptionValueParserException {
@@ -81,9 +75,6 @@ public class JcRegistryTest {
 
     /**
      * Test of getCommand method, of class JcRegistry.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testGetCommand() throws OptionAnnotationException, OptionValueParserException {
@@ -173,9 +164,6 @@ public class JcRegistryTest {
      *
      * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testRegisterObject() throws OptionAnnotationException, OptionValueParserException {
@@ -375,9 +363,6 @@ public class JcRegistryTest {
      *
      * Due to the nature of JcRegistry, this also uses/tests other functions of
      * JcRegistry.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionAnnotationException
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testRegisterClass() throws OptionAnnotationException, OptionValueParserException {

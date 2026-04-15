@@ -5,15 +5,16 @@ import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Test;
-import org.junit.BeforeClass;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests com.github.agadar.javacommander.JcCommand.
@@ -25,7 +26,7 @@ public final class JcCommandTest {
     private static AnnotatedClass objectToInvokeOn;
     private static Method methodToInvokeOn;
 
-    @BeforeClass
+    @BeforeAll
     public static void SetupClass() throws NoSuchMethodException {
         objectToInvokeOn = new AnnotatedClass();
         methodToInvokeOn = AnnotatedClass.class.getMethod("bar");
@@ -44,8 +45,6 @@ public final class JcCommandTest {
 
     /**
      * Test of hasOptions method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testHasOptions() throws OptionValueParserException {
@@ -90,8 +89,6 @@ public final class JcCommandTest {
 
     /**
      * Test of hasOption method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testHasOption() throws OptionValueParserException {
@@ -122,18 +119,16 @@ public final class JcCommandTest {
 
     /**
      * Test of getOptionByIndex method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testGetOptionByIndex() throws OptionValueParserException {
         System.out.println("getOptionByIndex");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+        var jcOption1 = new JcCommandOption<>(List.of("one"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+        var jcOption2 = new JcCommandOption<>(List.of("two"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+        var jcOption3 = new JcCommandOption<>(List.of("three"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
@@ -156,18 +151,16 @@ public final class JcCommandTest {
 
     /**
      * Test of getOptionByName method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testGetOptionByName() throws OptionValueParserException {
         System.out.println("getOptionByName");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+        var jcOption1 = new JcCommandOption<>(List.of("one"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+        var jcOption2 = new JcCommandOption<>(List.of("two"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+        var jcOption3 = new JcCommandOption<>(List.of("three"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
 
         final ArrayList<JcCommandOption<?>> jcOptions = new ArrayList<>();
@@ -187,18 +180,16 @@ public final class JcCommandTest {
 
     /**
      * Test of numberOfOptions method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testNumberOfOptions() throws OptionValueParserException {
         System.out.println("numberOfOptions");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+        var jcOption1 = new JcCommandOption<>(List.of("one"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+        var jcOption2 = new JcCommandOption<>(List.of("two"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+        var jcOption3 = new JcCommandOption<>(List.of("three"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
@@ -213,18 +204,16 @@ public final class JcCommandTest {
 
     /**
      * Test of indexOfOption method, of class JcCommand.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testIndexOfOption() throws OptionValueParserException {
         System.out.println("indexOfOption");
 
-        var jcOption1 = new JcCommandOption<>(Arrays.asList("one"), "description", Void.class,
+        var jcOption1 = new JcCommandOption<>(List.of("one"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption2 = new JcCommandOption<>(Arrays.asList("two"), "description", Void.class,
+        var jcOption2 = new JcCommandOption<>(List.of("two"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
-        var jcOption3 = new JcCommandOption<>(Arrays.asList("three"), "description", Void.class,
+        var jcOption3 = new JcCommandOption<>(List.of("three"), "description", Void.class,
                 "defaultValue", null, NullOptionValueParser.class);
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
@@ -251,12 +240,12 @@ public final class JcCommandTest {
         // True result.
         var jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
-        var jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
+        var jcCommand2 = new JcCommand(List.of("one"), "description2", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertEquals(jcCommand1.hashCode(), jcCommand2.hashCode());
 
         // False result.
-        var jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
+        var jcCommand3 = new JcCommand(List.of("two"), "description3", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertNotEquals(jcCommand1.hashCode(), jcCommand3.hashCode());
     }
@@ -271,21 +260,18 @@ public final class JcCommandTest {
         // True result.
         var jcCommand1 = new JcCommand(Arrays.asList("one", "two", "three"), "description1", null,
                 methodToInvokeOn, objectToInvokeOn);
-        var jcCommand2 = new JcCommand(Arrays.asList("one"), "description2", null, methodToInvokeOn,
+        var jcCommand2 = new JcCommand(List.of("one"), "description2", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertEquals(jcCommand1, jcCommand2);
 
         // False result.
-        var jcCommand3 = new JcCommand(Arrays.asList("two"), "description3", null, methodToInvokeOn,
+        var jcCommand3 = new JcCommand(List.of("two"), "description3", null, methodToInvokeOn,
                 objectToInvokeOn);
         assertNotEquals(jcCommand1, jcCommand3);
     }
 
     /**
      * Test of invoke method, of class JcCommand.
-     *
-     * @throws java.lang.NoSuchMethodException
-     * @throws com.github.agadar.javacommander.exception.CommandInvocationException
      */
     @Test
     public void testInvoke() throws NoSuchMethodException, CommandInvocationException {

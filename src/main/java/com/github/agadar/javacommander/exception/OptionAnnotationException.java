@@ -1,5 +1,6 @@
 package com.github.agadar.javacommander.exception;
 
+import java.io.Serial;
 import java.lang.reflect.Method;
 
 import lombok.Getter;
@@ -12,6 +13,7 @@ import lombok.Getter;
  */
 public class OptionAnnotationException extends JavaCommanderException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

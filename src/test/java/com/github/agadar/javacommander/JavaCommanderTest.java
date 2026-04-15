@@ -3,12 +3,13 @@ package com.github.agadar.javacommander;
 import com.github.agadar.javacommander.exception.JavaCommanderException;
 import com.github.agadar.javacommander.testclass.AnnotatedClass;
 import com.github.agadar.javacommander.testclass.DataClass;
-
-import static org.junit.Assert.assertArrayEquals;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 /**
  * Tests com.github.agadar.javacommander.JavaCommander.
@@ -22,7 +23,7 @@ public class JavaCommanderTest {
      */
     private static AnnotatedClass foo;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         foo = new AnnotatedClass();
     }
@@ -30,8 +31,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barWithParams'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_StringArray_barWithParams() throws JavaCommanderException {
@@ -66,8 +65,6 @@ public class JavaCommanderTest {
 
     /**
      * Test of execute method, of class JavaCommander testing the 'bar' method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_bar() throws JavaCommanderException {
@@ -78,15 +75,13 @@ public class JavaCommanderTest {
         jcCommander.registerFromObject(foo);
 
         // Test call.
-        jcCommander.execute(Arrays.asList("bar"));
+        jcCommander.execute(List.of("bar"));
         assertArguments();
     }
 
     /**
      * Test of execute method, of class JavaCommander testing the 'barWithParams'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_barWithParams() throws JavaCommanderException {
@@ -122,8 +117,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the
      * 'barWithDefaultParams' method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_barWithDefaultParams() throws JavaCommanderException {
@@ -140,7 +133,7 @@ public class JavaCommanderTest {
         assertArguments("someString", 15, true);
         jcCommander.execute(Arrays.asList("barWithDefaultParams", "someString"));
         assertArguments("someString", 15, true);
-        jcCommander.execute(Arrays.asList("barWithDefaultParams"));
+        jcCommander.execute(List.of("barWithDefaultParams"));
         assertArguments("defaultString", 15, true);
 
         // Test explicit calls, in order, leaving out parameters (expecting default
@@ -168,8 +161,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barWithBazParam'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_barWithBazParam() throws JavaCommanderException {
@@ -182,7 +173,7 @@ public class JavaCommanderTest {
         // Test calls.
         jcCommander.execute(Arrays.asList("barWithBazParam", "someString"));
         assertArguments(new DataClass("someString"));
-        jcCommander.execute(Arrays.asList("barWithBazParam"));
+        jcCommander.execute(List.of("barWithBazParam"));
         assertArguments(new DataClass("defaultBaz"));
         jcCommander.execute(Arrays.asList("barWithBazParam", "BazParam", "someString"));
         assertArguments(new DataClass("someString"));
@@ -191,8 +182,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barNameless'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_barNameless() throws JavaCommanderException {
@@ -212,8 +201,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barStatic'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_List_barStatic() throws JavaCommanderException {
@@ -224,14 +211,12 @@ public class JavaCommanderTest {
         jcCommander.registerFromClass(AnnotatedClass.class);
 
         // Test call.
-        jcCommander.execute(Arrays.asList("barStatic"));
+        jcCommander.execute(List.of("barStatic"));
         assertArguments();
     }
 
     /**
      * Test of execute method, of class JavaCommander testing the 'bar' method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_String_bar() throws JavaCommanderException {
@@ -249,8 +234,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barWithParams'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_StringbarWithParams() throws JavaCommanderException {
@@ -282,8 +265,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the
      * 'barWithDefaultParams' method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_String_barWithDefaultParams() throws JavaCommanderException {
@@ -327,8 +308,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barWithBazParam'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_String_barWithBazParam() throws JavaCommanderException {
@@ -350,8 +329,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barNameless'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_String_barNameless() throws JavaCommanderException {
@@ -371,8 +348,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the 'barStatic'
      * method.
-     *
-     * @throws com.github.agadar.javacommander.exception.JavaCommanderException
      */
     @Test
     public void testExecute_String_barStatic() throws JavaCommanderException {
@@ -390,8 +365,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing multiple commands in
      * one execute call.
-     *
-     * @throws JavaCommanderException
      */
     @Test
     public void testExecute_String_multiple_commands() throws JavaCommanderException {
@@ -423,8 +396,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the usage of flag
      * options where the flag functionality is used during explicit parsing.
-     * 
-     * @throws JavaCommanderException
      */
     @Test
     public void testExecute_String_flags_explicit_flagged() throws JavaCommanderException {
@@ -442,8 +413,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the usage of flag
      * options where the flag functionality is NOT used during explicit parsing.
-     * 
-     * @throws JavaCommanderException
      */
     @Test
     public void testExecute_String_flags_explicit_not_flagged() throws JavaCommanderException {
@@ -461,8 +430,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the usage of flag
      * options where the flag functionality is used during implicit parsing.
-     * 
-     * @throws JavaCommanderException
      */
     @Test
     public void testExecute_String_flags_implicit_flagged() throws JavaCommanderException {
@@ -480,8 +447,6 @@ public class JavaCommanderTest {
     /**
      * Test of execute method, of class JavaCommander testing the usage of flag
      * options where the flag functionality is NOT used during implicit parsing.
-     * 
-     * @throws JavaCommanderException
      */
     @Test
     public void testExecute_String_flags_implicit_not_flagged() throws JavaCommanderException {

@@ -50,7 +50,7 @@ public abstract class OptionValueParser<T> {
                 type = boxPrimitive(type);
             }
             if (type.equals(Character.class)) {
-                return type.cast(Character.valueOf(stringToParse.charAt(0)));
+                return type.cast(stringToParse.charAt(0));
             }
             var valueOfMethod = type.getMethod("valueOf", String.class);
             return type.cast(valueOfMethod.invoke(null, stringToParse));

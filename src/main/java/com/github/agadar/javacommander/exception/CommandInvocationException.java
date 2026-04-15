@@ -4,6 +4,8 @@ import com.github.agadar.javacommander.JcCommand;
 
 import lombok.Getter;
 
+import java.io.Serial;
+
 /**
  * Thrown when an underlying exception caused a command invocation to fail.
  *
@@ -11,6 +13,7 @@ import lombok.Getter;
  */
 public class CommandInvocationException extends JavaCommanderException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

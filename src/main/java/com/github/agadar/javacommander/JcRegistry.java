@@ -98,7 +98,7 @@ public class JcRegistry {
         var commandsToRemove = primaryNamesToCommands.values().stream()
                 .filter((command) -> command.isMyObject(object))
                 .collect(Collectors.toList());
-        commandsToRemove.forEach(command -> unregisterDirectly(command));
+        commandsToRemove.forEach(this::unregisterDirectly);
     }
 
     /**
@@ -143,7 +143,7 @@ public class JcRegistry {
     }
 
     /**
-     * Returns whether or not a command name is known by this registry.
+     * Returns whether a command name is known by this registry.
      *
      * @param commandName The command name to check.
      * @return Whether the command name is known by this registry.

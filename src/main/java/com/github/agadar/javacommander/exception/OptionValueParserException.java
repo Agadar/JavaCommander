@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander.exception;
 
+import java.io.Serial;
+
 /**
  * Thrown when an OptionValueParser failed to parse a string, or when the parser
  * itself failed to be instantiated.
@@ -8,6 +10,7 @@ package com.github.agadar.javacommander.exception;
  */
 public class OptionValueParserException extends JavaCommanderException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

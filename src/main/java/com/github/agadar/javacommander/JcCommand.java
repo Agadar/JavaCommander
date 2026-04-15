@@ -2,12 +2,8 @@ package com.github.agadar.javacommander;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.agadar.javacommander.exception.CommandInvocationException;
@@ -73,14 +69,14 @@ public class JcCommand {
         }
         this.description = (description == null) ? "" : description;
         this.options = (options == null) ? new ArrayList<>()
-                : options.stream().filter(option -> option != null).collect(Collectors.toList());
+                : options.stream().filter(Objects::nonNull).collect(Collectors.toList());
         this.methodToInvoke = methodToInvoke;
         this.objectToInvokeOn = objectToInvokeOn;
 
         optionNamesToOptions = this.options.stream()
                 .flatMap(option -> option.getNames().stream()
                         .map(name -> new SimpleEntry<String, JcCommandOption<?>>(name, option)))
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
+                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
     }
 
     /**

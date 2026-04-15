@@ -49,7 +49,7 @@ public class TerminalInputReader implements Runnable {
             try {
                 javaCommander.execute(br.readLine());
             } catch (IOException | JavaCommanderException ex) {
-                log.error("An error occured while reading the next line", ex);
+                log.error("An error occurred while reading the next line", ex);
                 System.out.println(ex.getMessage());
             } finally {
                 System.out.println(); // always print a newline after a command

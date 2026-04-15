@@ -88,7 +88,6 @@ public class ArgumentsParser {
 
                 if (useFlagValueForOption(args, command, currentOption, argsIndex)) {
                     finalArgs[indexOfOption] = currentOption.getFlagValue();
-                    findingValueForOption = false;
 
                 } else {
                     findingValueForOption = true;

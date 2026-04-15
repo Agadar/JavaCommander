@@ -4,6 +4,8 @@ import com.github.agadar.javacommander.JcCommand;
 
 import lombok.Getter;
 
+import java.io.Serial;
+
 /**
  * Thrown when an option was supplied for a command that does not have that
  * option.
@@ -13,6 +15,7 @@ import lombok.Getter;
 @Getter
 public class UnknownOptionException extends JavaCommanderException {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

@@ -79,9 +79,9 @@ public class OptionAnnotationParser {
             throws OptionValueParserException, OptionAnnotationException {
 
         var jcOptions = new ArrayList<JcCommandOption<?>>();
-        for (Parameter paramameter : parameters) {
-            if (paramameter.isAnnotationPresent(Option.class)) {
-                var parsedOption = parseOption(paramameter.getAnnotation(Option.class), paramameter);
+        for (Parameter param : parameters) {
+            if (param.isAnnotationPresent(Option.class)) {
+                var parsedOption = parseOption(param.getAnnotation(Option.class), param);
                 jcOptions.add(parsedOption);
             } else {
                 throw new OptionAnnotationException(method);

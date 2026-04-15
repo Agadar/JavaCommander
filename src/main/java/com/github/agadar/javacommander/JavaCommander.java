@@ -83,7 +83,7 @@ public class JavaCommander {
             throw new IllegalArgumentException("'args' should not be null or empty");
         }
         var commandOpt = jcRegistry.getCommand(argumentTokens.get(0));
-        if (!commandOpt.isPresent()) {
+        if (commandOpt.isEmpty()) {
             throw new UnknownCommandException(argumentTokens.get(0));
         }
         var command = commandOpt.get();

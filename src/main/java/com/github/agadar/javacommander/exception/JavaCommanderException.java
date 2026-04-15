@@ -1,5 +1,7 @@
 package com.github.agadar.javacommander.exception;
 
+import java.io.Serial;
+
 /**
  * Parent class for all custom exceptions thrown by JavaCommander.
  *
@@ -7,6 +9,7 @@ package com.github.agadar.javacommander.exception;
  */
 public class JavaCommanderException extends Exception {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

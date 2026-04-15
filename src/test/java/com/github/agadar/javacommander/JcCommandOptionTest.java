@@ -5,11 +5,12 @@ import com.github.agadar.javacommander.exception.OptionValueParserException;
 import com.github.agadar.javacommander.optionvalueparser.NullOptionValueParser;
 import com.github.agadar.javacommander.testclass.DataClass;
 import com.github.agadar.javacommander.testclass.DataClassOptionValueParser;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests com.github.agadar.javacommander.JcCommandOption.
@@ -20,8 +21,6 @@ public final class JcCommandOptionTest {
 
     /**
      * Test of getPrimaryName method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testGetPrimaryName() throws OptionValueParserException {
@@ -33,8 +32,6 @@ public final class JcCommandOptionTest {
 
     /**
      * Test of hashCode method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testHashCode() throws OptionValueParserException {
@@ -43,18 +40,16 @@ public final class JcCommandOptionTest {
         // True result.
         var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", String.class,
                 "defaultValue", null, null);
-        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", Integer.class, "10", null, null);
+        var instance2 = new JcCommandOption<>(List.of("one"), "description2", Integer.class, "10", null, null);
         assertEquals(instance1.hashCode(), instance2.hashCode());
 
         // False result.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", Integer.class, "10", null, null);
+        var instance3 = new JcCommandOption<>(List.of("one1"), "description2", Integer.class, "10", null, null);
         assertNotEquals(instance1.hashCode(), instance3.hashCode());
     }
 
     /**
      * Test of equals method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testEquals() throws OptionValueParserException {
@@ -63,18 +58,16 @@ public final class JcCommandOptionTest {
         // True result.
         var instance1 = new JcCommandOption<>(Arrays.asList("one", "two", "three"), "description1", String.class,
                 "defaultValue", null, null);
-        var instance2 = new JcCommandOption<>(Arrays.asList("one"), "description2", Integer.class, "10", null, null);
+        var instance2 = new JcCommandOption<>(List.of("one"), "description2", Integer.class, "10", null, null);
         assertEquals(instance1, instance2);
 
         // False result.
-        var instance3 = new JcCommandOption<>(Arrays.asList("one1"), "description2", Integer.class, "10", null, null);
+        var instance3 = new JcCommandOption<>(List.of("one1"), "description2", Integer.class, "10", null, null);
         assertNotEquals(instance1, instance3);
     }
 
     /**
      * Test of parseOptionValue method, of class JcCommandOption.
-     *
-     * @throws com.github.agadar.javacommander.exception.OptionValueParserException
      */
     @Test
     public void testParseOptionValue() throws OptionValueParserException {

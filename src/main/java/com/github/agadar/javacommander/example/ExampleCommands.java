@@ -71,7 +71,7 @@ public class ExampleCommands {
             // message.
             var command = javaCommander.getCommand(commandName);
 
-            if (!command.isPresent()) {
+            if (command.isEmpty()) {
                 stringBuilder.append(String.format("'%s' is not recognized as a command", commandName));
                 System.out.println(stringBuilder.toString());
                 return;
